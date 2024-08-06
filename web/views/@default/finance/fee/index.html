@@ -1,0 +1,156 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">启用计费</td>
+            <td>
+                <checkbox name="isOn" v-model="config.isOn"></checkbox>
+            </td>
+        </tr>
+        <tbody v-show="config.isOn">
+            <tr v-show="!config.enablePlans">
+                <td>默认结算周期</td>
+                <td>
+                    <radio name="pricePeriod" :v-value="'daily'" v-model="config.pricePeriod">按日结算</radio> &nbsp; &nbsp;
+                    <radio name="pricePeriod" :v-value="'monthly'" v-model="config.pricePeriod">按月结算</radio> &nbsp;
+                    <div v-if="config.pricePeriod == 'daily'">
+                        <p class="comment">按自然日流量或带宽峰值结算，每天出前一天的账单。此选项不适用于套餐计费。<br/><strong style="margin-top: 0.3em;display: block">请谨慎修改此选项，如果当月已生成了按月结算账单，则结算周期变更需要在下个月才会生效。</strong></div>
+                    <p class="comment" v-if="config.pricePeriod == 'monthly'">按自然月流量或带宽峰值结算，每月一日出上月的账单。此选项不适用于套餐计费。<br/><strong style="margin-top: 0.3em;display: block">请谨慎修改此选项，如果当月已生成了按日结算账单，则结算周期需要在下个月才会生效。</strong></p>
+                </td>
+            </tr>
+            <tr>
+                <td class="title">默认计费方式</td>
+                <td>
+                    <radio name="priceType" :v-value="'bandwidth'" v-model="config.priceType">按带宽计费</radio> &nbsp; &nbsp;
+                    <radio name="priceType" :v-value="'traffic'" v-model="config.priceType">按流量计费</radio> &nbsp; &nbsp;
+                    <p class="comment">用户默认的计费方式，<strong>请谨慎修改此选项，如果当月已经生成了账单，则计费方式需要在下个月才会生效。</strong></p>
+                </td>
+            </tr>
+            <tr>
+                <td>按带宽计费设置</td>
+                <td>
+                    <plan-price-bandwidth-config-box :v-plan-price-bandwidth-config="config.bandwidthPrice"></plan-price-bandwidth-config-box>
+                </td>
+            </tr>
+            <tr>
+                <td>按流量计费设置</td>
+                <td>
+                    <plan-price-traffic-config-box :v-plan-price-traffic-config="config.trafficPrice"></plan-price-traffic-config-box>
+                </td>
+            </tr>
+            <tr>
+                <td class="color-border">使用套餐计费</td>
+                <td>
+                    <checkbox name="enablePlans" v-model="config.enablePlans"></checkbox>
+                    <p class="comment">选中后，表示使用套餐计费，而不使用流量和带宽计费；开启后可以在 <a href="/plans">[套餐管理]</a> 中添加套餐，服务可能在绑定套餐后才能使用；如果不开启，则表示自动使用流量和带宽阶梯价格计费。<br/><strong style="margin-top: 0.3em;display: block">请谨慎选择此选项，如果当月已经产生了按流量/带宽账单，再修改为使用套餐计费，可能会重复产生费用；同样，如果当月已经产生了套餐计费，再改为流量/带宽计费，也可能会重复产生费用。</strong></p>
+                </td>
+            </tr>
+            <tr v-show="config.enablePlans">
+                <td class="color-border">允许用户管理套餐</td>
+                <td>
+                    <checkbox name="showPlansInUserSystem" v-model="config.showPlansInUserSystem"></checkbox>
+                    <p class="comment">选中后，在用户界面中显示套餐列表，用户可以购买和续费套餐；取消选中，表示用户界面中不显示套餐列表。</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div v-show="config.isOn && !config.enablePlans">
+        <h4 style="margin-top: 1.5em">流量包</h4>
+        <table class="ui table selectable definition">
+            <tr>
+                <td class="title">启用流量包</td>
+                <td>
+                    <checkbox name="enableTrafficPackages" v-model="config.enableTrafficPackages"></checkbox>
+                    <p class="comment">启用后，在流量计费时优先从用户已购流量包中扣除。</p>
+                </td>
+            </tr>
+            <tr v-show="config.enableTrafficPackages">
+                <td>在用户界面显示流量包</td>
+                <td>
+                    <checkbox name="showTrafficPackages" v-model="config.showTrafficPackages"></checkbox>
+                    <p class="comment">在用户界面显示流量包相关内容，用户也可以购买流量包。</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div v-show="config.isOn && !config.enablePlans">
+        <h4 style="margin-top: 1.5em">用户自定义</h4>
+        <table class="ui table selectable definition">
+            <tr>
+                <td class="title">允许用户自选计费方式</td>
+                <td>
+                    <checkbox name="userCanChangePriceType" v-model="config.userCanChangePriceType"></checkbox>
+                    <p class="comment">选中后，表示允许用户可以自选计费方式（按流量还是按带宽）；取消选中后，所有用户都将使用默认的计费方式。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>允许用户自选计费周期</td>
+                <td>
+                    <checkbox name="userCanChangePricePeriod" v-model="config.userCanChangePricePeriod"></checkbox>
+                    <p class="comment">选中后，表示允许用户可以自选计费周期（按月还是按日）；取消选中后，所有用户都将使用默认的计费周期。</p>
+                </td>
+            </tr>
+        </table>
+
+        <h4 style="margin-top: 1.5em">用户界面</h4>
+        <table class="ui table selectable definition">
+            <tr>
+                <td class="title">显示价格和价格计算器</td>
+                <td>
+                    <checkbox name="userUIShowPrices" v-model="config.userUI.showPrices"></checkbox>
+                    <p class="comment">选中后，表示在用户界面中显示价格和价格计算器。</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div v-show="config.isOn">
+        <h4 style="margin-top: 1.5em">逾期账单处理</h4>
+        <table class="ui table selectable definition">
+            <tr>
+                <td class="title">开启逾期账单处理</td>
+                <td>
+                    <checkbox name="unpaidBillPolicyIsOn" v-model="config.unpaidBillPolicy.isOn"></checkbox>
+                    <p class="comment">开启后，有逾期未支付账单，将会提醒用户。</p>
+                </td>
+            </tr>
+            <tr v-show="config.unpaidBillPolicy.isOn">
+                <td>日账单逾期天数</td>
+                <td>
+                    <div class="ui input right labeled">
+                        <input type="text" name="unpaidBillPolicyMinDailyBillDays" maxlength="4" style="width: 5em" v-model="config.unpaidBillPolicy.minDailyBillDays"/>
+                        <span class="ui label">天</span>
+                    </div>
+                    <p class="comment">按日结算的账单超过一定天数没有支付，则认为逾期；如果为0表示没有限制。</p>
+                </td>
+            </tr>
+            <tr v-show="config.unpaidBillPolicy.isOn">
+                <td>月账单逾期天数</td>
+                <td>
+                    <div class="ui input right labeled">
+                        <input type="text" name="unpaidBillPolicyMinMonthlyBillDays" maxlength="4" style="width: 5em" v-model="config.unpaidBillPolicy.minMonthlyBillDays"/>
+                        <span class="ui label">天</span>
+                    </div>
+                    <p class="comment">按月结算的账单超过一定天数没有支付，则认为逾期；如果为0表示没有限制。</p>
+                </td>
+            </tr>
+            <tr v-show="config.unpaidBillPolicy.isOn">
+                <td>逾期后停止网站</td>
+                <td>
+                    <checkbox name="unpaidBillPolicyDisableServers" v-model="config.unpaidBillPolicy.disableServers"></checkbox>
+                    <p class="comment">选中后，表示有逾期账单时停止用户的网站。</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="margin"></div>
+    <submit-btn></submit-btn>
+</form>

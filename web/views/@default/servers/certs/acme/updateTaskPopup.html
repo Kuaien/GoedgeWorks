@@ -1,0 +1,59 @@
+{$layout "layout_popup"}
+
+<h3>修改申请任务</h3>
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<csrf-token></csrf-token>
+	<input type="hidden" name="taskId" :value="task.id"/>
+	<input type="hidden" name="acmeUserId" :value="task.acmeUser.id"/>
+	<input type="hidden" name="authType" :value="task.authType"/>
+
+	<table class="ui table definition selectable">
+		<tr v-if="task.authType == 'dns'">
+			<td class="title">选择DNS服务商 *</td>
+			<td>
+				<div v-if="providers.length > 0">
+					<select class="ui dropdown auto-width" name="dnsProviderId" v-model="task.dnsProvider.id">
+						<option value="0">[请选择]</option>
+						<option v-for="provider in providers" :value="provider.id">{{provider.name}}（{{provider.typeName}}）</option>
+					</select>
+				</div>
+				<p class="comment">用于自动创建域名解析记录。</p>
+			</td>
+		</tr>
+		<tr v-if="task.authType == 'dns'">
+			<td class="title">顶级域名 *</td>
+			<td>
+				<input type="text" maxlength="100" name="dnsDomain" v-model="task.dnsDomain"/>
+				<p class="comment">用于在DNS服务商账号中操作解析记录的域名，比如 example.com，不要输入二级或别的多级域名。</p>
+			</td>
+		</tr>
+		<tr>
+			<td class="title">证书域名列表 *</td>
+			<td>
+                <domains-box name="domainsJSON" :v-domains="task.domains" :v-support-wildcard="task.authType == 'dns'"></domains-box>
+				<p class="comment">需要申请的证书中包含的域名列表<span v-if="task.authType == 'dns'">，所有域名必须是同一个顶级域名</span><span v-if="task.authType == 'http'">使用HTTP认证方式时，域名中不能含有通配符</span>。</p>
+			</td>
+		</tr>
+		<tr>
+			<td>自动续期</td>
+			<td>
+				<checkbox name="autoRenew" v-model="task.autoRenew"></checkbox>
+                <p class="comment">选中后，表示在免费证书临近到期之前尝试自动续期。</p>
+			</td>
+		</tr>
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+        <tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>回调URL</td>
+                <td>
+                    <input type="text" name="authURL" v-model="task.authURL" maxlength="200"/>
+                    <p class="comment">将认证数据以JSON的方式POST到此URL上，可以依此生成认证文件或者设置DNS域名解析；仅适用于未绑定当前CDN系统的域名。</p>
+                </td>
+            </tr>
+        </tbody>
+	</table>
+
+	<submit-btn></submit-btn>
+</form>

@@ -1,0 +1,73 @@
+{$layout "layout_popup"}
+
+<h3>IP最近访问日志<span class="grey">（<span>{{ip}}</span>）</span></h3>
+
+<table class="ui table definition celled selectable">
+    <tr>
+        <td class="cell-title">IP</td>
+        <td class="cell-content">
+            <span id="ip-text">{{ip}}</span>
+            <copy-to-clipboard :v-target="'ip-text'"></copy-to-clipboard>
+        </td>
+        <td class="cell-title">区域</td>
+        <td class="cell-content">
+            <span v-if="regions.length > 0">{{regions}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td class="cell-title">ISP</td>
+        <td>
+            <span v-if="isp.length > 0">{{isp}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+    </tr>
+    <tr v-if="publicBlackIPLists.length > 0">
+        <td>所在IP名单</td>
+        <td colspan="5">
+            <div class="ui label basic small" v-for="ipList in ipLists" style="margin-bottom: 0.5em">
+                {{ipList.name}}
+
+                <!-- 过期时间 -->
+                <span v-if="ipList.itemExpiredTime.length == 0" class="grey small">（不过期）</span>
+                <span v-else class="grey small">（有效至：{{ipList.itemExpiredTime}}）</span>
+
+                <!-- 操作 -->
+                <a href="" title="删除" @click.prevent="deleteFromList(ipList.id, ipList.itemId)"><i class="icon remove small"></i></a>
+            </div>
+            <span v-if="ipLists.length == 0" class="disabled">暂时未在任何名单。</span>
+            &nbsp; &nbsp;
+            <div>
+                <a href="" @click.prevent="showBlackLists"><i class="icon angle" :class="{up: blackListsVisible, down: !blackListsVisible}"></i>加入到<span v-if="ipLists.length > 0">其他</span>黑名单</a>
+            </div>
+        </td>
+    </tr>
+    <tr v-if="publicBlackIPLists.length > 0 && blackListsVisible">
+        <td>加入黑名单</td>
+        <td colspan="5">
+            <form class="ui form">
+                <table class="ui table">
+                    <tr>
+                        <td class="title">过期时间</td>
+                        <td>
+                            <datetime-input :v-timestamp="defaultItemExpiredAt" ref="itemExpiredTimestamp"></datetime-input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>选择名单 *</td>
+                        <td>
+                            <a class="ui label basic small" :class="{blue: selectedListId == ipList.id}" v-for="ipList in publicBlackIPLists" @click.prevent="addBlackIP(ipList)" style="margin-top: 0.3em">
+                                {{ipList.name}}
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<p class="comment" v-if="accessLogs.length == 0">暂时还没有访问日志。</p>
+<table class="ui table selectable" v-if="accessLogs.length > 0">
+    <tr v-for="accessLog in accessLogs" :key="accessLog.requestId">
+        <td><http-access-log-box :v-access-log="accessLog"></http-access-log-box></td>
+    </tr>
+</table>

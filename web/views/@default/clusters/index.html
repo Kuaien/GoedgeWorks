@@ -1,0 +1,87 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+<form method="get" action="/clusters" class="ui form">
+    <input type="hidden" name="searchType" :value="searchType"/>
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" name="keyword" v-model="keyword" placeholder="集群、节点关键词"/>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+        </div>
+        <div class="ui field" v-if="latestClusters.length > 0">
+            <a href="" @click.prevent="showLatest()">常用<i class="icon angle" :class="{down: !latestVisible, up: latestVisible}"></i> </a>
+        </div>
+    </div>
+</form>
+<div class="ui segment" v-if="latestVisible">
+    常用集群：<span v-for="(cluster, index) in latestClusters"><a :href="'/clusters/cluster?clusterId=' + cluster.id">{{cluster.name}}</a> &nbsp; <span class="disabled" v-if="index != latestClusters.length - 1">|</span> &nbsp;</span>
+</div>
+
+<div class="ui tabular menu" v-if="isSearching">
+    <a :href="'/clusters?searchType=cluster&keyword=' + keyword" class="item" :class="{active: searchType == '' || searchType == 'cluster'}">集群({{countClusters}})</a>
+    <a :href="'/clusters/nodes?keyword=' + keyword" class="item" :class="{active: searchType == 'node'}">节点({{countNodes}})</a>
+</div>
+
+<!-- 集群 -->
+<div v-show="searchType == '' || searchType == 'cluster'">
+    <div class="margin"></div>
+    <p class="comment" v-if="clusters.length == 0">暂时还没有集群。</p>
+    <table class="ui table selectable celled" v-if="clusters.length > 0">
+        <thead>
+            <tr>
+                <th>集群名称</th>
+                <th class="center width10">节点数</th>
+                <th class="center width10">在线节点数</th>
+                <th class="center width10">网站数</th>
+                <th>DNS域名</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="cluster in clusters">
+            <td class="cluster-name-td">
+                <a :href="'/clusters/cluster?clusterId=' + cluster.id"><keyword :v-word="keyword">{{cluster.name}}</keyword></a>
+
+                <a :href="'/clusters/cluster/settings?clusterId=' + cluster.id" title="设置"><i class="icon setting grey"></i></a>
+
+                <div v-if="cluster.timeZone != null && cluster.timeZone.length > 0">
+                    <grey-label>时区：{{cluster.timeZone}}</grey-label>
+                </div>
+
+                <a href="" title="取消置顶" v-if="cluster.isPinned" @click.prevent="pin(cluster.id, false)"><i class="icon pin grey visible"></i></a>
+                <a href="" title="置顶" v-else @click.prevent="pin(cluster.id, true)"><i class="icon pin grey opacity"></i></a>
+            </td>
+            <td class="center">
+                <a :href="'/clusters/cluster/nodes?clusterId=' + cluster.id" v-if="cluster.countAllNodes > 0"><span :class="{red:cluster.countAllNodes > cluster.countActiveNodes}">{{cluster.countAllNodes}}</span></a>
+                <span class="disabled" v-else="">-</span>
+
+                <div v-if="cluster.countUpgradeNodes > 0" style="margin-top:0.5em">
+                    <a :href="'/clusters/cluster/upgradeRemote?clusterId=' + cluster.id" title="点击进入远程升级页面"><span class="red">有节点需要升级</span></a>
+                </div>
+            </td>
+            <td class="center">
+                <a :href="'/clusters/cluster/nodes?clusterId=' + cluster.id + '&activeState=1'" v-if="cluster.countActiveNodes > 0"><span class="green">{{cluster.countActiveNodes}}</span></a>
+                <span class="disabled" v-else>-</span>
+            </td>
+            <td class="center">
+                <span v-if="cluster.countServers > 0">{{cluster.countServers}}</span>
+                <span class="disabled" v-else>-</span>
+            </td>
+            <td>
+                <span v-if="cluster.dnsName.length > 0">
+                    <var><keyword :v-word="keyword">{{cluster.dnsName}}</keyword></var>.<span v-if="cluster.dnsDomainName.length > 0">{{cluster.dnsDomainName}}</span><span v-else class="disabled">主域名</span>
+                    <span v-if="cluster.dnsDomainId > 0"><link-icon :href="'/dns/clusters/cluster?clusterId=' + cluster.id"></link-icon></span>
+                </span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td>
+                <a :href="'/clusters/cluster?clusterId=' + cluster.id">详情</a> &nbsp;
+                <a :href="'/clusters/cluster/settings?clusterId=' + cluster.id">设置</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<page-box></page-box>

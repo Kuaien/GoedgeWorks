@@ -1,0 +1,86 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<table class="ui table selectable definition">
+		<tr>
+			<td>名称 *</td>
+			<td>
+				<input type="text" name="name" maxlength="100" ref="focus"/>
+                <p class="comment">为当前认证信息起一个容易识别的名称。</p>
+			</td>
+		</tr>
+
+		<tr>
+			<td class="title">认证方式</td>
+			<td>
+				<select class="ui dropdown" style="width:10em" name="method" v-model="method">
+					<option v-for="method in methods" :value="method.value">{{method.name}}</option>
+				</select>
+			</td>
+		</tr>
+
+		<!-- 用户名/密码 -->
+		<tbody v-if="method == 'user'">
+			<tr>
+				<td>SSH用户名 *</td>
+				<td>
+					<input type="text" name="username" maxlength="100" value="root" v-model="username"/>
+					<p class="comment">SSH登录用户名。</p>
+				</td>
+			</tr>
+			<tr>
+				<td>SSH密码</td>
+				<td><input type="password" name="password" maxlength="100"/>
+				<p class="comment">SSH登录用户密码。<mask-warning></mask-warning></p> </td>
+			</tr>
+		</tbody>
+
+		<!-- 私钥 -->
+		<tbody v-if="method == 'privateKey'">
+            <tr>
+                <td>SSH用户名 *</td>
+                <td>
+                    <input type="text" name="username" maxlength="100" value="root" v-model="username"/>
+                    <p class="comment">SSH登录用户名。</p>
+                </td>
+            </tr>
+			<tr>
+				<td>RSA私钥 *</td>
+				<td>
+					<file-textarea name="privateKey" spellcheck="false" placeholder="填入RSA私钥内容或者拖动私钥文件到当前框中"></file-textarea>
+					<p class="comment">用来生成登录SSH公钥的私钥。<mask-warning></mask-warning></p>
+				</td>
+			</tr>
+            <tr>
+                <td>私钥密码<br/><em>（Passphrase）</em></td>
+                <td>
+                    <input type="password" name="passphrase" maxlength="200"/>
+                    <p class="comment">为私钥设置了密码（Passphrase）后需要填写。</p>
+                </td>
+            </tr>
+		</tbody>
+
+        <tr v-if="username != 'root'">
+            <td>执行sudo</td>
+            <td>
+                <checkbox name="su" checked="checked"></checkbox>
+                <p class="comment">非root的用户可以使用<code-label>sudo</code-label>获得更高权限来执行命令，请确保当前用户已经加入到sudo分组中。</p>
+            </td>
+        </tr>
+
+		<tr>
+			<td colspan="2"><more-options-indicator></more-options-indicator></td>
+		</tr>
+		<tbody v-show="moreOptionsVisible">
+			<tr>
+				<td>备注</td>
+				<td>
+					<textarea name="description" rows="3"></textarea>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

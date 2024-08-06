@@ -1,0 +1,400 @@
+{$layout "layout_popup"}
+
+<h3>修改DNS服务商账号</h3>
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+	<csrf-token></csrf-token>
+	<input type="hidden" name="providerId" :value="provider.id"/>
+	<input type="hidden" name="type" :value="provider.type"/>
+	<table class="ui table definition selectable">
+		<tr>
+			<td class="title">账号说明 *</td>
+			<td>
+				<input type="text" name="name" maxlength="50" ref="focus" v-model="provider.name"/>
+				<p class="comment">用来方便区分不同的账号。</p>
+			</td>
+		</tr>
+		<tr>
+			<td>服务商厂家 *</td>
+			<td>
+				{{provider.typeName}}
+				<p class="comment">{{typeDescription}}创建后无法修改此选项。</p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">API参数</td>
+		</tr>
+
+		<!-- DNSPod -->
+		<tbody v-if="provider.type == 'dnspod'">
+            <tr>
+                <td>密钥类型 *</td>
+                <td>
+                    <select class="ui dropdown auto-width" name="paramDNSPodAPIType" v-model="provider.params.apiType">
+                        <option value="tencentDNS">腾讯云API密钥</option>
+                        <option value="dnsPodToken">DNSPod Token</option>
+                    </select>
+                </td>
+            </tr>
+            <tr v-show="provider.params.apiType == 'tencentDNS'">
+                <td>SecretId *</td>
+                <td>
+                    <input type="text" name="paramDNSPodAccessKeyId" maxlength="100" v-model="provider.params.accessKeyId"/>
+                    <p class="comment">在DNSPod控制台“账号中心--API密钥”中获取。</p>
+                </td>
+            </tr>
+            <tr v-show="provider.params.apiType == 'tencentDNS'">
+                <td>SecretKey *</td>
+                <td>
+                    <input type="text" name="paramDNSPodAccessKeySecret" maxlength="100" v-model="provider.params.accessKeySecret"/>
+                    <p class="comment">在DNSPod控制台“账号中心--API密钥”中获取。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+			<tr v-show="provider.params.apiType == null || provider.params.apiType.length == 0 || provider.params.apiType == 'dnsPodToken'">
+				<td>密钥ID *</td>
+				<td>
+					<input type="text" name="paramDNSPodId" maxlength="100" v-model="provider.params.id"/>
+					<p class="comment">在DNSPod控制台“账号中心--API密钥--DNSPod Token”中获取。</p>
+				</td>
+			</tr>
+			<tr v-show="provider.params.apiType == null || provider.params.apiType.length == 0 || provider.params.apiType == 'dnsPodToken'">
+				<td>密钥Token *</td>
+				<td>
+					<input type="text" name="paramDNSPodToken" maxlength="100" v-model="provider.params.token" spellcheck="false"/>
+                    <p class="comment">在DNSPod控制台“账号中心--API密钥--DNSPod Token”中获取。<mask-warning></mask-warning></p>
+				</td>
+			</tr>
+            <tr v-if="provider.params.apiType == null || provider.params.apiType.length == 0 || provider.params.apiType == 'dnsPodToken'">
+                <td>区域</td>
+                <td>
+                    <select class="ui dropdown auto-width" name="paramDNSPodRegion" v-model="provider.params.region">
+                        <option value="">中国站</option>
+                        <option value="international">国际站</option>
+                    </select>
+                </td>
+            </tr>
+		</tbody>
+
+		<!-- AliDNS -->
+		<tbody v-if="provider.type == 'alidns'">
+			<tr>
+				<td>AccessKeyId *</td>
+				<td>
+					<input type="text" name="paramAliDNSAccessKeyId" maxlength="100" v-model="provider.params.accessKeyId" spellcheck="false"/>
+					<p class="comment">登录阿里云控制台 -- 在"访问控制"中创建和获取。</p>
+				</td>
+			</tr>
+			<tr>
+				<td>AccessKeySecret *</td>
+				<td>
+					<input type="text" name="paramAliDNSAccessKeySecret" maxlength="100" v-model="provider.params.accessKeySecret" spellcheck="false"/>
+					<p class="comment">登录阿里云控制台 -- 在"访问控制"中创建和获取。<mask-warning></mask-warning></p>
+				</td>
+			</tr>
+            <tr>
+                <td>区域ID<optional-label></optional-label></td>
+                <td>
+                    <input type="text" name="paramAliDNSRegionId" maxlength="100" v-model="provider.params.regionId"/>
+                    <p class="comment">阿里云产品所在区域代号，通常不需要填写。</p>
+                </td>
+            </tr>
+		</tbody>
+
+        <!-- 华为云 -->
+        <tbody v-if="provider.type == 'huaweiDNS'">
+            <tr>
+                <td>AccessKeyId *</td>
+                <td>
+                    <input type="text" name="paramHuaweiAccessKeyId" maxlength="100" v-model="provider.params.accessKeyId" spellcheck="false"/>
+                    <p class="comment">登录华为云控制台 -- 在"我的凭证 -- 访问密钥"中创建和获取。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>AccessKeySecret *</td>
+                <td>
+                    <input type="text" name="paramHuaweiAccessKeySecret" maxlength="100" v-model="provider.params.accessKeySecret" spellcheck="false"/>
+                    <p class="comment">登录华为云控制台 -- 在"我的凭证 -- 访问密钥"中创建和获取。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+            <tr>
+                <td>终端节点</td>
+                <td>
+                    <input type="text" name="paramHuaweiEndpoint" maxlength="100" v-model="provider.params.endpoint" spellcheck="false"/>
+                    <p class="comment">选填项。可以填写终端节点（Endpoint）区域代号或者域名，参考 <a href="https://developer.huaweicloud.com/endpoint?DNS" target="_blank">https://developer.huaweicloud.com/endpoint?DNS</a>（如果此链接失效，请到华为云开发者中心自行查找）。</p>
+                </td>
+            </tr>
+        </tbody>
+
+
+        <!-- CloudFlare -->
+        <tbody v-if="provider.type == 'cloudFlare'">
+            <tr>
+                <td>API密钥 *</td>
+                <td>
+                    <input type="text" name="paramCloudFlareAPIKey" maxlength="100" v-model="provider.params.apiKey" spellcheck="false"/>
+                    <p class="comment">在个人资料中的"API令牌"--"API密钥"--"Global API Key"中获取。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+            <tr>
+                <td>账号邮箱 *</td>
+                <td>
+                    <input type="text" name="paramCloudFlareEmail" maxlength="100" v-model="provider.params.email" spellcheck="false"/>
+                    <p class="comment">登录账号使用的邮箱。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- GoDaddy -->
+        <tbody v-if="provider.type == 'godaddy'">
+            <tr>
+                <td>Key *</td>
+                <td>
+                    <input type="text" name="paramGoDaddyKey" maxlength="100" v-model="provider.params.key" spellcheck="false"/>
+                    <p class="comment">可以在GoDaddy<a href="https://developer.godaddy.com/keys" target="_blank">开发者中心</a>创建，创建时Environment选择Production。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>Secret *</td>
+                <td>
+                    <input type="text" name="paramGoDaddySecret" maxlength="100" v-model="provider.params.secret" spellcheck="false"/>
+                    <p class="comment"><mask-warning></mask-warning></p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- ClouDNS -->
+        <tbody v-if="provider.type == 'cloudns'">
+            <tr>
+                <td>用户认证ID<em>（auth-id）</em></td>
+                <td>
+                    <input type="text" name="paramClouDNSAuthId" maxlength="20" v-model="provider.params.authId" spellcheck="false"/>
+                    <p class="comment">和子用户认证ID二选一。可以在ClouDNS<a href="https://www.cloudns.net/api-settings/" target="_blank">API设置页面</a>添加。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>子用户认证ID<em>（sub-auth-id）</em></td>
+                <td>
+                    <input type="text" name="paramClouDNSSubAuthId" maxlength="20" v-model="provider.params.subAuthId"/>
+                    <p class="comment">和用户认证ID二选一。可以在ClouDNS<a href="https://www.cloudns.net/api-settings/" target="_blank">API设置页面</a>添加。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>认证密码 *<em>（auth-password）</em></td>
+                <td>
+                    <input type="password" name="paramClouDNSAuthPassword" maxlength="100" v-model="provider.params.authPassword" spellcheck="false"/>
+                    <p class="comment">用户或者子用户的认证密码。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- DNS.COM -->
+        <tbody v-if="provider.type == 'dnscom'">
+            <tr>
+                <td>API Key *</td>
+                <td>
+                    <input type="text" name="paramDNSComKey" maxlength="100" v-model="provider.params.key" spellcheck="false"/>
+                    <p class="comment">在DNS.COM控制台账号中心--API设置中创建和查看。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>API Secret *</td>
+                <td>
+                    <input type="text" name="paramDNSComSecret" maxlength="100" v-model="provider.params.secret" spellcheck="false"/>
+                    <p class="comment">在DNS.COM控制台账号中心--API设置中创建和查看。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- DNS.LA -->
+        <tbody v-if="provider.type == 'dnsla'">
+            <tr>
+                <td>API ID *</td>
+                <td>
+                    <input type="text" name="paramDNSLaAPIId" maxlength="100" v-model="provider.params.apiId" spellcheck="false"/>
+                    <p class="comment">在DNS.LA控制台--账户信息中查看。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>API密钥 *</td>
+                <td>
+                    <input type="text" name="paramDNSLaSecret" maxlength="100" v-model="provider.params.secret" spellcheck="false"/>
+                    <p class="comment">在DNS.LA控制台--账户信息中查看。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- VolcEngine -->
+        <tbody v-if="provider.type == 'volcEngine'">
+            <tr>
+                <td>Access Key ID *</td>
+                <td>
+                    <input type="text" name="paramVolcEngineAccessKeyId" maxlength="100" v-model="provider.params.accessKeyId" spellcheck="false"/>
+                    <p class="comment">在火山引擎“访问控制--API访问密钥”中获取。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>Secret Access Key *</td>
+                <td>
+                    <input type="text" name="paramVolcEngineAccessKeySecret" maxlength="100" v-model="provider.params.accessKeySecret" spellcheck="false"/>
+                    <p class="comment"><mask-warning></mask-warning></p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- Amazon Route 53 -->
+        <tbody v-if="provider.type == 'amazonRoute53'">
+            <tr>
+                <td>Access Key ID *</td>
+                <td>
+                    <input type="text" name="paramAmazonRoute53AccessKeyId" maxlength="100" v-model="provider.params.accessKeyId" spellcheck="false"/>
+                </td>
+            </tr>
+            <tr>
+                <td>Secret Access Key *</td>
+                <td>
+                    <input type="text" name="paramAmazonRoute53AccessKeySecret" maxlength="100" v-model="provider.params.accessKeySecret" spellcheck="false"/>
+                    <p class="comment"><mask-warning></mask-warning></p>
+                </td>
+            </tr>
+            <tr>
+                <td>API区域</td>
+                <td>
+                    <input type="text" name="paramAmazonRoute53Region" maxlength="100" v-model="provider.params.region" spellcheck="false"/>
+                    <p class="comment">通常不需要填写。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- Microsoft Azure DNS -->
+        <tbody v-if="provider.type == 'azureDNS'">
+            <tr>
+                <td>订阅ID <br/><em>(Subscription ID)</em> *</td>
+                <td>
+                    <input type="text" name="paramAzureDNSSubscriptionId" maxlength="100" v-model="provider.params.subscriptionId" spellcheck="false"/>
+                    <p class="comment">可以在订阅（Subscriptions）服务中查看。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>目录(租户) ID <br/><em>(Directory Tenant ID)</em> *</td>
+                <td>
+                    <input type="text" name="paramAzureDNSTenantId" maxlength="100" v-model="provider.params.tenantId" spellcheck="false"/>
+                    <p class="comment">可以在应用注册（App registrations）中对应应用概述（Overview）中查看。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>应用程序(客户端) ID <br/><em>(Client ID)</em> *</td>
+                <td><input type="text" name="paramAzureDNSClientId" maxlength="100" v-model="provider.params.clientId" spellcheck="false"/>
+                    <p class="comment">需要在应用注册（App registrations）中新注册应用程序获得。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>客户端密码值 <br/><em>(Client Secret Value)</em> *</td>
+                <td>
+                    <input type="text" name="paramAzureDNSClientSecret" maxlength="100" v-model="provider.params.clientSecret" spellcheck="false"/>
+                    <p class="comment">可以在应用注册（App registrations）中对应应用的“证书和密码（Certificates &amp; secrets）”--“客户端密码（Client secrets）”中创建和查看。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+            <tr>
+                <td>资源组 <br/><em>(Resource Group Name)</em> *</td>
+                <td>
+                    <input type="text" name="paramAzureDNSResourceGroupName" maxlength="100" v-model="provider.params.resourceGroupName" spellcheck="false"/>
+                    <p class="comment">权限设置帮助：你需要在对应资源组（Resource group）-- 访问控制（Access control (IAM)）-- 角色分配（Role assignments）中添加一个角色分配（Role assignment），其中作业职能角色（Job function roles）为"DNS 区域参与者(DNS Zone Contributor)"，成员（Members）为应用注册（App registrations）中的应用程序（application）（有时需要在选择成员（select members）界面搜索应用程序（application）名称才能看到）。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- bunny.net -->
+        <tbody v-if="provider.type == 'bunnyNet'">
+            <tr>
+                <td>API密钥 *</td>
+                <td>
+                    <input type="text" name="paramBunnyNetAPIKey" maxlength="100" spellcheck="false" v-model="provider.params.apiKey"/>
+                    <p class="comment">在“Edit account details" -- "API Key"中获取。<mask-warning></mask-warning></p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- EdgeDNS -->
+        <tbody v-if="provider.type == 'localEdgeDNS'">
+            <tr>
+                <td>选择域名服务集群 *</td>
+                <td>
+                    <select class="ui dropdown auto-width" name="paramLocalEdgeDNSClusterId" v-model="provider.params.clusterId">
+                        <option value="0">[选择域名服务集群]</option>
+                        <option v-for="cluster in nsClusters" :value="cluster.id">{{cluster.name}}</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+
+
+        <!-- EdgeDNS API -->
+        <tbody v-if="provider.type == 'edgeDNSAPI'">
+            <tr>
+                <td>API地址 *</td>
+                <td>
+                    <input type="text" name="paramEdgeDNSAPIHost" maxlength="100" v-model="provider.params.host"/>
+                </td>
+            </tr>
+            <tr>
+                <td>AccessKey类型 *</td>
+                <td>
+                    <select class="ui dropdown auto-width" name="paramEdgeDNSAPIRole" v-model="provider.params.role">
+                        <option value="user">平台用户</option>
+                        <option value="admin">管理员</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>AccessKey ID *</td>
+                <td>
+                    <input type="text" name="paramEdgeDNSAPIAccessKeyId" maxlength="64" v-model="provider.params.accessKeyId"/>
+                </td>
+            </tr>
+            <tr>
+                <td>AccessKey密钥 *</td>
+                <td>
+                    <input type="text" name="paramEdgeDNSAPIAccessKeySecret" maxlength="64" v-model="provider.params.accessKeySecret"/>
+                    <p class="comment"><mask-warning></mask-warning></p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 自定义HTTP-->
+        <tbody v-if="provider.type == 'customHTTP'">
+            <tr>
+                <td>HTTP URL *</td>
+                <td>
+                    <input type="text" name="paramCustomHTTPURL" maxlength="200" v-model="provider.params.url"/>
+                    <p class="comment">HTTP URL完整地址，DNS所有操作都会以POST的方式转发到此地址。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>私钥 *</td>
+                <td>
+                    <input type="text" name="paramCustomHTTPSecret" maxlength="64" v-model="provider.params.secret"/>
+                    <p class="comment">通讯用的私钥，转发请求时会在Header中加入相关信息，方便开发者校验请求是否合法。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 更多选项 -->
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+
+        <tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>最小TTL</td>
+                <td>
+                    <div class="ui right labeled input">
+                        <input type="text" name="minTTL" size="4" maxlength="6" style="width: 6em" v-model="provider.minTTL"/>
+                        <span class="ui label">秒</span>
+                    </div>
+                    <p class="comment">生成的DNS时可以使用的最小TTL，请根据你选择的服务商和你在服务商中的账号等级进行填写；不填写或者0表示默认。</p>
+                </td>
+            </tr>
+        </tbody>
+	</table>
+
+	<submit-btn></submit-btn>
+</form>

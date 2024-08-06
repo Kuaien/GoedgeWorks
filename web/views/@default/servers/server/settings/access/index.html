@@ -1,0 +1,11 @@
+{$layout}
+{$template "../settings_menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    <form class="ui form" data-tea-action="$" data-tea-success="success" ref="authForm">
+        <input type="hidden" name="webId" :value="webId">
+        <http-auth-config-box :v-auth-config="authConfig" @change="changeMethods"></http-auth-config-box>
+        <submit-btn @ref=""></submit-btn>
+    </form>
+</div>

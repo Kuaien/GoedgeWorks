@@ -1,0 +1,57 @@
+{$layout}
+{$template "../item_menu"}
+{$template "chart_menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="chartId" :value="chart.id"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">图表名称 *</td>
+            <td>
+                <input type="text" maxlength="100" name="name" ref="focus" v-model="chart.name"/>
+                <p class="comment">也会作为有些图表的标题。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>图表类型 *</td>
+            <td>
+                <select class="ui dropdown auto-width" name="type" v-model="type" @change="changeType">
+                    <option v-for="type in types" :value="type.code">{{type.name}}</option>
+                </select>
+                <p class="comment" v-if="typeDefinition != null"><i class="icon" :class="typeDefinition.icon"></i> {{typeDefinition.description}}</p>
+            </td>
+        </tr>
+        <tr>
+            <td>启用当前图表</td>
+            <td><checkbox name="isOn" value="1" v-model="chart.isOn"></checkbox></td>
+        </tr>
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+        <tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>对象数限制</td>
+                <td>
+                    <input type="text" name="maxItems" maxlength="2" style="width: 4em" v-model="chart.maxItems"/>
+                    <p class="comment">在图表中能显示的最多对象数，0表示不限制。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>忽略空值对象</td>
+                <td>
+                    <checkbox name="ignoreEmptyKeys" value="1" checked="checked" v-model="chart.ignoreEmptyKeys"></checkbox>
+                    <p class="comment">选中后，空的对象值不会在图表中出现。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>忽略其他对象</td>
+                <td>
+                    <values-box name="ignoredKeys" :values="chart.ignoredKeys"></values-box>
+                    <p class="comment">这些对象不会在图表中出现。</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <submit-btn></submit-btn>
+</form>

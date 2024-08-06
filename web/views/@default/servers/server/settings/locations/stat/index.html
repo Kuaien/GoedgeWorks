@@ -1,0 +1,15 @@
+{$layout}
+{$template "/left_menu"}
+
+<div class="right-box">
+	{$template "../location_menu"}
+	{$template "../left_menu"}
+
+	<div class="right-box tiny">
+		<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+			<input type="hidden" name="webId" :value="webId"/>
+			<http-stat-config-box :v-stat-config="statConfig" :v-is-location="true"></http-stat-config-box>
+			<submit-btn></submit-btn>
+		</form>
+	</div>
+</div>

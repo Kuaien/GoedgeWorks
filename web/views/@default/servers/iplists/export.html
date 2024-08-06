@@ -1,0 +1,25 @@
+{$layout}
+{$template "list_menu"}
+
+<div class="margin"></div>
+<form class="ui form" method="get" action="/servers/iplists/exportData">
+    <input type="hidden" name="listId" :value="list.id"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">说明</td>
+            <td>导出所有的IP，并以文件格式下载。注意v1.3.5版本及以后导出的数据不能在之前的版本中导入。</td>
+        </tr>
+        <tr>
+            <td>格式</td>
+            <td>
+                <select class="ui dropdown auto-width" name="format">
+                    <option value="xlsx">Excel</option>
+                    <option value="csv">CSV</option>
+                    <option value="txt">TXT</option>
+                    <option value="json">JSON</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <submit-btn>导出</submit-btn>
+</form>

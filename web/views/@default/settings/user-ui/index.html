@@ -1,0 +1,221 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">产品名称 *</td>
+            <td>
+                <input type="text" name="productName" v-model="config.productName" maxlength="100"/>
+            </td>
+        </tr>
+        <tr>
+            <td>用户系统名称 *</td>
+            <td>
+                <input type="text" name="userSystemName" v-model="config.userSystemName" maxlength="100"/>
+            </td>
+        </tr>
+        <tr>
+            <td>浏览器图标</td>
+            <td>
+                <div v-if="config.faviconFileId > 0">
+                    <a :href="'/ui/image/' + config.faviconFileId" target="_blank"><img :src="'/ui/image/' + config.faviconFileId" style="width:32px;border:1px #ccc solid;"/></a>
+                </div>
+                <div v-else>
+                    <span class="disabled">还没有上传。</span>
+                </div>
+                <div style="margin-top: 0.8em">
+                    <input type="file" name="faviconFile" accept=".png"/>
+                </div>
+                <p class="comment">在浏览器标签栏显示的图标，请使用PNG格式。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>Logo图</td>
+            <td>
+                <div v-if="config.logoFileId > 0">
+                    <a :href="'/ui/image/' + config.logoFileId" target="_blank"><img :src="'/ui/image/' + config.logoFileId" style="width:32px;border:1px #ccc solid; padding: 4px; background: #276AC6"/></a>
+                </div>
+                <div v-else>
+                    <span class="disabled">还没有上传。</span>
+                </div>
+                <div style="margin-top: 0.8em">
+                    <input type="file" name="logoFile" accept=".png"/>
+                </div>
+                <p class="comment">显示在系统控制面板界面上的图标，请使用PNG格式；将会被用于深色背景之上，请使用浅色勾勒线条。</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">显示版本号</td>
+            <td>
+                <checkbox name="showVersion" v-model="config.showVersion"></checkbox>
+                <p class="comment">选中后，表示在系统名称后面加入版本号。</p>
+            </td>
+        </tr>
+        <tr v-show="config.showVersion">
+            <td class="color-border">定制版本号</td>
+            <td>
+                <input type="text" name="version" v-model="config.version" maxlength="100"/>
+                <p class="comment">定制自己的版本号，留空表示使用系统自带的版本号。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>页面背景颜色</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <div class="ui input left labeled">
+                            <span class="ui label">#</span>
+                            <input type="text" maxlength="7" style="width: 8em" v-model="config.theme.backgroundColor" @input="changeThemeBackgroundColor" placeholder="16进制色值" name="themeBackgroundColor"/>
+                        </div>
+                    </div>
+                    <div class="ui field">
+                        <div class="theme-background-preview-box" :style="'background-color: ' + ((config.theme.backgroundColor.length > 0) ? '#' + config.theme.backgroundColor : '')" title="背景颜色预览" ref="themeBackgroundPreviewBox"></div>
+                    </div>
+                </div>
+                <p class="comment">整个页面框架的背景颜色，留空表示使用默认的背景颜色。可点击使用：
+                    <span class="color-spans">
+                        <a href="" v-for="color in themeBackgroundColors" @click.prevent="selectThemeBackgroundColor(color)" :title="'#' + color"><span class="color-span" :style="'background-color: #' + color">&nbsp;</span></a>
+                    </span>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>显示页脚</td>
+            <td>
+                <checkbox name="showPageFooter" v-model="config.showPageFooter"></checkbox>
+            </td>
+        </tr>
+        <tr v-show="config.showPageFooter">
+            <td>自定义页脚HTML</td>
+            <td>
+                <textarea rows="3" name="pageFooterHTML" v-model="config.pageFooterHTML"></textarea>
+                <p class="comment">类似于<code-label>&lt;a class=&quot;item&quot;&gt;内容1&lt;/a&gt;&lt;a class=&quot;item&quot;&gt;内容2&lt;/a&gt;</code-label></p>
+            </td>
+        </tr>
+        <tr>
+            <td>显示财务相关功能</td>
+            <td>
+                <checkbox name="showFinance" v-model="config.showFinance"></checkbox>
+                <p class="comment">选中后，表示在菜单中显示财务管理功能。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>注册设置</td>
+            <td>
+                <a href="/users/setting">修改用户注册相关设置 &raquo;</a>
+            </td>
+        </tr>
+    </table>
+
+    <h4>网站相关设置</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">自动检查CNAME</td>
+            <td>
+                <checkbox name="serverCheckCNAME" v-model="config.server.checkCNAME"></checkbox>
+                <p class="comment">选中后，表示自动在网站列表中检查网站域名是否已正确解析到对应的CNAME。</p>
+            </td>
+        </tr>
+    </table>
+
+    <h4>数据看板设置</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">显示流量相关数据和图表</td>
+            <td><checkbox name="showTrafficCharts" v-model="config.showTrafficCharts"></checkbox></td>
+        </tr>
+        <tr>
+            <td>在流量图表中显示缓存相关信息</td>
+            <td>
+                <checkbox name="showCacheInfoInTrafficCharts" v-model="config.showCacheInfoInTrafficCharts"></checkbox>
+                <p class="comment">选中后，表示在流量图表中显示缓存流量、缓存命中率等信息。</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">显示带宽相关数据和图表</td>
+            <td><checkbox name="showBandwidthCharts" v-model="config.showBandwidthCharts"></checkbox></td>
+        </tr>
+        <tr v-show="false">
+            <td class="title">带宽单位</td>
+            <td>
+                <select class="ui dropdown auto-width" name="bandwidthUnit" v-model="config.bandwidthUnit">
+                    <option value="bit">比特</option>
+                    <option value="byte">字节</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+
+    <h4>门户页面</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">启用内置门户页面</td>
+            <td>
+                <checkbox name="portalIsOn" v-model="config.portal.isOn"></checkbox>
+                <p class="comment">启用内置门户页面后，访问用户系统首页会自动跳转到内置的门户页面（网址是：<code-label>/portal</code-label>）。</p>
+            </td>
+        </tr>
+        <tr v-show="config.portal.isOn">
+            <td>Logo图</td>
+            <td>
+                <div v-if="config.portal.logoFileId > 0">
+                    <a :href="'/ui/image/' + config.portal.logoFileId" target="_blank"><img :src="'/ui/image/' + config.portal.logoFileId" style="width:32px;border:1px #ccc solid; padding: 4px;" alt=""/></a>
+                </div>
+                <div v-else>
+                    <span class="disabled">还没有上传。</span>
+                </div>
+                <div style="margin-top: 0.8em">
+                    <input type="file" name="portalLogoFile" accept=".png"/>
+                </div>
+                <p class="comment">显示在门户页面上的图标，请使用PNG格式。</p>
+            </td>
+        </tr>
+    </table>
+
+    <h4>其他</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">时区</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <select class="ui dropdown" v-model="timeZoneGroupCode">
+                            <option v-for="timeZoneGroup in timeZoneGroups" :value="timeZoneGroup.code">{{timeZoneGroup.name}}</option>
+                        </select>
+                    </div>
+                    <div class="ui field">
+                        <select class="ui dropdown" name="timeZone" v-model="config.timeZone">
+                            <option v-for="timeZoneLocation in timeZoneLocations" :value="timeZoneLocation.name" v-if="timeZoneLocation.group == timeZoneGroupCode">{{timeZoneLocation.name}} ({{timeZoneLocation.offset}})</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="comment">用户系统显示时间使用的时区。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>使用的DNS解析库</td>
+            <td>
+                <select class="ui dropdown auto-width" name="dnsResolverType" v-model="config.dnsResolver.type">
+                    <option value="default">默认</option>
+                    <option value="cgo">CGO</option>
+                    <option value="goNative">Go原生</option>
+                </select>
+                <p class="comment">用户系统使用的DNS解析库；修改此项配置后，需要重启用户系统进程才会生效；通常不需要修改；如要修改，请在专家指导下进行。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>自定义客户端IP报头<a id="client-ip-header-names"></a></td>
+            <td>
+                <input type="text" name="clientIPHeaderNames" v-model="config.clientIPHeaderNames"/>
+                <p class="comment">可以通过此报头获取客户端IP，类似于<code-label>X-Forwarded-For X-Real-IP True-Client-IP Client-IP</code-label>&nbsp;<a href=""><span class="small" @click.prevent="addDefaultClientIPHeaderNames('X-Forwarded-For X-Real-IP True-Client-IP Client-IP')">[填入]</span></a>，用于使用反向代理访问用户系统的情形；如果有多个报头可以使用空格隔开。</p>
+            </td>
+        </tr>
+    </table>
+
+    <p class="comment">修改后，在3分钟内生效。</p>
+
+    <submit-btn></submit-btn>
+</form>

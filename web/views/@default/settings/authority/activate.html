@@ -1,0 +1,19 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success" data-tea-before="before" data-tea-done="done" data-tea-timeout="1800" spellcheck="false">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">注册码 *</td>
+            <td>
+                <textarea rows="8" name="key" ref="focus"></textarea>
+                <p class="comment">请输入商业版/企业版注册码。</p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn v-show="!isRequesting">激活</submit-btn>
+    <button class="ui button disabled" v-show="isRequesting">激活中...</button>
+</form>

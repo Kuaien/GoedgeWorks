@@ -1,0 +1,13 @@
+.grid .small {
+  font-size: 0.8em !important;
+}
+.table-box {
+  width: 40em;
+  max-height: 40em;
+  overflow-y: auto;
+}
+.chart-box {
+  height: 20em;
+  margin-top: 1em;
+}
+/*# sourceMappingURL=index.css.map */

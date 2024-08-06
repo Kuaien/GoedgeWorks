@@ -1,0 +1,18 @@
+{$layout "layout_popup"}
+
+<h3>域名支持的线路</h3>
+
+<table class="ui table definition selectable">
+	<tr>
+		<td class="title">线路</td>
+		<td>
+			<p class="comment" v-if="routes.length == 0">暂时还没有支持的线路。</p>
+			<div v-if="routes.length > 0">
+				<div class="ui label tiny basic" v-for="route in routes" style="margin-bottom: 0.5em">{{route.name}}<span v-if="route.code.length > 0 && route.code != route.name"> ({{route.code}})</span></div>
+			</div>
+			<p class="comment">注意：有些DNS服务商会根据账号的会员级别等限制线路的使用。</p>
+		</td>
+	</tr>
+</table>
+
+<button class="ui button primary" @click.prevent="close" type="button">确定</button>

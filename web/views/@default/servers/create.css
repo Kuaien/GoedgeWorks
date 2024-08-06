@@ -1,0 +1,30 @@
+.tables-box .table-box {
+  margin-top: 0;
+}
+.label em {
+  font-style: italic !important;
+}
+.checkboxes .checkbox {
+  float: left;
+  margin-bottom: 1em;
+  margin-right: 1em;
+}
+@media screen and (min-width: 1124px) {
+  .tables-box {
+    width: 1024px;
+  }
+  .tables-box .table-box.left {
+    width: 55%;
+    float: left;
+  }
+  .tables-box .table-box.right {
+    width: 40%;
+    float: left;
+    margin-left: 2em;
+    opacity: 0.3;
+  }
+  .tables-box .table-box.right:hover {
+    opacity: 1;
+  }
+}
+/*# sourceMappingURL=create.css.map */

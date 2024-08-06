@@ -1,0 +1,141 @@
+{$layout "layout"}
+{$template "menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">套餐名称 *</td>
+            <td>
+                <input type="text" name="name" ref="focus" maxlength="100"/>
+            </td>
+        </tr>
+        <tr>
+            <td>套餐简介</td>
+            <td>
+                <input type="text" name="description" maxlength="100"/>
+                <p class="comment">为用户介绍当前套餐的应用场景。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>关联集群 *</td>
+            <td>
+                <cluster-selector></cluster-selector>
+                <p class="comment">使用当前套餐的网站都将会部署在此集群上。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>价格设置 *</td>
+            <td>
+                <plan-price-config-box></plan-price-config-box>
+            </td>
+        </tr>
+    </table>
+
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">流量限制</td>
+            <td>
+                <traffic-limit-config-box></traffic-limit-config-box>
+            </td>
+        </tr>
+        <tr>
+            <td>带宽限制</td>
+            <td>
+                <bandwidth-size-capacity-box :v-name="'bandwidthLimitPerNodeJSON'" :v-unit="'mb'"></bandwidth-size-capacity-box>
+                <p class="comment">该套餐在单个CDN节点上的带宽限制，不填或者为0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>总网站数限制</td>
+            <td>
+                <digit-input name="totalServers" size="6" style="width: 6em" value="1" maxlength="6"></digit-input>
+                <p class="comment">当前套餐能够绑定的总网站数量，0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>总域名数限制</td>
+            <td>
+                <digit-input name="totalServerNames" size="6" style="width: 6em" value="0" maxlength="6"></digit-input>
+                <p class="comment">当前套餐能够绑定的总域名数量（即每个网站的所有域名总数量），0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>每个网站最多域名数</td>
+            <td>
+                <digit-input name="totalServerNamesPerServer" size="6" style="width: 6em" value="0" maxlength="6"></digit-input>
+                <p class="comment">当前套餐能够绑定的单个网站能够添加的最多域名数量，0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>单日请求数限制</td>
+            <td>
+                <div class="ui input right labeled">
+                    <digit-input name="dailyRequests" size="16" style="width: 12em" value="0" maxlength="16" @input="changeDailyRequests"></digit-input>
+                    <span class="ui label">次/每日</span>
+                </div>
+                <p class="comment"><span v-if="dailyRequestsFormat.length > 0">当前输入：{{dailyRequestsFormat}}。</span>当前套餐下的所有网站每天可以处理的请求数限制，0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>单月请求数限制</td>
+            <td>
+                <div class="ui input right labeled">
+                    <digit-input name="monthlyRequests" size="16" style="width: 12em" value="0" maxlength="16" @input="changeMonthlyRequests"></digit-input>
+                    <span class="ui label">次/每月</span>
+                </div>
+                <p class="comment"><span v-if="monthlyRequestsFormat.length > 0">当前输入：{{monthlyRequestsFormat}}。</span>当前套餐下的所有网站每月可以处理的请求数限制，0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>单日Websocket连接数限制</td>
+            <td>
+                <div class="ui input right labeled">
+                    <digit-input name="dailyWebsocketConnections" size="16" style="width: 12em" value="0" maxlength="16" @input="changeDailyWebsocketConnections"></digit-input>
+                    <span class="ui label">次/每日</span>
+                </div>
+                <p class="comment"><span v-if="dailyWebsocketConnectionsFormat.length > 0">当前输入：{{dailyWebsocketConnectionsFormat}}。</span>当前套餐下的所有网站每天可以接受的Websocket连接数限制，0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>单月Websocket连接数限制</td>
+            <td>
+                <div class="ui input right labeled">
+                    <digit-input name="monthlyWebsocketConnections" size="16" style="width: 12em" value="0" maxlength="16" @input="changeMonthlyWebsocketConnections"></digit-input>
+                    <span class="ui label">次/每月</span>
+                </div>
+                <p class="comment"><span v-if="monthlyWebsocketConnectionsFormat.length > 0">当前输入：{{monthlyWebsocketConnectionsFormat}}。</span>当前套餐下的所有网站每月可以接受的Websocket连接数限制，0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>文件上传最大尺寸</td>
+            <td>
+                <size-capacity-box :v-name="'maxUploadSizeJSON'" :v-unit="'gb'"></size-capacity-box>
+                <p class="comment">单次上传的文件最大内容尺寸；0表示不限制。</p>
+            </td>
+        </tr>
+    </table>
+
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">包含所有功能</td>
+            <td>
+                <checkbox name="hasFullFeatures" v-model="hasFullFeatures"></checkbox>
+                <p class="comment">选中后，表示当前套餐用户包含所有功能；取消选中后，可以选择支持的功能。</p>
+            </td>
+        </tr>
+        <tr v-show="!hasFullFeatures">
+            <td>选择支持的功能</td>
+            <td>
+                <div class="feature-boxes">
+                    <div class="feature-box" v-for="feature in features">
+                        <checkbox name="featureCodes" :v-value="feature.code" v-model="feature.isChecked">{{feature.name}}</checkbox>
+                        <p class="comment">{{feature.description}}</p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

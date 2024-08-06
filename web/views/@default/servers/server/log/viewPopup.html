@@ -1,0 +1,160 @@
+{$layout "layout_popup"}
+{$template "/code_editor"}
+
+<div class="ui menu tabular tiny">
+	<a class="item" :class="{active: tab == 'summary'}" @click.prevent="switchTab('summary')">综合信息</a>
+	<a class="item" :class="{active: tab == 'response'}" @click.prevent="switchTab('response')">响应数据（Response）</a>
+	<a class="item" :class="{active: tab == 'request'}" @click.prevent="switchTab('request')">请求数据（Request）</a>
+	<a class="item" :class="{active: tab == 'cookie'}" @click.prevent="switchTab('cookie')">Cookie</a>
+	<a class="item" :class="{active: tab == 'client'}" @click.prevent="switchTab('client')">终端信息</a>
+</div>
+
+<div v-if="tab == 'summary'">
+	<table class="ui table selectable small">
+		<tr>
+			<td style="width: 50%">请求概要<em>(Request)</em>：{{accessLog.request}}</td>
+            <td>请求ID：{{accessLog.requestId}}</td>
+		</tr>
+		<tr>
+			<td>请求方法<em>(RequestMethod)</em>：{{accessLog.requestMethod}}</td>
+            <td>请求URI<em>(RequestURI)</em>：{{accessLog.requestURI}}</td>
+		</tr>
+		<tr>
+            <td>主机地址<em>(Host)</em>：{{accessLog.host}}</td>
+			<td>终端地址<em>(RemoteAddr:RemotePort)</em>：{{accessLog.remoteAddr}}:{{accessLog.remotePort}}</td>
+		</tr>
+		<tr>
+            <td>请求来源<em>(Referer)</em>：
+                <span v-if="accessLog.referer != null && accessLog.referer.length > 0">{{accessLog.referer}}</span>
+                <span v-else class="disabled">[没有设置]</span>
+            </td>
+			<td>终端信息<em>(UserAgent)</em>：
+				<span v-if="accessLog.userAgent != null && accessLog.userAgent.length > 0">{{accessLog.userAgent}}</span>
+				<span v-else class="disabled">[没有设置]</span>
+			</td>
+		</tr>
+		<tr>
+			<td>状态<em>(StatusMessage)</em>：<span :class="{red:accessLog.status>=400, green:accessLog.status<400}">{{accessLog.status}} {{accessLog.statusMessage}} <span v-if="accessLog.originStatus >= 400 || (accessLog.originStatus > 0 && accessLog.originStatus != accessLog.status)" class="grey small">（源站{{accessLog.originStatus}}）</span></span></td>
+			<td>文件类型<em>(ContentType)</em>：
+				<span v-if="accessLog.contentType != null && accessLog.contentType.length > 0">{{accessLog.contentType}}</span>
+				<span v-else>-</span>
+			</td>
+		</tr>
+		<tr>
+			<td>下行流量<em>(BytesSent)</em>：
+                <span v-if="accessLog.bytesSent != null">{{accessLog.bytesSent}}
+                    <span v-if="accessLog.bytesSent > 0" class="grey small">（{{teaweb.formatBytes(accessLog.bytesSent)}}）</span>
+                </span>
+                <span v-else class="disabled">0</span>
+            </td>
+			<td>源站地址：
+                <span v-if="accessLog.originAddress != null && accessLog.originAddress">{{accessLog.originAddress}}</span>
+                <span v-else class="disabled">未访问源站</span>
+            </td>
+		</tr>
+		<tr>
+			<td>ISO8601时间：{{accessLog.timeISO8601}}</td>
+			<td>本地时间<em>(TimeLocal)</em>：{{accessLog.timeLocal}}</td>
+		</tr>
+		<tr v-if="wafInfo != null">
+			<td class="color-border">WAF策略：{{wafInfo.policy.name}}</td>
+			<td>WAF规则分组：
+				<span v-if="wafInfo.group != null">{{wafInfo.group.name}}</span>
+				<span v-else>-</span>
+			</td>
+		</tr>
+		<tr v-if="wafInfo != null && wafInfo.set != null">
+			<td class="color-border">WAF规则集：
+                <a :href="'/servers/components/waf/group?firewallPolicyId=' +  accessLog.firewallPolicyId + '&type=inbound&groupId=' + accessLog.firewallRuleGroupId+ '#set' + accessLog.firewallRuleSetId" v-if="wafInfo.policy.serverId == 0" target="_parent">{{wafInfo.set.name}}</a>
+                <a :href="'/servers/server/settings/waf/group?serverId=' + accessLog.serverId + '&firewallPolicyId=' + accessLog.firewallPolicyId + '&type=inbound&groupId=' + accessLog.firewallRuleGroupId + '#set' + accessLog.firewallRuleSetId" target="_parent" v-if="wafInfo.policy.serverId > 0">{{wafInfo.set.name}}</a> </td>
+			<td></td>
+		</tr>
+		<tr v-if="accessLog.errors != null && accessLog.errors.length > 0">
+			<td colspan="2">
+				<div v-for="error in accessLog.errors">
+                    <pre><span class="red">{{error}}</span></pre>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div v-if="tab == 'response'">
+    <table class="ui table definition selectable small">
+        <tr>
+            <td class="title">Status</td>
+            <td>{{accessLog.status}} {{accessLog.statusMessage}}</td>
+        </tr>
+    </table>
+	<table class="ui table definition selectable small" v-if="responseHeaders.length > 0">
+        <tbody v-for="header in responseHeaders">
+            <tr v-for="value in header.values">
+                <td class="title">
+                    <span v-if="header.isGeneral">{{header.name}}</span>
+                    <span style="font-style: italic" v-else>{{header.name}}</span>
+                </td>
+                <td>{{value}}</td>
+            </tr>
+        </tbody>
+	</table>
+</div>
+
+<div v-if="tab == 'request'">
+	<table class="ui table definition selectable small">
+        <tbody v-for="header in requestHeaders">
+            <tr v-for="value in header.values">
+                <td class="title">
+                    <span v-if="header.isGeneral">{{header.name}}</span>
+                    <span style="font-style: italic" v-else>{{header.name}}</span>
+                </td>
+                <td>{{value}}</td>
+            </tr>
+        </tbody>
+        <tbody v-if="requestBody.length > 0">
+            <tr>
+                <td colspan="2">请求内容：</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <source-code-box :type="requestContentType" width="0" height="200">{{requestBody}}</source-code-box>
+                </td>
+            </tr>
+        </tbody>
+	</table>
+</div>
+
+<div v-if="tab == 'cookie'">
+	<p class="comment" v-if="cookies.length == 0">暂时没有Cookie数据。</p>
+	<div v-else>
+		<table class="ui table definition selectable small">
+			<tr v-for="cookie in cookies">
+				<td class="title">{{cookie.name}}</td>
+				<td>{{cookie.value}}</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div v-if="tab == 'client'">
+	<table class="ui table definition selectable small">
+		<tr>
+			<td class="title">综合信息<em>(UserAgent)</em></td>
+			<td>
+                <span v-if="accessLog.userAgent != null && accessLog.userAgent.length > 0">{{accessLog.userAgent}}</span>
+                <span class="disabled" v-else>[没有设置]</span>
+            </td>
+		</tr>
+		<tr>
+			<td>IP</td>
+			<td>{{accessLog.remoteAddr}}</td>
+		</tr>
+		<tr v-if="region != null">
+			<td>区域</td>
+			<td>{{region.full}}</td>
+		</tr>
+		<tr v-if="region != null && region.isp != null && region.isp.length > 0">
+			<td>ISP</td>
+			<td>{{region.isp}}</td>
+		</tr>
+	</table>
+</div>

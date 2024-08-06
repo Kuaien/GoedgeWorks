@@ -1,0 +1,63 @@
+{$layout "layout_popup"}
+
+<h3>创建{{category.toUpperCase()}}统计指标</h3>
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="category" :value="category"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">指标名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="100" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td>统计对象 *</td>
+            <td>
+                <metric-keys-config-box :v-category="category"></metric-keys-config-box>
+            </td>
+        </tr>
+        <tr>
+            <td>统计周期 *</td>
+            <td>
+                <metric-period-config-box></metric-period-config-box>
+            </td>
+        </tr>
+        <tr>
+            <td>统计数值 *</td>
+            <td>
+                <!-- HTTP -->
+                <select class="ui dropdown auto-width" name="value" v-if="category == 'http'">
+                    <option v-for="def in valueDefinitions" :value="def.code">{{def.name}}</option>
+                </select>
+
+                <!-- TCP -->
+                <select class="ui dropdown auto-width" name="value" v-if="category == 'tcp'">
+                    <option v-for="def in valueDefinitions" :value="def.code">{{def.name}}</option>
+                </select>
+
+                <!-- UDP -->
+                <select class="ui dropdown auto-width" name="value" v-if="category == 'udp'">
+                    <option v-for="def in valueDefinitions" :value="def.code">{{def.name}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>数据保留周期</td>
+            <td>
+                <div class="ui input">
+                    <input type="text" size="4" maxlength="4" name="expiresPeriod"/>
+                </div>
+                <p class="comment">自动删除此周期以外的数据。单位和统计周期一致。不填或者为0，表示自动计算。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>公用</td>
+            <td>
+                <checkbox name="isPublic" checked="checked"></checkbox>
+                <p class="comment">选中表示所有集群自动使用此指标。</p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

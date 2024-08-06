@@ -1,0 +1,15 @@
+.theme-background-preview-box {
+  width: 1.6em;
+  height: 1.6em;
+}
+.color-spans {
+  position: absolute;
+  margin-top: 0.2em;
+}
+.color-spans .color-span {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.6em;
+}
+/*# sourceMappingURL=index.css.map */

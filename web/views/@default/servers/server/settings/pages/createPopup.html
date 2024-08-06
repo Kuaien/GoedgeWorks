@@ -1,0 +1,66 @@
+{$layout "layout_popup"}
+<h3>添加自定义页面</h3>
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+    <input type="hidden" name="exceptURLPatternsJSON" :value="JSON.stringify(exceptURLPatterns)"/>
+    <input type="hidden" name="onlyURLPatternsJSON" :value="JSON.stringify(onlyURLPatterns)"/>
+
+	<table class="ui table selectable definition">
+		<tr>
+			<td class="title">响应状态码 *</td>
+			<td>
+				<input type="text" name="status" size="3" placeholder="状态码" maxlength="3" style="width:5.2em" ref="focus"/>
+                <p class="comment">匹配的响应状态码，比如404，或者50x。</p>
+			</td>
+		</tr>
+        <tr>
+            <td>内容类型 *</td>
+            <td>
+                <select class="ui dropdown auto-width" name="bodyType" v-model="bodyType">
+                    <option v-for="bodyType in bodyTypes" :value="bodyType.code">{{bodyType.name}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr v-show="bodyType == 'html'">
+            <td>显示页面HTML *</td>
+            <td>
+                <textarea name="body" ref="htmlBody" rows="7"></textarea>
+                <p class="comment"><a href="" @click.prevent="addHTMLTemplate">[使用模板]</a>。填写页面的HTML内容，支持请求变量。</p>
+            </td>
+        </tr>
+        <tr v-if="bodyType == 'url'">
+            <td>显示页面URL *</td>
+            <td>
+                <input type="text" name="url" maxlength="500" placeholder="类似于 https://example.com/page.html"/>
+                <p class="comment">将从此URL中读取内容。</p>
+            </td>
+        </tr>
+        <tr v-if="bodyType == 'redirectURL'">
+            <td>跳转到URL *</td>
+            <td>
+                <input type="text" name="url" maxlength="500" placeholder="类似于 https://example.com/page.html"/>
+                <p class="comment">将会跳转到此URL，支持使用变量。</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+		<tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>例外URL &nbsp;<tip-icon content="对这些URL将不做任何限制。"></tip-icon></td>
+                <td><url-patterns-box v-model="exceptURLPatterns"></url-patterns-box></td>
+            </tr>
+            <tr>
+                <td>限制URL &nbsp;<tip-icon content="只对这些URL做限制。"></tip-icon></td>
+                <td><url-patterns-box v-model="onlyURLPatterns"></url-patterns-box></td>
+            </tr>
+            <tr>
+                <td>新状态码</td>
+                <td>
+                    <input type="text" name="newStatus" size="3" placeholder="状态码" maxlength="3" style="width:5.2em"/>
+                    <p class="comment">可以用来修改响应的状态码，不填表示不改变原有状态码。</p>
+                </td>
+            </tr>
+        </tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

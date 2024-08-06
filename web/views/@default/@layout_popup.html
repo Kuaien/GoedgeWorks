@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{$ htmlEncode .teaTitle}控制台</title>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+    {$if eq .teaFaviconFileId 0}
+    <link rel="shortcut icon" href="/images/favicon.png"/>
+    {$else}
+    <link rel="shortcut icon" href="/ui/image/{$.teaFaviconFileId}"/>
+    {$end}
+	<link rel="stylesheet" type="text/css" href="/_/@default/@layout_popup.css" media="all"/>
+
+	<link rel="stylesheet" type="text/css" href="/css/semantic.iframe.min.css?v=bRafhK" media="all"/>
+	{$TEA.VUE}
+	<link rel="stylesheet" type="text/css" href="/_/@default/@layout_override.css" media="all"/>
+	{$echo "header"}
+	<script type="text/javascript" src="/_/@default/@layout.js"></script>
+	<script type="text/javascript" src="/js/components.js"></script>
+	<script type="text/javascript" src="/js/utils.min.js"></script>
+	<script type="text/javascript" src="/js/sweetalert2/dist/sweetalert2.all.min.js"></script>
+	<script type="text/javascript" src="/js/date.tea.js"></script>
+    <script type="text/javascript" src="/js/langs/{$.teaLang}.js?v=1.2.0"></script>
+	<style type="text/css">
+        .main {
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            overflow-y: auto;
+            padding-bottom: 0;
+        }
+
+        .main::-webkit-scrollbar {
+            width: 4px;
+        }
+	</style>
+	<script type="text/javascript">
+		window.IS_POPUP = true
+	</script>
+</head>
+<body>
+
+<div class="main">
+	<!-- 功能区 -->
+	{$TEA.VIEW}
+</div>
+
+</body>
+</html>

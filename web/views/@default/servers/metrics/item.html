@@ -1,0 +1,64 @@
+{$layout}
+{$template "item_menu"}
+
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">指标名称</td>
+        <td>
+            {{item.name}}
+        </td>
+    </tr>
+    <tr>
+        <td>状态</td>
+        <td><label-on :v-is-on="item.isOn"></label-on></td>
+    </tr>
+    <tr>
+        <td>统计对象</td>
+        <td>
+            <span v-for="key in item.keys" style="margin-right: 0.5em"><metric-key-label :v-key="key"></metric-key-label></span>
+        </td>
+    </tr>
+    <tr>
+        <td>统计周期</td>
+        <td>
+            {{item.period}} {{item.periodUnitName}}
+        </td>
+    </tr>
+    <tr>
+        <td>统计数值</td>
+        <td>
+            <span class="ui label small basic">{{item.valueName}}</span>
+        </td>
+    </tr>
+    <tr>
+        <td>数据保留周期</td>
+        <td>
+            <span v-if="item.expiresPeriod > 0">{{item.expiresPeriod}}</span>
+            <span v-else>自动</span>
+            <p class="comment" v-if="item.expiresPeriod > 0">单位和统计周期一致。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>公用</td>
+        <td>
+            <span class="green" v-if="item.isPublic">公用</span>
+            <span class="disabled" v-else>非公用</span>
+        </td>
+    </tr>
+    <tr>
+        <td>内置</td>
+        <td>
+            <span class="green" v-if="item.code.length > 0">内置</span>
+            <span class="disabled" v-else>自建</span>
+        </td>
+    </tr>
+</table>
+
+<!-- 使用此指标的集群 -->
+<h4>绑定此指标的集群</h4>
+<p class="comment" v-if="clusters.length == 0">暂时还没有集群使用此策略。</p>
+<table class="ui table selectable" v-if="clusters.length > 0">
+    <tr v-for="cluster in clusters">
+        <td>{{cluster.name}}<link-icon :href="'/clusters/cluster?clusterId=' + cluster.id"></link-icon></td>
+    </tr>
+</table>

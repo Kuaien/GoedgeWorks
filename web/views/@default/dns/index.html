@@ -1,0 +1,52 @@
+{$layout}
+
+<div class="margin"></div>
+
+<form class="ui form" method="get" action="/dns">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" name="keyword" placeholder="集群、域名..." v-model="keyword"/>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+            &nbsp;
+            <a href="/dns" v-if="keyword.length > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<p class="comment" v-if="clusters.length == 0" style="margin-top: 1em">暂时还没有集群。</p>
+<table class="ui table selectable celled" v-if="clusters.length > 0">
+	<thead>
+		<tr>
+			<th>集群</th>
+			<th>子域名</th>
+			<th>DNS服务商</th>
+			<th>DNS服务商账号</th>
+			<th class="two op">操作</th>
+		</tr>
+	</thead>
+	<tr v-for="cluster in clusters">
+		<td>
+            <a :href="'/dns/clusters/cluster?clusterId=' + cluster.id"><keyword :v-word="keyword">{{cluster.name}}</keyword></a><link-icon :href="'/clusters/cluster?clusterId=' + cluster.id"></link-icon>
+		</td>
+		<td>
+            <span v-if="cluster.dnsName.length > 0 && cluster.domainName.length > 0"><em class="italic"><keyword :v-word="keyword">{{cluster.dnsName}}</keyword></em>.<keyword :v-word="keyword">{{cluster.domainName}}</keyword></span>
+			<span v-else="" class="disabled">-</span>
+		</td>
+		<td>
+			<span v-if="cluster.providerTypeName.length > 0">{{cluster.providerTypeName}}</span>
+			<span v-else class="disabled">-</span>
+		</td>
+		<td>
+			<span v-if="cluster.providerName.length > 0">{{cluster.providerName}}<link-icon :href="'/dns/providers/provider?providerId=' + cluster.providerId"></link-icon></span>
+			<span v-else="" class="disabled">-</span>
+		</td>
+		<td>
+			<a :href="'/dns/clusters/cluster?clusterId=' + cluster.id">详情</a> &nbsp; <a href="" @click.prevent="updateCluster(cluster.id)">修改</a>
+		</td>
+	</tr>
+</table>
+<p class="comment" v-if="clusters.length > 0">这里列出了所有集群对应的域名设置。</p>
+
+<div class="page" v-html="page"></div>

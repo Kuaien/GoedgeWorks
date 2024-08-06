@@ -1,0 +1,41 @@
+{$layout}
+{$template "menu"}
+
+<second-menu>
+    <menu-item @click.prevent="createRegion()">[创建区域]</menu-item>
+</second-menu>
+
+<p class="comment" v-if="regions.length == 0">暂时还没有区域。</p>
+
+<table class="ui table selectable" v-if="regions.length > 0" id="sortable-table">
+    <thead>
+        <tr>
+            <th style="width:3em"></th>
+            <th class="width10">区域名称</th>
+            <th>区域说明</th>
+            <th class="width10 center">节点数</th>
+            <th class="width10">区域状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tbody v-for="region in regions" :v-id="region.id">
+        <tr>
+            <td style="text-align: center;"><i class="icon bars handle grey"></i> </td>
+            <td :class="{disabled: !region.isOn}">
+                <a href="" @click.prevent="updateRegion(region.id)">{{region.name}} &nbsp; <i class="icon expand small"></i></a>
+            </td>
+            <td>
+                <span v-if="region.description.length > 0">{{region.description}}</span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td class="center"><a :href="'/clusters/regions/nodes?regionId=' + region.id"><span :class="{disabled: region.countNodes == 0}">{{region.countNodes}}</span></a></td>
+            <td>
+                <label-on :v-is-on="region.isOn"></label-on>
+            </td>
+            <td>
+                <a href="" @click.prevent="updateRegion(region.id)">修改</a> &nbsp; <a href="" @click.prevent="deleteRegion(region.id)">删除</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p v-if="regions.length > 0" class="comment">可以拖动左侧的<i class="icon bars"></i>排序。</p>

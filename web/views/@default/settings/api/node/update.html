@@ -1,0 +1,80 @@
+{$layout}
+
+{$template "menu"}
+
+<div class="ui warning message"><i class="icon warning circle"></i>如果你修改了GRPC访问地址、端口、证书相关信息时，需要重启<code-label>edge-api</code-label>进程（<code-label>edge-node restart</code-label>）才能生效，并可能需要手工修改其他节点的配置信息。</div>
+
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<input type="hidden" name="nodeId" :value="node.id"/>
+	<input type="hidden" name="sslPolicyId" :value="node.sslPolicyId"/>
+	<table class="ui table selectable definition">
+		<tr>
+			<td class="title">节点名称 *</td>
+			<td>
+				<input type="text" name="name" maxlength="100" ref="focus" v-model="node.name"/>
+			</td>
+		</tr>
+		<tr>
+			<td>GRPC监听端口 *</td>
+			<td>
+				<network-addresses-box :v-name="'listensJSON'" :v-server-type="'httpWeb'" :v-addresses="node.listens" @change="changeListens" :v-from="'apiNode'"></network-addresses-box>
+				<p class="comment">通过GRPC访问API节点进程监听的网络端口。</p>
+			</td>
+		</tr>
+		<tr v-if="hasHTTPS">
+			<td>HTTPS证书 *</td>
+			<td>
+				<ssl-certs-box :v-certs="node.certs" :v-protocol="'https'"></ssl-certs-box>
+			</td>
+		</tr>
+		<tr>
+			<td>GRPC访问地址 *</td>
+			<td>
+				<api-node-addresses-box :v-name="'accessAddrsJSON'" :v-addrs="node.accessAddrs"></api-node-addresses-box>
+				<p class="comment">边缘节点和管理平台等外部节点访问API节点的网络地址，需要保证其他节点能够通过此地址访问到API节点服务。<strong>访问地址里的端口号和监听端口通常一致，除非你做了端口转发。</strong></p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><more-options-indicator></more-options-indicator></td>
+		</tr>
+		<tbody v-show="moreOptionsVisible">
+            <tr>
+                <td :class="{'color-border': node.restIsOn}">开启HTTP API端口</td>
+                <td>
+                    <checkbox name="restIsOn" v-model="node.restIsOn">启用HTTP API</checkbox>
+                    <p class="comment">启用后用户可以通过HTTP API调用服务接口。</p>
+                </td>
+            </tr>
+            <tr v-if="node.restIsOn">
+                <td class="color-border">HTTP API监听端口 *</td>
+                <td>
+                    <network-addresses-box :v-name="'restListensJSON'" :v-server-type="'httpWeb'" @change="changeRestListens" :v-addresses="node.restListens"></network-addresses-box>
+                    <p class="comment">HTTP API节点进程监听的网络端口，需要和当前节点的GRPC端口不同。</p>
+                </td>
+            </tr>
+			<tr>
+				<td>描述</td>
+				<td>
+					<textarea name="description" maxlength="200" rows="3" v-model="node.description"></textarea>
+				</td>
+			</tr>
+            <tr>
+                <td>主节点</td>
+                <td>
+                    <checkbox name="isPrimary" v-model="node.isPrimary"></checkbox>
+                    <p class="comment">设置为主节点后，主要的后台任务会在此节点上运行。</p>
+                </td>
+            </tr>
+			<tr>
+				<td>启用当前节点</td>
+				<td>
+					<div class="ui checkbox">
+						<input type="checkbox" name="isOn" value="1" v-model="node.isOn"/>
+						<label></label>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

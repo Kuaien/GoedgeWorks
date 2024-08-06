@@ -1,0 +1,143 @@
+{$layout}
+{$template "/echarts"}
+
+<!-- 加载中 -->
+<div style="margin-top: 0.8em">
+    <div class="ui message loading" v-if="isLoading">
+        <div class="ui active inline loader small"></div>  &nbsp; 数据加载中...
+    </div>
+</div>
+
+<!-- XFF设置提示 -->
+<div class="ui message warning" v-if="teaXFFPrompt">
+    检测到你正在使用反向代理访问当前系统，如果你的系统确定在一个反向代理服务的上游，为了系统的正常运行，请在安全设置中设置“自定义客户端IP报头”。
+    <a href="/settings/security?showAll=1#client-header-names">[去设置]</a> &nbsp; &nbsp;
+    <a href="" @click.prevent="dismissXFFPrompt">[关闭提示]</a>
+</div>
+
+<!-- 没有节点提醒 -->
+<div class="ui icon message warning" v-if="!isLoading && dashboard.defaultClusterId > 0 && dashboard.countNodes == 0">
+    <i class="icon warning circle"></i>
+    <a :href="'/clusters/cluster/createNode?clusterId=' + dashboard.defaultClusterId">还没有在集群中添加节点，现在去添加？添加节点后才可部署网站。</a>
+</div>
+
+<!-- 新版本更新提醒 -->
+<div class="ui icon message error" v-if="!isLoading && newVersionCode.length > 0">
+    <i class="icon warning circle"></i>
+    升级提醒：有新版本管理系统可以更新：v{{currentVersionCode}} -&gt; v{{newVersionCode}} &nbsp; &nbsp;
+    <a href="/settings/updates?doCheck=1">[查看详情]</a>
+
+    <a href="" title="关闭" @click.prevent="closeMessage"><i class="ui icon remove small"></i></a>
+</div>
+
+<!-- 边缘节点升级提醒 -->
+<div class="ui icon message error" v-if="!isLoading && nodeUpgradeInfo.count > 0">
+    <i class="icon warning circle"></i>
+    <a href="/clusters">升级提醒：有 {{nodeUpgradeInfo.count}} 个边缘节点需要升级到 v{{nodeUpgradeInfo.version}} 版本，系统正在尝试自动升级，请耐心等待...</a><a href="" title="关闭" @click.prevent="closeMessage"><i class="ui icon remove small"></i></a>
+</div>
+
+<!-- API节点升级提醒 -->
+<div class="ui icon message error" v-if="!isLoading && apiNodeUpgradeInfo.count > 0">
+    <i class="icon warning circle"></i>
+    <a href="/settings/api">升级提醒：有 {{apiNodeUpgradeInfo.count}} 个API节点需要升级到 v{{apiNodeUpgradeInfo.version}} 版本；如果已经升级，请尝试重启API节点进程。</a><a href="" title="关闭" @click.prevent="closeMessage"><i class="ui icon remove small"></i></a>
+</div>
+
+<!-- 本地API节点 -->
+<div class="ui icon message error" v-if="!isLoading && localLowerVersionAPINode != null">
+    <i class="icon warning circle"></i>
+    <span v-if="localLowerVersionAPINode.runtimeVersion == localLowerVersionAPINode.fileVersion">升级提醒：发现一个正在使用的本地API节点版本需要升级，文件位置：{{localLowerVersionAPINode.exePath}}，当前版本：v{{localLowerVersionAPINode.runtimeVersion}}。</span>
+    <span v-if="localLowerVersionAPINode.runtimeVersion != localLowerVersionAPINode.fileVersion">升级提醒：发现一个正在使用的本地API节点版本文件已经更新，但需要重启后生效，文件位置：{{localLowerVersionAPINode.exePath}}。 <a href="" @click.prevent="restartAPINode" v-if="!isRestartingLocalAPINode">[帮我重启]</a><span v-if="isRestartingLocalAPINode">尝试重启中...</span></span>
+    <a href="" title="关闭" @click.prevent="closeMessage"><i class="ui icon remove small"></i></a>
+</div>
+
+<!-- 没有硬盘空间提醒 -->
+<div class="ui icon message error" v-if="!isLoading && dashboard.diskUsageWarning != null && dashboard.diskUsageWarning.length > 0">
+    <i class="icon warning circle"></i>
+    <span v-html="dashboard.diskUsageWarning" style="line-height: 1.8"></span>
+    <a href="" title="关闭" @click.prevent="closeMessage"><i class="ui icon remove small"></i></a>
+</div>
+
+<!-- 弱密码提示 -->
+<div class="ui icon message error" v-if="countWeakAdmins > 0">
+    <i class="icon warning circle"></i>
+    <a href="/admins?hasWeakPassword=1">安全提醒：有 {{countWeakAdmins}} 个管理员登录账号正在使用弱密码，请及时修改密码，避免产生安全风险。</a>
+    <a href="" title="关闭" @click.prevent="closeMessage"><i class="ui icon remove small"></i></a>
+</div>
+
+<!-- 统计图表 -->
+<columns-grid v-if="!isLoading">
+    <div class="ui column">
+        <h4>集群<link-icon href="/clusters" v-if="dashboard.canGoNodes"></link-icon></h4>
+        <div class="value"><span>{{dashboard.countNodeClusters}}</span>个</div>
+    </div>
+
+    <div class="ui column">
+        <h4>边缘节点<link-icon href="/clusters" v-if="dashboard.canGoNodes"></link-icon></h4>
+        <div class="value"><span>{{dashboard.countNodes}}</span>个
+            <span style="font-size: 1em" v-if="dashboard.countOfflineNodes > 0">/ <a href="/clusters" v-if="dashboard.canGoNodes"><span class="red" style="font-size: 1em">{{dashboard.countOfflineNodes}}离线</span></a><span class="red" style="font-size: 1em" v-else>{{dashboard.countOfflineNodes}}离线</span></span>
+        </div>
+    </div>
+
+    <div class="ui column">
+        <h4>API节点<link-icon href="/settings/api" v-if="dashboard.canGoSettings"></link-icon></h4>
+        <div class="value"><span>{{dashboard.countAPINodes}}</span>个
+            <span style="font-size: 1em" v-if="dashboard.countOfflineAPINodes > 0">/ <a href="/settings/api" v-if="dashboard.canGoSettings"><span class="red" style="font-size: 1em">{{dashboard.countOfflineAPINodes}}离线</span></a><span class="red" style="font-size: 1em" v-else>{{dashboard.countOfflineAPINodes}}离线</span></span>
+        </div>
+    </div>
+
+    <div class="ui column">
+        <h4>用户<link-icon href="/users" v-if="dashboard.canGoUsers"></link-icon></h4>
+        <div class="value"><span>{{dashboard.countUsers}}</span>个</div>
+    </div>
+
+    <div class="ui column">
+        <h4>网站<link-icon href="/servers" v-if="dashboard.canGoServers"></link-icon></h4>
+        <div class="value"><span>{{dashboard.countServers}}</span>个</div>
+    </div>
+
+    <div class="ui column">
+        <h4>当天独立IP</h4>
+        <div class="value">
+            <span v-if="todayCountIPs > 0">{{todayCountIPsFormat}}</span>
+            <span v-else class="disabled">尚无数据</span>
+        </div>
+    </div>
+
+    <div class="ui column">
+        <h4>当天流量</h4>
+        <div class="value"><span>{{todayTraffic}}</span>{{todayTrafficUnit}}</div>
+    </div>
+
+</columns-grid>
+
+<chart-columns-grid>
+    <div class="ui column">
+        <div class="ui menu text blue" v-show="!isLoading">
+            <a href="" class="item" :class="{active: trafficTab == 'hourly'}" @click.prevent="selectTrafficTab('hourly')">24小时流量趋势</a>
+            <a href="" class="item" :class="{active: trafficTab == 'daily'}" @click.prevent="selectTrafficTab('daily')">15天流量趋势</a>
+        </div>
+        <div class="ui divider"></div>
+
+        <!-- 按小时统计 -->
+        <div class="chart-box" id="hourly-traffic-chart-box" v-show="trafficTab == 'hourly'"></div>
+
+        <!-- 按日统计 -->
+        <div class="chart-box" id="daily-traffic-chart-box" v-show="trafficTab == 'daily'"></div>
+    </div>
+
+    <div class="ui column">
+        <!-- 域名排行 -->
+        <h4 v-show="!isLoading">域名访问排行 <span>（24小时）</span></h4>
+        <div class="ui divider"></div>
+        <div class="chart-box" id="top-domains-chart"></div>
+    </div>
+
+    <!-- 指标 -->
+    <metric-chart v-for="chart in metricCharts"
+                  :key="chart.id"
+                  :v-chart="chart.chart"
+                  :v-stats="chart.stats"
+                  :v-item="chart.item"
+                  :v-column="true">
+    </metric-chart>
+</chart-columns-grid>

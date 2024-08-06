@@ -1,0 +1,68 @@
+{$layout "layout_popup"}
+
+<h3>添加API节点</h3>
+<form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+	<table class="ui table selectable definition">
+		<tr>
+			<td class="title">节点名称 *</td>
+			<td>
+				<input type="text" name="name" maxlength="100" ref="focus"/>
+			</td>
+		</tr>
+		<tr>
+			<td>GRPC监听端口 *</td>
+			<td>
+				<network-addresses-box :v-name="'listensJSON'" :v-server-type="'httpWeb'" @change="changeListens" :v-from="'apiNode'"></network-addresses-box>
+				<p class="comment">通过GRPC访问API节点进程监听的网络端口。</p>
+			</td>
+		</tr>
+		<tr v-if="hasHTTPS">
+			<td>HTTPS证书 *</td>
+			<td>
+				<ssl-certs-box :v-protocol="'https'"></ssl-certs-box>
+			</td>
+		</tr>
+		<tr>
+			<td>GRPC 外部访问地址 *</td>
+			<td>
+				<api-node-addresses-box :v-name="'accessAddrsJSON'"></api-node-addresses-box>
+				<p class="comment">边缘节点和管理平台等外部节点访问API节点的网络地址，需要保证其他节点能够通过此地址访问到API节点服务。<strong>访问地址里的端口号和监听端口通常一致，除非你做了端口转发。</strong></p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><more-options-indicator></more-options-indicator></td>
+		</tr>
+		<tbody v-show="moreOptionsVisible">
+            <tr>
+                <td :class="{'color-border': restIsOn}">开启HTTP API端口</td>
+                <td>
+                    <checkbox name="restIsOn" v-model="restIsOn">启用HTTP API</checkbox>
+                    <p class="comment">启用后用户可以通过HTTP API调用服务接口。</p>
+                </td>
+            </tr>
+            <tr v-if="restIsOn">
+                <td class="color-border">HTTP API监听端口 *</td>
+                <td>
+                    <network-addresses-box :v-name="'restListensJSON'" :v-server-type="'httpWeb'" @change="changeRestListens"></network-addresses-box>
+                    <p class="comment">HTTP API节点进程监听的网络端口，需要和当前节点的GRPC端口不同。</p>
+                </td>
+            </tr>
+			<tr>
+				<td>描述</td>
+				<td>
+					<textarea name="description" maxlength="200" rows="3"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>启用当前节点</td>
+				<td>
+					<div class="ui checkbox">
+						<input type="checkbox" name="isOn" value="1" checked="checked"/>
+						<label></label>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

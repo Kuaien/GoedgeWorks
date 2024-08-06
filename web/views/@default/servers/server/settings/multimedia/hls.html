@@ -1,0 +1,16 @@
+{$layout}
+{$template "../settings_menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    {$template "menu"}
+    <form class="ui form" data-tea-success="success" data-tea-action="$">
+        <csrf-token></csrf-token>
+        <input type="hidden" name="webId" :value="webId"/>
+
+        <h4>HLS加密设置</h4>
+        <http-hls-config-box v-model="hlsConfig"></http-hls-config-box>
+
+        <submit-btn></submit-btn>
+    </form>
+</div>

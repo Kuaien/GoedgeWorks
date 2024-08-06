@@ -1,0 +1,79 @@
+{$layout "layout_popup"}
+
+<h3 v-if="list.type == 'white'">添加IP到白名单</h3>
+<h3 v-if="list.type == 'black'">添加IP到黑名单</h3>
+<h3 v-if="list.type == 'grey'">添加IP到灰名单</h3>
+
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<input type="hidden" name="listId" :value="listId"/>
+	<csrf-token></csrf-token>
+	<table class="ui table definition selectable">
+        <tr>
+            <td class="title">类型 *</td>
+            <td>
+                <select class="ui dropdown auto-width" name="type" v-model="type">
+                    <option value="ip">单IP或IP段</option>
+                    <option value="all">所有IP</option>
+                </select>
+                <p class="comment" v-if="type == 'ip'">单个IP或一个IP范围。</p>
+                <p class="comment" v-if="type == 'all'">允许或禁用所有的IP。</p>
+            </td>
+        </tr>
+
+        <tr v-if="type != 'all'">
+            <td>添加方式</td>
+            <td>
+                <radio name="method" value="single" :v-value="'single'" v-model="method">单个添加</radio> &nbsp; &nbsp;
+                <radio name="method" value="batch" :v-value="'batch'" v-model="method">批量添加</radio>
+            </td>
+        </tr>
+
+        <!-- 单个添加 -->
+        <tbody v-if="method == 'single' && type == 'ip'">
+            <tr>
+                <td>IP或IP段 *</td>
+                <td>
+                    <input type="text" name="value" maxlength="64" placeholder="x.x.x.x" ref="focus" style="width: 20em"/>
+                    <p class="comment">支持IPv4和IPv6；支持三种格式：单个IP（比如192.168.1.100）、IP范围（比如192.168.1.1-192.168.1.255）、CIDR（比如192.168.1.1/24）。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 批量添加 -->
+        <tbody v-if="method == 'batch' && type == 'ip'">
+            <tr>
+                <td>IP列表</td>
+                <td>
+                    <textarea name="ipData" style="width: 20em" :placeholder="'x.x.x.x' + '\n' + 'x.x.x.x/24' + '\n' + 'x.x.x.x-y.y.y.y'" rows="3"></textarea>
+                    <p class="comment">每行一个IP，支持三种格式：<code-label :class="'grey'">192.168.1.100</code-label>、<code-label :class="'grey'">192.168.1.1-192.168.1.255</code-label>、<code-label :class="'grey'">192.168.1.1/24</code-label>。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <tr>
+            <td>过期时间</td>
+            <td>
+                <datetime-input :v-name="'expiredAt'"></datetime-input>
+                <p class="comment">在加入名单某一段时间后会失效，留空表示永久有效。</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td>级别</td>
+            <td>
+                <firewall-event-level-options :v-value="eventLevel"></firewall-event-level-options>
+            </td>
+        </tr>
+
+		<tr>
+			<td colspan="2"><more-options-indicator></more-options-indicator></td>
+		</tr>
+		<tbody v-show="moreOptionsVisible">
+			<tr>
+				<td>备注</td>
+				<td><input type="text" name="reason" maxlength="100"/></td>
+			</tr>
+		</tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

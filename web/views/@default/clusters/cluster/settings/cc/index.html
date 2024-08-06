@@ -1,0 +1,109 @@
+{$layout}
+{$template "../menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    <form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+        <csrf-token></csrf-token>
+        <input type="hidden" name="clusterId" :value="clusterId"/>
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">启用CC防护功能</td>
+                <td>
+                    <checkbox name="isOn" v-model="httpCCPolicy.isOn"></checkbox>
+                    <p class="comment">选中后，表示当前集群下的网站可以使用CC防护功能。</p>
+                </td>
+            </tr>
+            <tbody v-show="httpCCPolicy.isOn">
+                <tr v-for="(defaultThreshold, index) in defaultThresholds">
+                    <td>检测阈值{{index+1}}</td>
+                    <td>
+                        <table class="ui table">
+                            <tr>
+                                <td class="title">计算周期</td>
+                                <td>
+                                    <div class="ui input right labeled">
+                                        <input type="text" name="thresholdPeriodSeconds" style="width: 5em" maxlength="4" v-model="thresholds[index].periodSeconds"/>
+                                        <span class="ui label">秒</span>
+                                    </div>
+                                    <p class="comment">0表示默认，默认{{defaultThreshold.periodSeconds}}秒。</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>最大请求数</td>
+                                <td>
+                                    <input type="text" name="thresholdMaxRequests" style="width: 6em" maxlength="5" v-model="thresholds[index].maxRequests"/>
+                                    <p class="comment">0表示默认，默认{{defaultThreshold.maxRequests}}。</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>拦截时间</td>
+                                <td>
+                                    <div class="ui input right labeled">
+                                        <input type="text" name="thresholdBlockSeconds" style="width: 5em" maxlength="4" v-model="thresholds[index].blockSeconds"/>
+                                        <span class="ui label">秒</span>
+                                    </div>
+                                    <p class="comment">0表示默认，默认{{defaultThreshold.blockSeconds}}秒。</p>
+                                </td>
+                            </tr>
+                        </table>
+                        <p class="comment"><pro-warning-label></pro-warning-label></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>单IP最大并发连接数</td>
+                    <td>
+                        <input type="text" name="maxConnectionsPerIP" v-model="httpCCPolicy.maxConnectionsPerIP" maxlength="6" style="width: 6em"/>
+                        <p class="comment">如果为0表示使用默认，默认为{{defaultHTTPCCPolicyMaxConnectionsPerIP}}。<pro-warning-label></pro-warning-label></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>跳转检测路径</td>
+                    <td>
+                        <input type="text" name="redirectsCheckingValidatePath" v-model="httpCCPolicy.redirectsChecking.validatePath"/>
+                        <p class="comment">如果不填表示使用默认，默认为{{defaultHTTPCCPolicyRedirectsCheckingValidatePath}}；必须是一个特殊的URL以避免用户访问异常。<pro-warning-label></pro-warning-label></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>跳转检测周期</td>
+                    <td>
+                        <div class="ui input right labeled">
+                            <input type="text" maxlength="4" style="width: 5em" name="redirectsCheckingDurationSeconds" v-model="httpCCPolicy.redirectsChecking.durationSeconds"/>
+                            <span class="ui label">秒</span>
+                        </div>
+                        <p class="comment">如果为0表示使用默认，默认为{{defaultHTTPCCPolicyRedirectsCheckingDurationSeconds}}。<pro-warning-label></pro-warning-label></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>跳转检测最多次数</td>
+                    <td>
+                        <input type="text" maxlength="4" style="width: 5em" name="redirectsCheckingMaxRedirects" v-model="httpCCPolicy.redirectsChecking.maxRedirects"/>
+                        <p class="comment">如果为0表示使用默认，默认为{{defaultHTTPCCPolicyRedirectsCheckingMaxRedirects}}。<pro-warning-label></pro-warning-label></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>跳转检测拦截时间</td>
+                    <td>
+                        <div class="ui input right labeled">
+                            <input type="text" maxlength="6" style="width: 6em" name="redirectsCheckingBlockSeconds" v-model="httpCCPolicy.redirectsChecking.blockSeconds"/>
+                            <span class="ui label">秒</span>
+                        </div>
+                        <p class="comment">如果为0表示使用默认，默认为{{defaultHTTPCCPolicyRedirectsCheckingBlockSeconds}}。<pro-warning-label></pro-warning-label></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>防火墙拦截范围</td>
+                    <td>
+                        <select name="firewallScope" v-model="httpCCPolicy.firewall.scope" class="ui dropdown auto-width">
+                            <option value="global">所有网站</option>
+                            <option value="service">当前网站</option>
+                        </select>
+                        <p class="comment" v-if="httpCCPolicy.firewall.scope == 'global'">“所有网站”表示IP被拦截时，将被阻止访问所有网站；此时系统可以自动尝试利用本地防火墙提升拦截效率。</p>
+                        <p class="comment" v-if="httpCCPolicy.firewall.scope == 'service'">“当前网站”表示IP被拦截时，只会阻止访问当前网站；选择此选项会严重影响拦截效率，建议只有特殊情况下才使用。</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <submit-btn></submit-btn>
+    </form>
+</div>

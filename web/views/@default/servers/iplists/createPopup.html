@@ -1,0 +1,50 @@
+{$layout "layout_popup"}
+
+<h3>创建<var v-if="type == 'black'">黑名单</var><var v-if="type == 'white'">白名单</var><var v-if="type == 'grey'">灰名单</var>
+</h3>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="100" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td>代号</td>
+            <td>
+                <input type="text" name="code" maxlength="100"/>
+                <p class="comment">可选参数，只能是英文字母、数字、中划线、下划线的组合。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>类型</td>
+            <td>
+                <select class="ui dropdown auto-width" name="type" v-model="type">
+                    <option value="black">黑名单</option>
+                    <option value="white">白名单</option>
+                    <option value="grey">灰名单</option>
+                </select>
+                <p class="comment" v-if="type == 'black'">黑名单中的IP将会被禁止访问。</p>
+                <p class="comment" v-if="type == 'white'">白名单中的IP将会自动放行，优先级高于黑名单。</p>
+                <p class="comment" v-if="type == 'grey'">灰名单中的IP仅作为记录和观察使用，不影响黑名单和白名单的作用。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>全局有效</td>
+            <td>
+                <checkbox name="isGlobal" checked="checked"></checkbox>
+                <p class="comment">选中后，所有网站都自动使用此名单，不需要再次绑定；否则只有在WAF策略中绑定此名单后才会生效。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>备注</td>
+            <td>
+                <textarea name="description" rows="2" maxlength="200"></textarea>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

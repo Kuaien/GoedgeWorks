@@ -1,0 +1,13 @@
+.ui.message a .icon {
+  position: absolute;
+  right: 1em;
+  top: 2em;
+}
+.chart-box {
+  height: 14em;
+}
+h4 span {
+  font-size: 0.8em;
+  color: grey;
+}
+/*# sourceMappingURL=index.css.map */
