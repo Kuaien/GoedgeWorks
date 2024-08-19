@@ -1,0 +1,16 @@
+{$layout}
+{$template "/echarts"}
+
+{$template "stat_menu"}
+{$template "/left_menu_with_menu"}
+<div class="right-box with-menu">
+    {$template "requests_menu"}
+
+    <div class="ui column">
+        <h4>请求数统计（即时）</h4>
+        <div class="chart-box" id="minutely-requests-chart"></div>
+
+        <h4>流量统计（即时）</h4>
+        <div class="chart-box" id="minutely-traffic-chart"></div>
+    </div>
+</div>

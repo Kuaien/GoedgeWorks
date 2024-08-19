@@ -1,0 +1,22 @@
+{$layout}
+
+{$template "/left_menu"}
+
+<div class="right-box">
+	{$template "../location_menu"}
+	{$template "../left_menu"}
+
+	<div class="right-box tiny">
+        <div class="margin"></div>
+		<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+			<input type="hidden" name="webId" :value="webId"/>
+			<http-header-policy-box
+				:v-request-header-policy="requestHeaderPolicy"
+				:v-request-header-ref="requestHeaderRef"
+				:v-response-header-policy="responseHeaderPolicy"
+				:v-response-header-ref="responseHeaderRef"
+				:v-params="'serverId=' + serverId"
+				:v-is-location="true"></http-header-policy-box>
+		</form>
+	</div>
+</div>

@@ -1,0 +1,14 @@
+{$layout}
+{$template "menu_domain"}
+
+<p class="ui message warning" v-if="!canUpdate">当前用户没有权限修改健康检查设置，请检查用户所属套餐。</p>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <input type="hidden" name="domainId" :value="domainId"/>
+
+    <ns-records-health-check-config-box v-model="config"></ns-records-health-check-config-box>
+
+    <submit-btn :class="{disabled: !canUpdate}"></submit-btn>
+</form>

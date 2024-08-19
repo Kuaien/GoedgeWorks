@@ -1,0 +1,103 @@
+{$layout}
+{$template "../menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    <form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+        <csrf-token></csrf-token>
+        <input type="hidden" name="clusterId" :value="clusterId"/>
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">启用5秒盾功能</td>
+                <td>
+                    <checkbox name="isOn" v-model="uamPolicy.isOn"></checkbox>
+                    <p class="comment">选中后，表示当前集群下的网站可以使用5秒盾功能。</p>
+                </td>
+            </tr>
+            <tbody v-show="uamPolicy.isOn">
+                <tr>
+                    <td>验证有效期</td>
+                    <td>
+                        <div class="ui input right labeled">
+                            <input type="text" name="keyLife" v-model="uamPolicy.keyLife" maxlength="6" size="6" style="width: 6em"/>
+                            <span class="ui label">秒</span>
+                        </div>
+                        <p class="comment">单个客户端验证通过后，在这个有效期内不再重复验证；如果为0则表示默认3600秒。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>拦截时长</td>
+                    <td>
+                        <div class="ui input right labeled">
+                            <input type="text" name="blockSeconds" v-model="uamPolicy.blockSeconds" maxlength="6" size="6" style="width: 6em"/>
+                            <span class="ui label">秒</span>
+                        </div>
+                        <p class="comment">验证失败后，系统拦截的时间。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>最大失败次数</td>
+                    <td>
+                        <div class="ui input right labeled">
+                            <input type="text" name="maxFails" v-model="uamPolicy.maxFails" maxlength="6" size="6" style="width: 6em"/>
+                            <span class="ui label">次</span>
+                        </div>
+                        <p class="comment">失败尝试达到此数字后，则认为验证失败。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>页面标题</td>
+                    <td>
+                        <input type="text" maxlength="200" name="uiTitle" v-model="uamPolicy.uiTitle"/>
+                        <p class="comment">提示页面的标题。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>页面提示内容</td>
+                    <td>
+                        <textarea rows="8" name="uiBody" v-model="uamPolicy.uiBody"></textarea>
+                        <p class="comment">提示页面的HTML内容，支持请求变量（比如<code-label>${host}</code-label>表示正在访问的域名，<code-label>${product.name}</code-label>表示当前系统产品名称），留空表示使用默认提示内容；用<code-label>&lt;span class=&quot;ui-counter&quot;&gt;5&lt;/span&gt;</code-label>表示数字倒计时计数器。<a href="" @click.prevent="setTemplateBody">[使用模板]</a></p>
+                    </td>
+                </tr>
+            </tbody>
+            <tr v-if="uamPolicy.isOn">
+                <td colspan="2"><more-options-indicator></more-options-indicator></td>
+            </tr>
+            <tbody v-show="moreOptionsVisible">
+                <tr>
+                    <td>允许常见的搜索引擎</td>
+                    <td>
+                        <checkbox name="allowSearchEngines" v-model="uamPolicy.allowSearchEngines"></checkbox>
+                        <p class="comment">选中表示允许Google、Bing等常见搜索引擎直接跳过检查。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>拦截常见爬虫</td>
+                    <td>
+                        <checkbox name="denySpiders" v-model="uamPolicy.denySpiders"></checkbox>
+                        <p class="comment">选中表示自动拦截Python、Scrapy等常见爬虫。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>包含子域名</td>
+                    <td>
+                        <checkbox name="includeSubdomains" v-model="uamPolicy.includeSubdomains"></checkbox>
+                        <p class="comment">选中后，表示子域名之间只需验证一次。不要轻易修改此选项，防止导致短时间内大量用户验证信息失效。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>防火墙拦截范围</td>
+                    <td>
+                        <select name="firewallScope" v-model="uamPolicy.firewall.scope" class="ui dropdown auto-width">
+                            <option value="global">所有网站</option>
+                            <option value="service">当前网站</option>
+                        </select>
+                        <p class="comment" v-if="uamPolicy.firewall.scope == 'global'">“所有网站”表示IP被拦截时，将被阻止访问所有网站；此时系统可以自动尝试利用本地防火墙提升拦截效率。</p>
+                        <p class="comment" v-if="uamPolicy.firewall.scope == 'service'">“当前网站”表示IP被拦截时，只会阻止访问当前网站；选择此选项会严重影响拦截效率，建议只有特殊情况下才使用。</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <submit-btn></submit-btn>
+    </form>
+</div>

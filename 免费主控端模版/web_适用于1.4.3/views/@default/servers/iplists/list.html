@@ -1,0 +1,42 @@
+{$layout}
+{$template "list_menu"}
+
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">名称</td>
+        <td>
+            {{list.name}}
+        </td>
+    </tr>
+    <tr>
+        <td>ID</td>
+        <td>{{list.id}}</td>
+    </tr>
+    <tr>
+        <td>代号</td>
+        <td>
+            <span v-if="list.code.length > 0">{{list.code}}</span>
+            <span v-else class="disabled">没有设置</span>
+        </td>
+    </tr>
+    <tr>
+        <td>类型</td>
+        <td>
+            {{list.typeName}}
+        </td>
+    </tr>
+    <tr>
+        <td>全局有效</td>
+        <td>
+            <span v-if="list.isGlobal" class="green">Y</span>
+            <span v-else class="disabled">N</span>
+        </td>
+    </tr>
+    <tr>
+        <td>备注</td>
+        <td>
+            <span v-if="list.description.length > 0">{{list.description}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>浏览器安全检查...</title>
+	</head>
+	<body>
+		<!-- 把这下面这部分放到 5秒盾——>页面提示内容 里面即可，内容开始：-->
+		<style type="text/css">html{font-size:16px}body{display:flex;align-items:center;justify-content:center;width:100%;height:80vh;font-size:100%;margin:0;padding:0;background-image:linear-gradient(to right,#ffffff 0%,#f3f7ff 19%,#d6e1ff 42%,#e8f5ff 79%,#ffffff 100%)}.conent{text-align:center;box-sizing:border-box}.client{margin:0 auto;margin-top:5%;margin-bottom:4%;width:29.2%;height:44.9%}.err{font-size:1em;color:#000000;margin-bottom:2.6%}.text1{font-size:0.75em;color:#888888;letter-spacing:0;margin-bottom:1%}.text-color{color:#0061fc}.loader{width:3.5rem;height:3.5rem;border:.2rem solid #f3f7ff;border-bottom-color:#0061fc;border-radius:50%;display:inline-block;box-sizing:border-box;animation:rotation 1s linear infinite}@keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
+		<div class="conent"><div class="client"><span class="loader"></span></div><p class="sub-header"><h1>即将打开${host}</h1></p><h1 class="err">请稍候，我们正在检查您的浏览器，最多等待<span class="ui-counter">5</span>秒</h1><p class="text1">本页面为<span class="text-color">${product.name}</span>默认提示页面，如有疑问请联系网站管理员</p><p class="text1">您的IP地址：${remoteAddr}</p><p class="text1">唯一请求ID：${requestId}</p></div>
+		<!-- 内容结束 -->
+	</body>
+</html>

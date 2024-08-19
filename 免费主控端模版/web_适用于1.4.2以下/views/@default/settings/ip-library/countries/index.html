@@ -1,0 +1,38 @@
+{$layout}
+{$template "../menu"}
+
+<table class="ui table selectable celled">
+    <thead>
+        <tr>
+            <th style="width: 3em">ID</th>
+            <th style="width: 12em">国家/地区名称</th>
+            <th style="width: 12em">内置别名</th>
+            <th style="width: 12em">自定义名称 <tip-icon content="修改在界面上显示的国家/地区名称"></tip-icon></th>
+            <th style="width: 12em">自定义别名 <tip-icon content="可以在IP库中通过别名找到当前国家/地区，比如通过美国、美利坚合众国都可以找到美国这个国家"></tip-icon></th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="country in countries">
+        <td>{{country.id}}</td>
+        <td>{{country.name}}</td>
+        <td>
+            <div v-if="country.codes.length > 0">
+                <span v-for="code in country.codes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">无</span>
+        </td>
+        <td>
+            <span v-if="country.customName.length > 0">{{country.customName}}</span>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <div v-if="country.customCodes.length > 0">
+                <span v-for="code in country.customCodes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateCountry(country.id)">修改</a>
+        </td>
+    </tr>
+</table>

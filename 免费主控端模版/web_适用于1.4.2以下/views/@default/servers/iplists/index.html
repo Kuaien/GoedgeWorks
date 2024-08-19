@@ -1,0 +1,56 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+<form class="ui form" action="/servers/iplists" method="get">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" name="keyword" placeholder="x.x.x.x" v-model="keyword"/>
+        </div>
+        <div class="ui field">
+            <select class="ui dropdown auto-width" name="listType" v-model="listType">
+                <option value="">[所有类型]</option>
+                <option value="black">黑名单</option>
+                <option value="white">白名单</option>
+                <option value="grey">灰名单</option>
+            </select>
+        </div>
+        <div class="ui field">
+           <select class="ui dropdown" name="eventLevel" v-model="eventLevel">
+               <option value="">[所有级别]</option>
+               <option v-for="level in eventLevels" :value="level.code">{{level.name}}</option>
+           </select>
+        </div>
+        <div class="ui field">
+            <div class="ui checkbox">
+                <input type="checkbox" name="globalOnly" value="1" v-model="globalOnly" id="global-only-checkbox"/>
+                <label for="global-only-checkbox">系统自动拦截</label>
+            </div>
+        </div>
+        <div class="ui field" v-if="countUnread > 0">
+            <div class="ui checkbox">
+                <input type="checkbox" name="unread" value="1" v-model="unread"/>
+                <label><span class="red">New</span></label>
+            </div>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+            &nbsp;
+            <a href="/servers/iplists" v-if="keyword.length > 0 || globalOnly || unread || eventLevel.length > 0 || listType.length > 0">[清除条件]</a>
+        </div>
+        <div class="ui field" v-if="countUnread > 0">
+            <span class="disabled">|</span>
+        </div>
+        <div class="ui field" v-if="countUnread > 0">
+            <a href="" @click.prevent="readAllItems" title="消除未读标记New">[全部设为已读]</a>
+        </div>
+    </div>
+</form>
+
+<div class="margin"></div>
+
+<p class="comment" v-if="items.length == 0">暂时还没有IP。</p>
+
+<ip-list-table v-if="items.length > 0" :v-items="items" @update-item="updateItem" @delete-item="deleteItem" :v-keyword="keyword" :v-show-search-button="true" :v-total="totalItems"></ip-list-table>
+
+<div class="page" v-html="page"></div>

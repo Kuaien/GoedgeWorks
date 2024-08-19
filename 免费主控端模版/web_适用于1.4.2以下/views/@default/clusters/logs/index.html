@@ -1,0 +1,97 @@
+{$layout}
+{$template "/datepicker"}
+{$template "menu"}
+
+<div class="margin"></div>
+
+<form method="get" action="/clusters/logs" class="ui form" autocomplete="off">
+    <input type="hidden" name="type" :value="type"/>
+    <div class="ui fields">
+        <div class="ui field">
+            <input type="text" name="dayFrom" placeholder="开始日期" v-model="dayFrom" value="" style="width:8em" id="day-from-picker"/>
+        </div>
+        <div class="ui field">
+            <input type="text" name="dayTo" placeholder="结束日期" v-model="dayTo" value="" style="width:8em" id="day-to-picker"/>
+        </div>
+        <div class="ui field">
+            <select class="ui dropdown" name="level" v-model="level">
+                <option value="">[级别]</option>
+                <option value="error">错误</option>
+                <option value="warning">警告</option>
+                <option value="info">信息</option>
+                <option value="success">成功</option>
+            </select>
+        </div>
+        <div class="ui field">
+            <select class="ui dropdown" name="tag" v-model="tag">
+                <option value="">[标签]</option>
+                <option v-for="tag in tags" :value="tag.code">{{tag.name}}</option>
+            </select>
+        </div>
+        <div class="ui field">
+            <input type="text" name="keyword" style="width:10em" v-model="keyword" placeholder="关键词"/>
+        </div>
+        <div class="ui field">
+            <node-cluster-combo-box :v-cluster-id="clusterId" @change="changeCluster"></node-cluster-combo-box>
+        </div>
+        <div class="ui field" v-if="clusterId > 0">
+            <node-combo-box :v-cluster-id="clusterId" :v-node-id="nodeId"></node-combo-box>
+        </div>
+        <div class="ui field">
+            <button type="submit" class="ui button">查询</button>
+        </div>
+        <div class="ui field" v-if="dayFrom.length > 0 || dayTo.length > 0 || keyword.length > 0 || level.length > 0 || tag.length > 0 || clusterId > 0 || nodeId > 0">
+            <a :href="'/clusters/logs?type=' + type">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<!-- 未读操作 -->
+<div v-if="type == 'unread'">
+    <div class="ui divider" style="margin-bottom: 0"></div>
+    <second-menu v-if="logs.length > 0">
+        <a href="" class="item" @click.prevent="updatePageRead()">[本页已读]</a>
+        <a href="" class="item" @click.prevent="updateAllRead()">[全部已读]</a>
+        <a href="" class="item" @click.prevent="updateNodeRead(firstUnreadNode.id)" v-if="firstUnreadNode != null">["{{firstUnreadNode.name}}"节点已读]</a>
+    </second-menu>
+</div>
+
+<!-- 未修复操作 -->
+<div v-if="type == 'needFix'">
+    <div class="ui divider" style="margin-bottom: 0"></div>
+    <second-menu v-if="logs.length > 0">
+        <a href="" class="item" @click.prevent="fixPageLogs()">[本页已修复]</a>
+        <a href="" class="item" @click.prevent="fixAllLogs()">[全部已修复]</a>
+    </second-menu>
+    <p class="ui message" v-if="logs.length > 0">已合并重复内容，当前显示数据和总数量可能不一致。</p>
+</div>
+
+<p class="comment" v-if="logs.length == 0">暂时还没有<span v-if="type == 'unread'">未读</span><span v-if="type == 'needFix'">需修复</span>日志。</p>
+
+<div v-if="countLogs > 0 && searchedKeyword.length > 0" class="search-keyword-label">
+    <div class="ui label basic small">正在搜索关键词"{{searchedKeyword}}"，共{{countLogs}}条记录 &nbsp; <a href="" @click.prevent="deleteLogs"><span class="small">[清除日志]</span></a> </div>
+</div>
+
+<table class="ui table selectable celled" v-if="logs.length > 0">
+    <thead>
+        <tr>
+            <th class="two wide">集群</th>
+            <th class="two wide">节点</th>
+            <th>信息</th>
+            <th style="width: 5em">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="log in logs">
+        <td nowrap=""><link-icon :href="'/clusters/cluster?clusterId=' + log.node.cluster.id">{{log.node.cluster.name}}</link-icon></td>
+        <td nowrap=""><link-icon :href="'/clusters/cluster/node?clusterId=' + log.node.cluster.id + '&nodeId=' + log.node.id">{{log.node.name}}</link-icon></td>
+        <td>
+            <node-log-row :v-log="log" :v-keyword="keyword"></node-log-row>
+        </td>
+        <td>
+            <a href="" v-if="!log.isFixed" @click.prevent="fixLog(log.id)">已修复</a>
+            <a href="" @click.prevent="updateRead(log.id)" v-if="log.isFixed && !log.isRead">已读</a>
+        </td>
+    </tr>
+</table>
+
+<div class="page" v-html="page"></div>

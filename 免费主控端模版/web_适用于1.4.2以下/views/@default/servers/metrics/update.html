@@ -1,0 +1,71 @@
+{$layout "layout"}
+{$template "item_menu"}
+
+<warning-message>修改统计对象、统计周期、统计数值等任一参数时，将重新记录数据。</warning-message>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="itemId" :value="item.id"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">指标名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="100" ref="focus" v-model="item.name"/>
+            </td>
+        </tr>
+        <tr>
+            <td>统计对象 *</td>
+            <td>
+                <metric-keys-config-box :v-category="item.category" :v-keys="item.keys"></metric-keys-config-box>
+            </td>
+        </tr>
+        <tr>
+            <td>统计周期 *</td>
+            <td>
+                <metric-period-config-box :v-period="item.period" :v-period-unit="item.periodUnit"></metric-period-config-box>
+            </td>
+        </tr>
+        <tr>
+            <td>统计数值 *</td>
+            <td>
+                <!-- HTTP -->
+                <select class="ui dropdown auto-width" name="value" v-if="item.category == 'http'" v-model="item.value">
+                    <option v-for="def in valueDefinitions" :value="def.code">{{def.name}}</option>
+                </select>
+
+                <!-- TCP -->
+                <select class="ui dropdown auto-width" name="value" v-if="item.category == 'tcp'">
+                    <option v-for="def in valueDefinitions" :value="def.code">{{def.name}}</option>
+                </select>
+
+                <!-- UDP -->
+                <select class="ui dropdown auto-width" name="value" v-if="item.category == 'udp'">
+                    <option v-for="def in valueDefinitions" :value="def.code">{{def.name}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>数据保留周期</td>
+            <td>
+                <div class="ui input">
+                    <input type="text" size="4" maxlength="4" name="expiresPeriod" v-model="item.expiresPeriod"/>
+                </div>
+                <p class="comment">自动删除此周期以外的数据。单位和统计周期一致。不填或者为0，表示自动计算。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>公用</td>
+            <td>
+                <checkbox name="isPublic" v-model="item.isPublic"></checkbox>
+                <p class="comment">选中表示所有集群自动使用此指标。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>启用当前指标</td>
+            <td>
+                <checkbox name="isOn" v-model="item.isOn" value="1"></checkbox>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

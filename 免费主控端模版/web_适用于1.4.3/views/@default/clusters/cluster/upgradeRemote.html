@@ -1,0 +1,61 @@
+{$layout}
+{$template "menu"}
+{$template "/left_menu"}
+
+<div class="right-box">
+	<p class="comment" v-if="nodes.length == 0">暂时没有需要升级的节点。</p>
+
+	<div v-if="nodes.length > 0">
+		<h3>所有需要升级的节点
+            <button class="ui button primary tiny" v-if="countCheckedNodes() > 0" @click.prevent="installBatch()">批量升级({{countCheckedNodes()}})</button>
+        </h3>
+		<table class="ui table selectable celled">
+			<thead>
+				<tr>
+                    <th style="width:3em">
+                        <checkbox @input="checkNodes"></checkbox>
+                    </th>
+					<th>节点名</th>
+					<th>访问IP</th>
+					<th>SSH地址</th>
+					<th>版本变化</th>
+					<th class="four wide">节点状态</th>
+					<th class="two op">操作</th>
+				</tr>
+			</thead>
+			<tr v-for="node in nodes">
+                <td>
+                    <checkbox v-model="node.isChecked" v-if="node.installStatus == null || !node.installStatus.isOk"></checkbox>
+                </td>
+				<td>
+					<link-icon :href="'/clusters/cluster/node?clusterId=' + clusterId + '&nodeId=' + node.id">{{node.name}}</link-icon>
+				</td>
+				<td>
+					<span v-for="addr in node.addresses" v-if="addr.canAccess" class="ui label tiny basic">{{addr.ip}}</span>
+				</td>
+				<td>
+					<span v-if="node.login != null && node.login.type == 'ssh' && node.loginParams != null && node.loginParams.host != null && node.loginParams.host.length > 0">
+						{{node.loginParams.host}}:{{node.loginParams.port}}
+					</span>
+					<span v-else class="disabled">没有设置</span>
+				</td>
+				<td>v{{node.oldVersion}} -&gt; v{{node.newVersion}}</td>
+				<td>
+					<div v-if="node.installStatus != null && (node.installStatus.isRunning || node.installStatus.isFinished)">
+						<div v-if="node.installStatus.isRunning" class="blue">升级中...</div>
+						<div v-if="node.installStatus.isFinished">
+							<span v-if="node.installStatus.isOk" class="green">已升级成功</span>
+							<span v-if="!node.installStatus.isOk" class="red">升级过程中发生错误：{{node.installStatus.error}}</span>
+						</div>
+					</div>
+					<span v-else class="disabled">等待升级</span>
+				</td>
+				<td>
+					<a href="" @click.prevent="installNode(node)" v-if="!isInstalling">升级</a>
+					<span v-if="isInstalling && node.isInstalling">升级中...</span>
+					<span v-if="isInstalling && !node.isInstalling" class="disabled">升级</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>

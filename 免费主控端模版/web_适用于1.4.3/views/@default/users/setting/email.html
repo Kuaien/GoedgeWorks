@@ -1,0 +1,14 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <h4>激活邮件</h4>
+    <email-sender v-model="config.verifyEmail" name="verifyEmailJSON"></email-sender>
+
+    <h4>通知邮件</h4>
+    <email-sender v-model="config.notifyEmail" name="notifyEmailJSON"></email-sender>
+
+    <submit-btn></submit-btn>
+</form>

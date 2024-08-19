@@ -1,0 +1,121 @@
+{$layout}
+{$template "menu"}
+
+<table class="ui table selectable definition">
+    <tr>
+        <td class="title">支付方式名称</td>
+        <td>
+            {{method.name}}
+        </td>
+    </tr>
+    <tr>
+        <td>状态</td>
+        <td>
+            <label-on :v-is-on="method.isOn"></label-on>
+        </td>
+    </tr>
+    <tr>
+        <td>支付方式代号</td>
+        <td>
+            {{method.code}}
+        </td>
+    </tr>
+    <tr>
+        <td>支付方式说明</td>
+        <td>
+            {{method.description}}
+        </td>
+    </tr>
+    <tr>
+        <td>支持终端</td>
+        <td>
+            {{method.clientTypeName}}
+            <p class="comment">{{method.clientTypeDescription}}</p>
+        </td>
+    </tr>
+    <tr>
+        <td>密钥</td>
+        <td>{{method.secret}}</td>
+    </tr>
+    <tr>
+        <td>类型</td>
+        <td>
+            <span v-if="method.parentCode.length == 0">自定义</span>
+            <span v-else>{{method.parentName}}</span>
+        </td>
+    </tr>
+
+    <tr v-show="method.clientType == 'mobile'">
+        <td>二维码扫描提示</td>
+        <td>
+            <div v-if="method.qrcodeTitle.length > 0">
+                {{method.qrcodeTitle}}
+                <p class="comment">用来提示用户使用App扫描二维码，类似于"请使用支付宝APP扫描下方二维码完成支付："。</p>
+            </div>
+            <div v-else><span class="title disabled">没有设置</span></div>
+        </td>
+    </tr>
+
+    <!-- 自定义支付 -->
+    <tr v-show="method.parentCode.length == 0">
+        <td class="color-border">自定义支付URL</td>
+        <td>
+            {{method.url}}
+            <p class="comment">用户点击此支付方式后，系统将会跳转到这个支付URL并传递<code-label class="grey">{{urlArgs}}</code-label>。</p>
+        </td>
+    </tr>
+
+    <!-- 支付宝 -->
+    <tbody v-if="method.parentCode == 'alipay'">
+        <tr>
+            <td class="color-border">APPID</td>
+            <td>
+                {{method.params.appId}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">私钥</td>
+            <td>
+                <pre class="scroll-box">{{method.params.privateKey}}</pre>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">应用公钥证书</td>
+            <td>
+                <pre class="scroll-box">{{method.params.appPublicCert}}</pre>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">支付宝公钥证书</td>
+            <td>
+                <pre class="scroll-box">{{method.params.alipayPublicCert}}</pre>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">支付宝根证书</td>
+            <td>
+                <pre class="scroll-box">{{method.params.alipayRootCert}}</pre>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">产品代号</td>
+            <td>
+                {{method.params.productCode}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">沙箱应用</td>
+            <td>
+                <span v-if="method.params.isSandbox" class="green">Y</span>
+                <span v-else class="disabled">N</span>
+            </td>
+        </tr>
+    </tbody>
+
+    <tr v-if="method.payNotifyURL.length > 0">
+        <td class="color-border">支付结果通知URL</td>
+        <td>{{method.payNotifyURL}}
+            <p class="comment">前缀部分默认使用用户节点的第一个访问地址，<a href="/settings/userNodes">修改 &raquo;</a> </p>
+        </td>
+    </tr>
+</table>

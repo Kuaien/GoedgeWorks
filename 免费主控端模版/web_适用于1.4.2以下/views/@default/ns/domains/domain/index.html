@@ -1,0 +1,41 @@
+{$layout}
+{$template "../menu_domain"}
+
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">域名</td>
+        <td>{{domain.name}}</td>
+    </tr>
+    <tr>
+        <td>状态</td>
+        <td>
+            <span v-if="!domain.isOn" class="red">已停用</span>
+            <span v-if="domain.isOn" :class="{green:domain.status == 'verified', red:domain.status == 'rejected' || domain.status == 'forbidden'}">{{domain.statusName}}</span>
+            &nbsp; &nbsp; <a href="" @click.prevent="updateDomainStatus(domain.id)" v-if="domain.isOn"><span class="small">[修改状态]</span></a>
+        </td>
+    </tr>
+    <tr>
+        <td>所属集群</td>
+        <td>
+            {{domain.cluster.name}}<link-icon :href="'/ns/clusters/cluster?clusterId=' + domain.cluster.id"></link-icon>
+        </td>
+    </tr>
+    <tr>
+        <td>所属用户</td>
+        <td>
+            <span v-if="domain.user != null">
+                {{domain.user.fullname}} ({{domain.user.username}})
+            </span>
+            <span v-else class="disabled">暂时没指定用户</span>
+        </td>
+    </tr>
+    <tr>
+        <td>所属分组</td>
+        <td>
+           <div v-if="domain.groups.length > 0">
+                <a :href="'/ns/domains?userId=' + group.userId + '&groupId=' + group.id" class="ui label small basic" v-for="group in domain.groups">{{group.name}}</a>
+           </div>
+            <span v-else class="disabled">暂时没有分组</span>
+        </td>
+    </tr>
+</table>

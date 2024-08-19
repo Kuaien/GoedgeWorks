@@ -1,0 +1,25 @@
+<first-menu v-if="canAccess">
+    <menu-item href="/settings/ip-library" code="index">IP库</menu-item>
+    <menu-item href="/settings/ip-library/libraries/create" code="create">新制作</menu-item>
+    <menu-item href="/settings/ip-library/upload" code="upload">上传</menu-item>
+    <span class="item disabled">|</span>
+    <span class="item"> <tip-icon content="如果没有上传IP库或者没有设置IP库为使用状态，那么将使用内置的IP库。"></tip-icon></span>
+    <span class="item disabled">|</span>
+    <menu-item href="/settings/ip-library/libraries" code="library">IP库源文件</menu-item>
+    <!--<menu-item href="/settings/ip-library/unfinished" code="unfinished">未完成</menu-item>-->
+    <span class="item disabled">|</span>
+    <menu-item href="/settings/ip-library/countries" code="country">国家/地区</menu-item>
+    <menu-item href="/settings/ip-library/provinces" code="province">省份/州</menu-item>
+    <menu-item href="/settings/ip-library/cities" code="city">城市/市</menu-item>
+    <menu-item href="/settings/ip-library/towns" code="town">区/县</menu-item>
+    <menu-item href="/settings/ip-library/providers" code="provider">ISP运营商</menu-item>
+    <span class="item disabled">|</span>
+    <span class="item tips"><tip-icon content="为什么要修改国家、地区、省份、ISP运营商等别名？<br/>因为每个IP库提供商提供的IP库中的地区、ISP运营商名称都不一致，无法直接对应到数据库中的地区信息，所以需要一一人工校对后才能导入。"></tip-icon></span>
+</first-menu>
+
+<first-menu v-if="!canAccess">
+    <menu-item href="/settings/ip-library" code="index">IP库</menu-item>
+    <menu-item href="/settings/ip-library/upload" code="upload">上传</menu-item>
+    <span class="item disabled">|</span>
+    <span class="item tips"><tip-icon content="如果没有上传IP库或者没有设置IP库为使用状态，那么将使用内置的IP库；目前只允许上传GoEdge官方提供的IP库文件。"></tip-icon></span>
+</first-menu>

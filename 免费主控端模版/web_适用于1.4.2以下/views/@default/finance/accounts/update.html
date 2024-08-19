@@ -1,0 +1,44 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">选择用户 *</td>
+            <td>
+                <finance-user-selector @change="changeUser"></finance-user-selector>
+                <p class="comment">
+                    <span v-if="userAccount != null">余额{{userAccount.total}}元。</span>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>操作类型 *</td>
+            <td>
+                <select class="ui dropdown auto-width" name="eventType" v-model="eventType">
+                    <option v-for="eventType in eventTypes" :value="eventType.code">{{eventType.name}}</option>
+                </select>
+                <p class="comment">{{event.description}}</p>
+            </td>
+        </tr>
+        <tr>
+            <td>操作金额 *</td>
+            <td>
+               <div class="ui input left right labeled">
+                   <span class="ui label green" v-if="event != null && event.isPositive">+</span>
+                   <span class="ui label red" v-if="event != null && !event.isPositive">-</span>
+                   <input type="text" name="delta" value="" style="width: 8em" maxlength="8"/>
+                   <span class="ui label">元</span>
+               </div>
+            </td>
+        </tr>
+        <tr>
+            <td>描述</td>
+            <td>
+                <textarea rows="3" name="description"></textarea>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

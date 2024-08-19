@@ -1,0 +1,101 @@
+{$layout}
+{$template "../menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    {$template "menu"}
+
+	<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+		<input type="hidden" name="clusterId" :value="clusterId"/>
+		<csrf-token></csrf-token>
+
+		<table class="ui table selectable definition">
+			<tr>
+				<td>选择主域名 *</td>
+				<td>
+                    <div v-if="hasDomains">
+                        <dns-domain-selector :v-domain-id="domainId" :v-domain-name="domainName" :v-provider-name="domainProvider.name" @change="changeDomain"></dns-domain-selector>
+                        <p class="comment">用于生成集群节点和网站的CNAME和DNS解析记录<span v-if="domainId > 0">，修改后将自动删除旧域名中的相关记录</span>。</p>
+                    </div>
+                    <div v-else>
+                        没有可用的域名，请在 <a href="/dns/providers" target="_blank">[域名解析]</a> 中添加。
+                    </div>
+				</td>
+			</tr>
+            <tr v-if="oldDomain.id > 0 && domain.id == 0">
+                <td>不使用主域名</td>
+                <td>
+                    <checkbox name="confirmResetDomain"></checkbox>
+                    <p class="comment">选中后，表示确认当前集群不使用主域名；否则必须选择一个主域名。</p>
+                </td>
+            </tr>
+			<tr>
+				<td class="title">DNS子域名 *</td>
+				<td>
+					<div class="ui input right labeled">
+						<input type="text" name="dnsName" maxlength="64" style="width:12em" v-model="dnsName"/>
+                        <span class="ui label" v-if="domain != null && domain.name != null && domain.name.length > 0">.{{domain.name}}</span>
+                        <span class="ui label" v-else>.主域名</span>
+					</div>
+					<p class="comment">当前集群的子域名，和主域名一起组成集群节点的子域名，修改后将自动删除旧域名中的相关记录。<a href="" @click.prevent="generateRandName()">[随机生成]</a>。</p>
+				</td>
+			</tr>
+            <tr>
+                <td>自动设置CNAME记录<optional-label></optional-label></td>
+                <td>
+                    <values-box :values="cnameRecords" name="cnameRecords" placeholder="记录名" ref="cnameRecords"></values-box>
+                    <p class="comment">除集群已创建的网站之外，自动解析到集群的CNAME记录，比如<code-label @click.prevent="addCnameRecord('www')">www</code-label>。</p>
+                </td>
+            </tr>
+			<tr>
+				<td colspan="2"><more-options-indicator></more-options-indicator></td>
+			</tr>
+			<tbody v-show="moreOptionsVisible">
+                <tr>
+                    <td>允许通过CNAME访问网站</td>
+                    <td>
+                        <checkbox name="cnameAsDomain" v-model="cnameAsDomain"></checkbox>
+                        <p class="comment">选中后，表示允许使用CNAME直接访问网站；如果取消选中，则表示CNAME只作为DNS解析记录使用。</p>
+                    </td>
+                </tr>
+                <tr v-show="teaIsPlus">
+                    <td>包含Ln节点</td>
+                    <td>
+                        <checkbox name="includingLnNodes" v-model="includingLnNodes"></checkbox>
+                        <p class="comment">选中后，表示域名解析中包含L2及以上级别节点，也就意味着用户请求可能会被分配到这些节点。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>解析记录TTL</td>
+                    <td>
+                        <div class="ui input right labeled">
+                            <input type="text" name="ttl" maxlength="6" style="width: 6em" v-model="ttl"/>
+                            <span class="ui label">秒</span>
+                        </div>
+                        <p class="comment">每个DNS服务商或者账号的TTL限制各有不同，请注意取值范围；修改后，只对新的解析记录生效。0表示使用默认。</p>
+                    </td>
+                </tr>
+				<tr>
+					<td>同步节点DNS状态</td>
+					<td>
+						<div class="ui checkbox">
+							<input type="checkbox" name="nodesAutoSync" value="1" v-model="nodesAutoSync"/>
+							<label></label>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>同步网站DNS状态</td>
+					<td>
+						<div class="ui checkbox">
+							<input type="checkbox" name="serversAutoSync" value="1" v-model="serversAutoSync"/>
+							<label></label>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<submit-btn></submit-btn>
+	</form>
+</div>

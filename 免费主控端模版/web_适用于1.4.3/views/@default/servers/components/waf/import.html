@@ -1,0 +1,16 @@
+{$layout}
+{$template "waf_menu"}
+
+<form method="post" class="ui form" data-tea-success="success" data-tea-action="$">
+	<csrf-token></csrf-token>
+	<input type="hidden" name="firewallPolicyId" :value="firewallPolicyId"/>
+	<table class="ui table definition selectable">
+		<tr>
+			<td class="title">选择要导入的规则文件</td>
+			<td>
+				<input type="file" name="file" accept=".json"/>
+			</td>
+		</tr>
+	</table>
+	<submit-btn>导入</submit-btn>
+</form>

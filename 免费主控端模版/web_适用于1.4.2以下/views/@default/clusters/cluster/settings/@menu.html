@@ -1,0 +1,7 @@
+<second-menu>
+    <menu-item :href="'/clusters/cluster?clusterId=' + clusterId">{{currentClusterName}}</menu-item>
+    <raquo-item></raquo-item>
+    <menu-item :href="'/clusters/cluster/settings?clusterId=' + clusterId">集群设置</menu-item>
+    <raquo-item></raquo-item>
+    <a class="item active" v-if="leftMenuActiveItem != null" :href="leftMenuActiveItem.url">"{{leftMenuActiveItem.name}}"设置</a>
+</second-menu>

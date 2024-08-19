@@ -1,0 +1,101 @@
+{$layout}
+{$template "settings_menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    <div v-if="server.trafficLimitStatus != null">
+        <div class="ui margin"></div>
+        <warning-message>
+            <server-traffic-limit-status-viewer v-model="server.trafficLimitStatus"></server-traffic-limit-status-viewer>
+        </warning-message>
+    </div>
+
+	<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+		<input type="hidden" name="serverId" :value="server.id"/>
+		<table class="ui table selectable definition">
+            <tr>
+                <td>所属用户</td>
+                <td>
+                    <span v-if="user != null">{{user.fullname}} <span class="small">（{{user.username}}）</span><link-icon :href="'/users/user?userId=' + user.id"></link-icon></span>
+                    <div v-if="user == null">
+                        <div v-show="!userSelectorVisible">
+                            <span class="disabled">没有指定用户</span> &nbsp; <a href="" @click.prevent="showUserSelector">[指定用户]</a>
+                        </div>
+                        <div v-show="userSelectorVisible">
+                            <user-selector style="display:inline-block"></user-selector>
+                            <p class="comment"><span class="red">此操作同时会将与当前网站相关联的证书等数据自动修改为此用户所属。</span></p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+			<tr>
+				<td class="title">网站名称 *</td>
+				<td>
+					<input type="text" name="name" maxlength="60" ref="focus" v-model="server.name"/>
+				</td>
+			</tr>
+            <tr v-if="plans.length > 0">
+                <td>选择套餐</td>
+                <td>
+                    <select class="ui dropdown auto-width" name="userPlanId" v-model="userPlanId">
+                        <option value="0">[选择套餐]</option>
+                        <option v-for="plan in plans" :value="plan.id">{{plan.name}}（{{plan.dayTo}}）</option>
+                    </select>
+                </td>
+            </tr>
+            <tr v-if="plans.length == 0 && teaIsPlus">
+                <td>选择套餐</td>
+                <td>当前网站所属用户没有可用套餐。</td>
+            </tr>
+			<tr>
+				<td :class="{'color-border':server.clusterId != oldClusterId}">部署的集群 *</td>
+				<td>
+					<select class="ui dropdown auto-width" name="clusterId" v-model="server.clusterId" >
+						<option v-for="cluster in clusters" :value="cluster.id">{{cluster.name}}</option>
+					</select>
+				</td>
+			</tr>
+            <tr v-show="server.clusterId != oldClusterId">
+                <td class="color-border">是否保留原集群配置</td>
+                <td>
+                    <checkbox name="keepOldConfigs" checked="checked"></checkbox>
+                    <p class="comment">选中表示在先前的集群节点上仍然保留当前网站的配置，直至节点配置全部刷新时才会删除；不选中，则表示立即删除原集群上关于当前网站的配置。</p>
+                </td>
+            </tr>
+			<tr>
+				<td>网站类型 *</td>
+				<td>
+					{{typeName}}
+				</td>
+			</tr>
+			<tr>
+				<td>选择分组</td>
+				<td>
+					<server-group-selector :v-groups="server.groups"></server-group-selector>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2"><more-options-indicator></more-options-indicator></td>
+			</tr>
+			<tbody v-show="moreOptionsVisible">
+				<tr>
+					<td>描述</td>
+					<td>
+						<textarea name="description" rows="3" v-model="server.description"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>启用当前网站</td>
+					<td>
+						<div class="ui checkbox">
+							<input type="checkbox" name="isOn" value="1" v-model="server.isOn"/>
+							<label></label>
+						</div>
+						<p class="comment">可以使用此选项整体关闭当前网站。</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<submit-btn></submit-btn>
+	</form>
+</div>

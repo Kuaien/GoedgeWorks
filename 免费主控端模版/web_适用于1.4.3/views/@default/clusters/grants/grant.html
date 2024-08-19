@@ -1,0 +1,87 @@
+{$layout}
+{$template "grant_menu"}
+{$template "/code_editor"}
+
+<table class="ui table selectable definition">
+	<tr>
+		<td>名称</td>
+		<td>
+			{{grant.name}}
+		</td>
+	</tr>
+
+	<tr>
+		<td class="title">认证方式</td>
+		<td>
+			{{grant.methodName}}
+		</td>
+	</tr>
+
+	<!-- 用户名/密码 -->
+	<tbody v-if="grant.method == 'user'">
+        <tr>
+            <td>SSH用户名</td>
+            <td>
+                {{grant.username}}
+                <p class="comment">SSH登录用户名。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>SSH密码</td>
+            <td>{{grant.password}}
+                <p class="comment">SSH登录用户密码。</p> </td>
+        </tr>
+	</tbody>
+
+	<!-- 私钥 -->
+	<tbody v-if="grant.method == 'privateKey'">
+        <tr>
+            <td>SSH用户名</td>
+            <td>{{grant.username}}
+                <p class="comment">SSH登录用户名。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>RSA私钥</td>
+            <td>
+                <source-code-box type="text/plain">{{grant.privateKey}}</source-code-box>
+                <p class="comment">用来生成登录SSH公钥的私钥</p>
+            </td>
+        </tr>
+        <tr>
+            <td>私钥密码<br/><em>（Passphrase）</em></td>
+            <td>
+               <span v-if="grant.passphrase.length > 0">{{grant.passphrase}}</span>
+                <span v-else class="disabled">-</span>
+            </td>
+        </tr>
+	</tbody>
+    <tr>
+        <td>执行sudo</td>
+        <td>
+            <span v-if="grant.su" class="green">Y</span>
+            <span v-else class="disabled">N</span>
+        </td>
+    </tr>
+	<tr>
+		<td>备注</td>
+		<td>
+			<span v-if="grant.description.length > 0">{{grant.description}}</span>
+			<span v-if="grant.description.length == 0">-</span>
+		</td>
+	</tr>
+</table>
+
+<div class="ui divider"></div>
+<h3>使用此认证的集群</h3>
+<div>
+	<p v-if="clusters.length == 0" class="comment">暂时还没有集群使用此认证。</p>
+	<a :href="'/clusters/cluster?clusterId=' + cluster.id" class="ui label small basic" v-for="cluster in clusters">{{cluster.name}}</a>
+</div>
+
+<div class="ui divider"></div>
+<h3>使用此认证的节点</h3>
+<div>
+	<p v-if="nodes.length == 0" class="comment">暂时还没有节点使用此认证。</p>
+	<a :href="'/clusters/cluster/node?clusterId=' + node.cluster.id + '&nodeId=' + node.id" class="ui label small basic" :class="{red:!node.isOn}" v-for="node in nodes">{{node.name}}<span class="small">（{{node.cluster.name}}）</span></a>
+</div>

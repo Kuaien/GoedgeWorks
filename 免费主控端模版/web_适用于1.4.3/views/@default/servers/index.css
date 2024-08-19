@@ -1,0 +1,44 @@
+.ui.message .icon.remove {
+  position: absolute;
+  right: 1em;
+  top: 2.2em;
+}
+.ui.message .content {
+  padding-right: 1em;
+}
+.node-logs-box {
+  max-height: 14em;
+  overflow-y: auto;
+}
+.node-logs-box::-webkit-scrollbar {
+  width: 4px;
+}
+.server-checkbox-td .checkbox {
+  opacity: 50%;
+}
+.server-checkbox-td .checkbox:hover {
+  opacity: 100%;
+}
+.server-name-td {
+  position: relative;
+}
+.server-name-td .icon.setting {
+  display: none;
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  margin-top: -1em;
+}
+.server-name-td:hover .icon.setting {
+  display: inline;
+}
+.bandwidth-span var {
+  font-size: 0.8em;
+}
+.bandwidth-span var span {
+  font-size: 1.2em;
+}
+.table th.value-column {
+  width: 8em;
+}
+/*# sourceMappingURL=index.css.map */

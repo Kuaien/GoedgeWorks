@@ -1,0 +1,85 @@
+{$layout}
+{$template "node_menu"}
+
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    <form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+        <input type="hidden" name="nodeId" :value="node.id"/>
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">节点名称 *</td>
+                <td>
+                    <input type="text" name="name" maxlength="50" ref="focus" v-model="node.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td>所属集群</td>
+                <td>
+                    <span v-if="node.primaryCluster != null" class="ui label basic small">{{node.primaryCluster.name}}</span>
+                    <span v-if="node.secondaryClusters.length > 0"  v-for="cluster in node.secondaryClusters" class="ui label basic small grey">{{cluster.name}}</span> &nbsp; <a href="" @click.prevent="updateClusters">[修改]</a>
+                    <div v-show="showClustersBox">
+                        <node-clusters-selector :v-primary-cluster="node.primaryCluster" :v-secondary-clusters="node.secondaryClusters" @change="changeClusters"></node-clusters-selector>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>IP地址 *</td>
+                <td>
+                    <node-ip-addresses-box :v-ip-addresses="ipAddresses" :v-node-id="node.id"></node-ip-addresses-box>
+                    <p class="comment">用于访问节点和域名解析等。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>所属分组</td>
+                <td>
+                    <node-group-selector :v-cluster-id="clusterId" :v-group="node.group"></node-group-selector>
+                    <p class="comment">用来筛选节点<span v-if="teaIsPlus">，同时可以在分组中设置二级缓存节点</span>。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>所属区域</td>
+                <td>
+                    <node-region-selector :v-region="node.region"></node-region-selector>
+                    <p class="comment">设置区域后可以根据区域进行流量统计和计费。</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><more-options-indicator></more-options-indicator></td>
+            </tr>
+            <tbody v-show="moreOptionsVisible">
+                <tr v-show="teaIsPlus && canUpdateLevel">
+                    <td>级别</td>
+                    <td>
+                        <node-level-selector :v-node-level="node.level" @change="changeLevel"></node-level-selector>
+                    </td>
+                </tr>
+                <tr v-show="teaIsPlus && canUpdateLevel && nodeLevel > 1">
+                    <td>L2级别访问地址</td>
+                    <td>
+                        <values-box name="lnAddrs" :v-values="node.lnAddrs" placeholder="IP地址"></values-box>
+                        <p class="comment">如果不为空，边缘节点访问当前L2节点时将会使用这些IP地址；如果没有设置，将会使用当前节点已经填写的IP地址。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>同步IP名单</td>
+                    <td>
+                        <checkbox name="enableIPLists" v-model="node.enableIPLists"></checkbox>
+                        <p class="comment">选中后，表示启用IP名单同步，包括来自管理员、用户添加的IP名单，以及其他节点系统自动拦截的IP名单。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>启用节点</td>
+                    <td>
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="isOn" value="1" v-model="node.isOn"/>
+                            <label></label>
+                        </div>
+                        <p class="comment">如果不启用此节点，此节点上的所有网站将不能访问。</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <submit-btn></submit-btn>
+    </form>
+</div>

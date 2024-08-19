@@ -1,0 +1,68 @@
+{$layout "layout_popup"}
+
+<h3>修改IP地址</h3>
+
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<input type="hidden" name="addressId" :value="address.id"/>
+	<table class="ui table definition selectable">
+		<tr>
+			<td class="title">IP地址 *</td>
+			<td>
+				<input type="text" name="ip" maxlength="128" ref="focus" v-model="address.ip"/>
+                <p class="comment" v-if="address.id > 0">只支持单个IP。</p>
+                <p class="comment" v-if="address.id == 0">支持单个IP、CIDR格式的一组IP（位数不能小于24）、IP范围（类似于<code-label>x.x.x.x-x.x.x.x</code-label>，最多只取256个）等。</p>
+			</td>
+		</tr>
+		<tr>
+			<td>允许公开访问</td>
+			<td>
+				<div class="ui checkbox">
+					<input type="checkbox" name="canAccess" value="1" v-model="address.canAccess"/>
+					<label></label>
+				</div>
+				<p class="comment">是否为可以公开访问的IP，如果选中表示当前IP可以被公开访问，并可被加入到DNS解析记录中。</p>
+			</td>
+		</tr>
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+        <tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>启用当前IP</td>
+                <td>
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="isOn" value="1" v-model="address.isOn"/>
+                        <label></label>
+                    </div>
+                    <p class="comment">选中表示当前IP有效。</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="title">备注</td>
+                <td>
+                    <input type="text" name="name" maxlength="50" v-model="address.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td>在线状态</td>
+                <td>
+                    <select class="ui dropdown auto-width" name="isUp" v-model="address.isUp">
+                        <option value="1">在线</option>
+                        <option value="0">离线</option>
+                    </select>
+                </td>
+            </tr>
+            <tr v-if="teaIsPlus && supportThresholds">
+                <td>阈值设置</td>
+                <td>
+                    <node-ip-address-thresholds-box :v-thresholds="address.thresholds"></node-ip-address-thresholds-box>
+                </td>
+            </tr>
+            <tr v-show="clusters != null && clusters.length > 0">
+                <td>专属集群</td>
+                <td><node-ip-address-clusters-selector :v-clusters="clusters"></node-ip-address-clusters-selector></td>
+            </tr>
+        </tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

@@ -1,0 +1,147 @@
+{$layout}
+{$template "menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+	<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+		<input type="hidden" name="clusterId" :value="cluster.id"/>
+		<table class="ui table selectable definition">
+			<tr>
+				<td class="title">集群名称 *</td>
+				<td><input type="text" name="name" maxlength="50" ref="focus" v-model="cluster.name"/></td>
+			</tr>
+            <tr v-if="cluster.domainName.length > 0">
+                <td>域名</td>
+                <td>
+                    {{cluster.domainName}}<link-icon :href="'/clusters/cluster/settings/dns?clusterId=' + cluster.id"></link-icon>
+                </td>
+            </tr>
+			<tr>
+				<td>默认SSH认证</td>
+				<td>
+					<grant-selector :v-grant="grant"></grant-selector>
+					<p class="comment">当节点没有单独设置SSH认证时，默认使用此设置。</p>
+				</td>
+			</tr>
+            <tr>
+                <td>默认SSH端口</td>
+                <td>
+                    <input type="text" name="sshParamsPort" v-model="cluster.sshParams.port" maxlength="5" style="width: 5em"/>
+                    <p class="comment">节点默认SSH登录端口。</p>
+                </td>
+            </tr>
+			<tr>
+				<td>节点安装目录</td>
+				<td>
+					<input type="text" name="installDir" maxlength="100" v-model="cluster.installDir"/>
+					<p class="comment">当节点没有单独设置安装目录时，默认使用此设置。如果集群和节点都没有设置安装目录，则使用<span class="ui label tiny">$登录用户HOME路径/edge-node</span> 目录。</p>
+				</td>
+			</tr>
+            <tr>
+                <td colspan="2"><more-options-indicator></more-options-indicator></td>
+            </tr>
+            <tbody v-show="moreOptionsVisible">
+                <tr>
+                    <td>时区</td>
+                    <td>
+                        <div class="ui fields inline">
+                            <div class="ui field">
+                                <select class="ui dropdown" v-model="timeZoneGroupCode">
+                                    <option v-for="timeZoneGroup in timeZoneGroups" :value="timeZoneGroup.code">{{timeZoneGroup.name}}</option>
+                                </select>
+                            </div>
+                            <div class="ui field">
+                                <select class="ui dropdown" name="timeZone" v-model="cluster.timeZone">
+                                    <option v-for="timeZoneLocation in timeZoneLocations" :value="timeZoneLocation.name" v-if="timeZoneLocation.group == timeZoneGroupCode">{{timeZoneLocation.name}} ({{timeZoneLocation.offset}})</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="comment">节点记录日志使用的时区。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>单节点最大线程数</td>
+                    <td>
+                        <input type="text" name="nodeMaxThreads" maxlength="6" v-model="cluster.nodeMaxThreads"/>
+                        <p class="comment">取值在{{defaultNodeMaxThreadsMin}}和{{defaultNodeMaxThreadsMax}}之间；如果为0，则默认为{{defaultNodeMaxThreads}}。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>自动开放端口</td>
+                    <td>
+                        <checkbox name="autoOpenPorts" v-model="cluster.autoOpenPorts"></checkbox>
+                        <p class="comment">选中后会自动尝试在边缘节点正在运行的firewalld中开放所需端口；如果有别的防火墙或者安全策略，仍然需要手工操作。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="color-border">自动同步节点时钟</td>
+                    <td>
+                        <div class="ui fields inline">
+                            <div class="ui field">
+                                <checkbox name="clockAutoSync" v-model="cluster.clock.autoSync"></checkbox>
+                            </div>
+                        </div>
+                        <p class="comment">选中后表示尝试自动同步节点时钟。</p>
+                    </td>
+                </tr>
+                <tr v-show="cluster.clock.autoSync">
+                    <td class="color-border">NTP时钟服务器</td>
+                    <td>
+                        <input type="text" name="clockServer" v-model="cluster.clock.server" maxlength="100"/>
+                        <p class="comment">可选项。默认使用<code-label>pool.ntp.org</code-label>。</p>
+                    </td>
+                </tr>
+                <tr v-show="cluster.clock.autoSync">
+                    <td class="color-border">检查Chrony</td>
+                    <td>
+                        <checkbox name="clockCheckChrony" v-model="cluster.clock.checkChrony"></checkbox>
+                        <p class="comment">选中后，表示如果chrony（另一款时间同步软件）正在运行，则不重复执行时间同步。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>自动远程启动</td>
+                    <td>
+                        <checkbox name="autoRemoteStart" v-model="cluster.autoRemoteStart"></checkbox>
+                        <p class="comment">当检测到节点离线时，自动尝试远程启动（前提是节点已经设置了SSH登录认证）。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>自动安装nftables</td>
+                    <td>
+                        <checkbox name="autoInstallNftables" v-model="cluster.autoInstallNftables"></checkbox>
+                        <p class="comment">选中后，表示在Linux系统中自动尝试安装<code-label>nftables</code-label>用于安全防御；此功能需要联网从Ubuntu、CentOS等软件库中下载安装包。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>自动调节系统参数</td>
+                    <td>
+                        <checkbox name="autoSystemTuning" v-model="cluster.autoSystemTuning"></checkbox>
+                        <p class="comment">选中后，表示自动调整Linux内核等参数，以便提升性能；启用后，以往安装的边缘节点需要重启进程后才能生效。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>自动执行硬盘<br/>TRIM</td>
+                    <td>
+                        <checkbox name="autoTrimDisks" value="1" v-model="cluster.autoTrimDisks"></checkbox>
+                        <p class="comment">执行TRIM后可以移除SSD硬盘中无效的数据，从而显著提升SSD硬盘写入性能。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>节点I/O最大读并发数</td>
+                    <td>
+                        <input name="maxConcurrentReads" v-model="cluster.maxConcurrentReads" type="text" style="width: 5em" maxlength="4"/>
+                        <p class="comment">0表示根据系统资源自动计算；通常不需要修改，请在专业人士指导下操作。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>节点I/O最大写并发数</td>
+                    <td>
+                        <input name="maxConcurrentWrites" v-model="cluster.maxConcurrentWrites" type="text" style="width: 5em" maxlength="4"/>
+                        <p class="comment">0表示根据系统资源自动计算；通常不需要修改，请在专业人士指导下操作。</p>
+                    </td>
+                </tr>
+            </tbody>
+		</table>
+		<submit-btn></submit-btn>
+	</form>
+</div>

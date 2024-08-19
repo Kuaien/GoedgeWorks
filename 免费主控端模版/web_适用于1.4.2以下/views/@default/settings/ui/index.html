@@ -1,0 +1,129 @@
+{$layout}
+
+<form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+	<csrf-token></csrf-token>
+
+	<table class="ui table definition selectable">
+		<tr>
+			<td class="title">产品名称 *</td>
+			<td>
+				<input type="text" name="productName" v-model="config.productName" maxlength="100"/>
+                <p class="comment">可以使用变量<code-label>${product.name}</code-label>在网页里展示此名称，建议仅包含英文和数字字符。</p>
+			</td>
+		</tr>
+		<tr>
+			<td>管理员系统名称 *</td>
+			<td>
+				<input type="text" name="adminSystemName" v-model="config.adminSystemName" maxlength="100"/>
+                <p class="comment">当前管理系统界面上显示的名称。</p>
+			</td>
+		</tr>
+		<tr>
+			<td>显示底部开源信息</td>
+			<td>
+				<checkbox name="showOpenSourceInfo" v-model="config.showOpenSourceInfo"></checkbox>
+			</td>
+		</tr>
+		<tr>
+			<td>显示版本号</td>
+			<td>
+				<checkbox name="showVersion" v-model="config.showVersion"></checkbox>
+                <p class="comment">选中后，在界面中显示系统版本号。</p>
+			</td>
+		</tr>
+		<tr>
+			<td>定制版本号</td>
+			<td>
+				<input type="text" name="version" v-model="config.version" maxlength="100"/>
+				<p class="comment">定制自己的版本号，留空表示使用系统自带的版本号。</p>
+			</td>
+		</tr>
+        <tr v-show="teaIsPlus">
+            <td>显示模块</td>
+            <td>
+                <checkbox name="supportModuleCDN" v-model="supportModuleCDN">CDN</checkbox> &nbsp; &nbsp; &nbsp;
+                <checkbox name="supportModuleNS" v-model="supportModuleNS" v-show="nsIsVisible">智能DNS</checkbox>
+                <p class="comment">当前管理系统中可以显示的模块，不能为空。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>显示财务相关功能</td>
+            <td>
+                <checkbox name="showFinance" v-model="config.showFinance"></checkbox>
+                <p class="comment">选中后，表示在菜单中显示财务管理功能。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>浏览器图标</td>
+            <td>
+                <div v-if="config.faviconFileId > 0">
+                    <a :href="'/ui/image/' + config.faviconFileId" target="_blank"><img alt="" :src="'/ui/image/' + config.faviconFileId" style="width:32px;border:1px #ccc solid;"/></a>
+                </div>
+                <div v-else>
+                    <span class="disabled">还没有上传。</span>
+                </div>
+                <div style="margin-top: 0.8em">
+                    <input type="file" name="faviconFile" accept=".png"/>
+                </div>
+                <p class="comment">在浏览器标签栏显示的图标，请使用PNG格式。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>Logo</td>
+            <td>
+                <div v-if="config.logoFileId > 0">
+                    <a :href="'/ui/image/' + config.logoFileId" target="_blank"><img :src="'/ui/image/' + config.logoFileId" style="width:32px;border:1px #ccc solid;"/></a>
+                </div>
+                <div v-else>
+                    <span class="disabled">还没有上传。</span>
+                </div>
+                <div style="margin-top: 0.8em">
+                    <input type="file" name="logoFile" accept=".png"/>
+                </div>
+                <p class="comment">显示在系统界面上的图标，请使用PNG格式。</p>
+            </td>
+        </tr>
+	</table>
+
+    <h4>其他</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">每页显示数</td>
+            <td>
+                <input type="text" name="defaultPageSize" v-model="config.defaultPageSize" maxlength="3" style="width: 4em"/>
+                <p class="comment">在有分页的地方每页显示数量；不能超过100。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>时区</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <select class="ui dropdown" v-model="timeZoneGroupCode">
+                            <option v-for="timeZoneGroup in timeZoneGroups" :value="timeZoneGroup.code">{{timeZoneGroup.name}}</option>
+                        </select>
+                    </div>
+                    <div class="ui field">
+                        <select class="ui dropdown" name="timeZone" v-model="config.timeZone">
+                            <option v-for="timeZoneLocation in timeZoneLocations" :value="timeZoneLocation.name" v-if="timeZoneLocation.group == timeZoneGroupCode">{{timeZoneLocation.name}} ({{timeZoneLocation.offset}})</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="comment">当前管理系统显示时间使用的时区。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>使用的DNS解析库</td>
+            <td>
+                <select class="ui dropdown auto-width" name="dnsResolverType" v-model="config.dnsResolver.type">
+                    <option value="default">默认</option>
+                    <option value="cgo">CGO</option>
+                    <option value="goNative">Go原生</option>
+                </select>
+                <p class="comment">当前管理系统使用的DNS解析库；修改此项配置后，需要重启管理系统进程才会生效；通常不需要修改；如要修改，请在专家指导下进行。</p>
+            </td>
+        </tr>
+    </table>
+
+	<submit-btn></submit-btn>
+</form>

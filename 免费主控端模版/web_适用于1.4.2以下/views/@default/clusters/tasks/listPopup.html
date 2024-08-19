@@ -1,0 +1,50 @@
+{$layout "layout_popup"}
+
+<h3>正在同步的节点任务<span v-if="countTasks > 0">(共{{countTasks}}个)</span></h3>
+<p class="comment" v-if="clusters.length == 0">暂时没有同步的任务。</p>
+<div v-if="clusters.length > 0">
+    <button class="ui button basic tiny" @click.prevent="deleteAllTasks">清空所有任务</button> &nbsp;
+    <button class="ui button basic tiny" v-if="countCheckedTasks() > 0" @click.prevent="deleteBatch">批量删除{{countCheckedTasks()}}个任务</button>
+
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th style="width:3em"><checkbox @input="checkAll"></checkbox></th>
+                <th class="three wide">集群</th>
+                <th>节点</th>
+                <th>任务</th>
+                <th>状态</th>
+                <th>触发时间</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody v-for="cluster in clusters">
+            <tr v-for="task in cluster.tasks">
+                <td>
+                    <checkbox v-model="task.isChecked" @input="checkTask"></checkbox>
+                </td>
+                <td>{{cluster.name}}</td>
+                <td nowrap="">
+                   {{task.node.name}} &nbsp; <a :href="'/clusters/cluster/node?clusterId=' + cluster.id + '&nodeId=' + task.node.id" target="_blank"><i class="icon linkify small grey"></i></a>
+                </td>
+                <td nowrap="">
+                    <span v-if="task.type == 'configChanged' || task.type == 'globalServerConfigChanged'">同步配置</span>
+                    <span v-if="task.type == 'ipItemChanged'">同步IP名单</span>
+                    <span v-if="task.type == 'scriptsChanged'">同步脚本</span>
+                    <span v-if="task.type == 'nodeLevelChanged'">同步L2节点</span>
+                    <span v-if="task.type == 'ddosProtectionChanged'">DDoS配置</span>
+                    <span v-if="task.type == 'userServersStateChanged'">用户网站状态</span>
+                    <span v-if="task.type != null && task.type.startsWith('ipListDeleted')">删除IP名单</span>
+                </td>
+                <td>
+                    <span v-if="task.isDone" class="red">{{task.error}}</span>
+                    <span v-else>正在同步...</span>
+                </td>
+                <td nowrap="">{{task.updatedTime}}</td>
+                <td>
+                    <a href="" title="删除" class="remove-btn" @click.prevent="deleteTask(task.id)"><i class="icon remove small grey"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

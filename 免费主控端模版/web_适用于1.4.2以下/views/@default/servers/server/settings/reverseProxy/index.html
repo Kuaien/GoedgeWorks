@@ -1,0 +1,23 @@
+{$layout}
+{$template "../settings_menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+	{$template "menu"}
+
+    <div v-if="hasGroupConfig">
+        <div class="margin"></div>
+        <warning-message>由于已经在当前<a :href="groupSettingURL">网站分组</a>中进行了对应的配置，在这里的配置将不会生效。</warning-message>
+    </div>
+
+    <div :class="{'opacity-mask': hasGroupConfig}">
+        <div v-if="!reverseProxyRef.isOn">
+            <div class="margin"></div>
+            <warning-message>当前源站没有启用，可以通过点击 <a :href="'/servers/server/settings/reverseProxy/setting?serverId=' + serverId">[更多设置]</a> 开启 。</warning-message>
+        </div>
+
+        <origin-list-box :v-primary-origins="primaryOrigins" :v-backup-origins="backupOrigins"
+                         :v-server-type="serverType"
+                         :v-params="'type=server&serverId=' + serverId + '&reverseProxyId=' + reverseProxyConfig.id"></origin-list-box>
+    </div>
+</div>

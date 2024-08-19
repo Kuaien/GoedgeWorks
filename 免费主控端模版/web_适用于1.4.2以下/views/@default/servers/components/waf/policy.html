@@ -1,0 +1,141 @@
+{$layout}
+{$template "waf_menu"}
+
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">策略名称</td>
+        <td>{{firewallPolicy.name}}</td>
+    </tr>
+    <tr>
+        <td>状态</td>
+        <td>
+            <span v-if="!firewallPolicy.isOn" class="red">已停用</span>
+            <div v-else-if="firewallPolicy.modeInfo != null">
+                <span :class="{green: firewallPolicy.modeInfo.code == 'defend', blue: firewallPolicy.modeInfo.code == 'observe', grey: firewallPolicy.modeInfo.code == 'bypass'}">{{firewallPolicy.modeInfo.name}}</span>
+                <p class="comment">{{firewallPolicy.modeInfo.description}}</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>预置的规则分组</td>
+        <td>
+            <span class="ui label tiny basic" v-for="group in firewallPolicy.groups" style="margin-bottom:0.5em" :class="{disabled:!group.isOn}">{{group.name}}</span>
+           <div v-if="upgradeItems.length > 0">
+               <div class="ui divider"></div>
+               <a href=""><span class="red">升级提醒：官方提供了新的规则，是否要加入以下规则：<span class="ui label tiny basic" v-for="item in upgradeItems" style="margin-bottom: 0.2em">{{item.name}}<span v-if="!item.isOn" class="small">（默认不启用）</span></span></span></a> &nbsp; &nbsp; <a href="" @click.prevent="upgradeTemplate">[加入]</a>
+           </div>
+        </td>
+    </tr>
+</table>
+
+<h4>动作配置</h4>
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">阻止动作设置</td>
+        <td>
+           <http-firewall-block-options-viewer :v-block-options="firewallPolicy.blockOptions"></http-firewall-block-options-viewer>
+        </td>
+    </tr>
+    <tr>
+        <td class="title">显示页面动作设置</td>
+        <td>
+            <http-firewall-page-options-viewer :v-page-options="firewallPolicy.pageOptions"></http-firewall-page-options-viewer>
+        </td>
+    </tr>
+    <tr>
+        <td>人机识别动作配置</td>
+        <td>
+            <http-firewall-captcha-options-viewer :v-captcha-options="firewallPolicy.captchaOptions"></http-firewall-captcha-options-viewer>
+        </td>
+    </tr>
+    <tr>
+        <td>JSCookie动作配置</td>
+        <td>
+            <http-firewall-js-cookie-options-viewer :v-js-cookie-options="firewallPolicy.jsCookieOptions"></http-firewall-js-cookie-options-viewer>
+        </td>
+    </tr>
+    <tr>
+        <td>使用系统防火墙</td>
+        <td>
+            <span class="green" v-if="firewallPolicy.useLocalFirewall">启用</span>
+            <span class="disabled" v-if="!firewallPolicy.useLocalFirewall">不启用</span>
+            <p class="comment" v-if="firewallPolicy.useLocalFirewall">可以在合适的时候自动使用系统自带防火墙进行防御。</p>
+        </td>
+    </tr>
+</table>
+
+<h4>日志配置</h4>
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title" :class="{'color-border':firewallPolicy.log !=null && firewallPolicy.log.isOn}">记录访问日志</td>
+        <td>
+            <span v-if="firewallPolicy.log == null || !firewallPolicy.log.isOn">默认</span>
+            <span v-else class="green">开启</span>
+        </td>
+    </tr>
+    <tr v-show="firewallPolicy.log != null && firewallPolicy.log.isOn">
+        <td class="color-border">记录请求Body</td>
+        <td>
+            <span class="green" v-if="firewallPolicy.log.requestBody">开启</span>
+            <span v-else>默认</span>
+        </td>
+    </tr>
+    <tr v-show="firewallPolicy.log != null && firewallPolicy.log.isOn">
+        <td class="color-border">记录区域封禁日志</td>
+        <td>
+            <span class="green" v-if="firewallPolicy.log.regionDenying">开启</span>
+            <span v-else>不记录</span>
+        </td>
+    </tr>
+</table>
+
+<h4>区域封禁设置</h4>
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">区域封禁默认提示内容</td>
+        <td>
+            <span v-if="firewallPolicy.denyCountryHTML != null && firewallPolicy.denyCountryHTML.length > 0">自定义</span>
+            <span v-else class="disabled">使用默认</span>
+        </td>
+    </tr>
+    <tr>
+        <td>省份封禁默认提示内容</td>
+        <td>
+            <span v-if="firewallPolicy.denyProvinceHTML != null && firewallPolicy.denyProvinceHTML.length > 0">自定义</span>
+            <span v-else class="disabled">使用默认</span>
+        </td>
+    </tr>
+</table>
+
+<h4>其他配置</h4>
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">SYN Flood防御</td>
+        <td>
+            <span v-if="firewallPolicy.synFlood == null || !firewallPolicy.synFlood.isOn" class="disabled">未启用</span>
+            <firewall-syn-flood-config-viewer v-else :v-syn-flood-config="firewallPolicy.synFlood"></firewall-syn-flood-config-viewer>
+        </td>
+    </tr>
+    <tr>
+        <td>最多检查内容尺寸</td>
+        <td>
+            <span v-if="firewallPolicy.maxRequestBodySize == 0" class="disabled">使用默认</span>
+            <span v-else>{{firewallPolicy.maxRequestBodySizeFormat}}</span>
+        </td>
+    </tr>
+    <tr>
+        <td>描述</td>
+        <td>
+            <span v-if="firewallPolicy.description.length > 0">{{firewallPolicy.description}}</span>
+            <span v-else class="disabled">暂时还没有描述。</span>
+        </td>
+    </tr>
+</table>
+
+<h4>使用此策略的集群</h4>
+<p class="comment" v-if="clusters.length == 0">暂时还没有集群使用此策略。</p>
+<table class="ui table selectable" v-if="clusters.length > 0">
+    <tr v-for="cluster in clusters">
+        <td>{{cluster.name}}<link-icon :href="'/clusters/cluster?clusterId=' + cluster.id"></link-icon></td>
+    </tr>
+</table>

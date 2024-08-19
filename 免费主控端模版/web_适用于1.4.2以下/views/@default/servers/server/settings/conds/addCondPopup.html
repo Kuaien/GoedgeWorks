@@ -1,0 +1,43 @@
+{$layout "layout_popup"}
+
+<h3 v-if="!isUpdating">添加子条件</h3>
+<h3 v-if="isUpdating">修改子条件</h3>
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<table class="ui table definition selectable">
+		<tr>
+			<td class="title">选择条件类型</td>
+			<td>
+				<select class="ui dropdown auto-width" name="condType" v-model="condType" @change="changeCondType">
+					<option v-for="c in components" :value="c.type">{{c.name}}</option>
+				</select>
+				{$ range .components}
+					<p class="comment" v-if="condType == '{$ .Type}'">{$ .Description}</p>
+				{$ end}
+			</td>
+		</tr>
+		<tr v-if="condType != 'params'">
+			<td>{{paramsTitle}}</td>
+			<td>
+				{$ range .components}
+                    {$if not (eq .Type "params") }
+					    <{$ .Component} v-if="condType == '{$ .Type}'" :v-cond="cond" ref="component"></{$ .Component}>
+                    {$end}
+				{$ end}
+			</td>
+		</tr>
+        <tr v-if="paramsCaseInsensitive">
+            <td>不区分大小写</td>
+            <td>
+                <div class="ui checkbox">
+                    <input type="checkbox" v-model="isCaseInsensitive" @change="changeCaseInsensitive"/>
+                    <label></label>
+                </div>
+                <p class="comment">选中后表示对比时忽略参数值的大小写。</p>
+            </td>
+        </tr>
+
+        <!-- 变量相关 -->
+        <tbody is="http-cond-params" :v-cond="cond" v-if="condType == 'params'"></tbody>
+	</table>
+	<submit-btn>确定</submit-btn>
+</form>

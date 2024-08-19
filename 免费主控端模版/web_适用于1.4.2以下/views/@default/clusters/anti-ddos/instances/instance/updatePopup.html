@@ -1,0 +1,42 @@
+{$layout "layout_popup"}
+
+<h3>修改高防实例</h3>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="instanceId" :value="instanceId"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td>所属产品</td>
+            <td>
+                <span v-if="instance.package != null">{{instance.package.summary}}</span>
+                <span v-else class="red">已被删除</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">部署集群 *</td>
+            <td>
+                <node-cluster-combo-box :v-cluster-id="instance.clusterId"></node-cluster-combo-box>
+            </td>
+        </tr>
+        <tr>
+            <td>高防IP *</td>
+            <td>
+                <values-box name="ipAddresses" placeholder="x.x.x.x" maxlength="64" :validator="ipValidator" :v-values="instance.ipAddresses"></values-box>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+        <tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>启用当前实例</td>
+                <td>
+                    <checkbox name="isOn" v-model="instance.isOn"></checkbox>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <submit-btn>保存</submit-btn>
+</form>

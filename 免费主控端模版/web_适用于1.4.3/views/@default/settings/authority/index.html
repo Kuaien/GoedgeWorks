@@ -1,0 +1,99 @@
+{$layout}
+{$template "menu"}
+
+<div v-if="key == null">
+    <div class="margin"></div>
+    <div class="ui message error icon" v-if="plusErr.length > 0">
+        <i class="icon warning circle"></i>
+        出现异常错误，请重新激活：{{plusErr}}
+    </div>
+
+    <div>
+        <warning-message>
+            你暂时尚未激活商业版本：
+            <ul>
+                <li><a href="https://goedge.cloud/commercial" target="_blank">了解专业版</a> </li>
+                <li><a href="https://goedge.cloud/docs/Plus/Price.md" target="_blank">价格体系</a> </li>
+                <li><a href="https://goedge.cloud/community" target="_blank">其他方式购买专业版</a> </li>
+                <li><a href="https://goedge.cloud/community" target="_blank">联系试用</a> </li>
+            </ul>
+        </warning-message>
+        <warning-message>
+            <a href="/settings/authority/activate">如果你已经有注册码，点这里激活 &raquo;</a>
+        </warning-message>
+    </div>
+</div>
+
+<div v-if="key != null">
+    <div class="margin"></div>
+
+    <div class="ui message green icon" v-if="!key.isExpired && plusErr.length == 0">
+        <i class="icon gem outline small yellow"></i>
+        <div class="content">
+            恭喜您已经成为尊贵的商业版用户。
+        </div>
+    </div>
+
+    <div class="ui message error icon" v-if="plusErr.length > 0">
+        <i class="icon warning circle"></i>
+        {{plusErr}}
+    </div>
+
+    <div class="margin"></div>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">状态</td>
+            <td>
+                <span class="red" v-if="key.isExpiring">即将过期</span>
+                <span class="red" v-else-if="key.isExpired">已过期</span>
+                <span class="green" v-else>已认证</span>
+            </td>
+        </tr>
+        <tr v-if="key.editionName != null && key.editionName.length > 0">
+            <td>版本</td>
+            <td>{{key.editionName}}</td>
+        </tr>
+        <tr v-if="key.nodes > 0">
+            <td>节点数限制</td>
+            <td>{{key.nodes}}个节点<span class="small grey">（已使用{{quota.countNodes}}个节点）</span></td>
+        </tr>
+        <tr>
+            <td>公司/组织名</td>
+            <td>{{key.company}}
+                <div v-if="key.company != null && key.company.indexOf('试用') > 0">
+                    <span class="red">试用版本</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">开始日期</td>
+            <td>{{key.dayFrom}}</td>
+        </tr>
+        <tr>
+            <td class="title">结束日期</td>
+            <td><span :class="{green: key.dayTo == '终身授权' ? 'green' : ''}">{{key.dayTo}}</span>
+                <div v-if="key.isExpiring" style="margin-top: 0.5em">
+                    <span class="red">即将过期</span>
+                </div>
+                <div v-else-if="key.isExpired" style="margin-top: 0.5em">
+                    <span class="red">已过期，请尽快更新认证信息。</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>开通组件</td>
+            <td>
+                <span v-if="key.components.length == 0" class="ui label basic small">*</span>
+                <span v-for="c in key.components" class="ui label basic small">{{c}}</span>
+            </td>
+        </tr>
+        <tr>
+            <td>验证方式</td>
+            <td>
+                <span v-if="key.method == 'remote'">远程</span>
+                <span v-else>离线</span>
+            </td>
+        </tr>
+    </table>
+    <p class="comment">数据更新于{{key.updatedTime}}。</p>
+</div>

@@ -1,0 +1,53 @@
+{$layout}
+{$template "../menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    <first-menu class="second-menu">
+        <menu-item :href="'/clusters/cluster/settings/metrics?category=http&clusterId=' + clusterId" :active="category == 'http'">HTTP</menu-item>
+        <!--<menu-item :href="'/clusters/cluster/settings/metrics?category=tcp&clusterId=' + clusterId" :active="category == 'tcp'">TCP</menu-item>
+        <menu-item :href="'/clusters/cluster/settings/metrics?category=udp&clusterId=' + clusterId" :active="category == 'udp'">UDP</menu-item>-->
+        <span class="item disabled">|</span>
+        <menu-item @click.prevent="createItem">[添加指标]</menu-item>
+        <span class="item disabled">|</span>
+        <span class="item"><tip-icon content="在这里设置的指标，会自动应用到部署在当前集群上的所有网站上。<br/><br/>指标收集和运算通常需要消耗一定量的边缘节点系统资源，所以请谨慎选择。"></tip-icon></span>
+    </first-menu>
+
+    <p class="comment" v-if="items.length == 0">暂时还没有添加指标。</p>
+
+    <table class="ui table celled selectable" v-if="items.length > 0">
+        <thead>
+        <tr>
+            <th>指标名称</th>
+            <th>统计对象</th>
+            <th>统计周期</th>
+            <th class="three wide">统计数值</th>
+            <th class="two wide">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+        </thead>
+        <tr v-for="item in items">
+            <td>{{item.name}}
+                <div style="margin-top: 0.3em" v-if="item.isPublic || item.code.length > 0">
+                    <span class="ui label olive tiny basic" v-if="item.isPublic">公用</span>
+                    <span class="ui label olive tiny basic" v-if="item.code.length > 0">内置</span>
+                </div>
+            </td>
+            <td>
+                <div v-if="item.keys != null" v-for="key in item.keys" style="margin-top: 0.2em; margin-bottom: 0.2em"><metric-key-label :v-key="key"></metric-key-label></div>
+            </td>
+            <td>
+                {{item.period}} {{item.periodUnitName}}
+            </td>
+            <td>
+                <span class="ui label small basic">{{item.valueName}}</span>
+            </td>
+            <td>
+                <label-on :v-is-on="item.isOn"></label-on>
+            </td>
+            <td>
+                <a href="" @click.prevent="deleteItem(item.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+</div>

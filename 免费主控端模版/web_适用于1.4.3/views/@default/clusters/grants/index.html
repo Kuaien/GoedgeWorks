@@ -1,0 +1,57 @@
+{$layout}
+{$template "menu"}
+
+
+<!-- 搜索表单 -->
+<form class="ui form" method="get" action="/clusters/grants">
+    <div class="margin"></div>
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" name="keyword" placeholder="名称、用户名等..." v-model="keyword"/>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+            &nbsp;
+            <a :href="Tea.url('.')" v-if="keyword.length > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<!-- SSH认证列表 -->
+<div class="ui message" v-if="grants.length == 0">暂时还没有认证信息。</div>
+
+<table class="ui table selectable celled" v-if="grants.length > 0">
+	<thead>
+		<tr>
+			<th>名称</th>
+			<th>类型</th>
+            <th>用户名</th>
+			<th class="center width5">集群数</th>
+			<th class="center width5">节点数</th>
+			<th class="two op">操作</th>
+		</tr>
+	</thead>
+	<tr v-for="grant in grants">
+        <td><a :href="'/clusters/grants/grant?grantId=' + grant.id"><keyword :v-word="keyword">{{grant.name}}</keyword></a></td>
+		<td>
+			<span class="ui label tiny basic">{{grant.method.name}}</span>
+		</td>
+        <td>
+            <span v-if="grant.username.length > 0">{{grant.username}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+		<td class="center">
+			<span v-if="grant.countClusters > 0">{{grant.countClusters}}</span>
+			<span v-else class="disabled">0</span>
+		</td>
+		<td class="center">
+			<span v-if="grant.countNodes > 0">{{grant.countNodes}}</span>
+			<span v-else class="disabled">0</span>
+		</td>
+		<td>
+			<a :href="'/clusters/grants/grant?grantId=' + grant.id">详情</a> &nbsp; <a href="" @click.prevent="deleteGrant(grant.id)">删除</a>
+		</td>
+	</tr>
+</table>
+
+<div class="page" v-html="page"></div>

@@ -1,0 +1,88 @@
+{$layout "layout_popup"}
+
+<h3>创建用户</h3>
+
+<form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+	<csrf-token></csrf-token>
+	<table class="ui table definition selectable">
+        <tr>
+            <td class="title">用户名 *</td>
+            <td>
+                <input type="text" name="username" maxlength="100" ref="focus"/>
+                <p class="comment">用户名只能是英文、数字、下划线的组合。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>密码 *</td>
+            <td>
+                <input type="password" name="pass1" maxlength="100"/>
+            </td>
+        </tr>
+        <tr>
+            <td>确认密码 *</td>
+            <td>
+                <input type="password" name="pass2" maxlength="100"/>
+            </td>
+        </tr>
+        <tr>
+            <td>全名 *</td>
+            <td>
+                <input type="text" name="fullname" maxlength="100"/>
+                <p class="comment">用户姓名或者公司名称等等。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>关联集群 *</td>
+            <td>
+                <cluster-selector></cluster-selector>
+                <p class="comment">用户发布的网站会自动部署到此集群。</p>
+            </td>
+        </tr>
+        <tr v-show="teaIsPlus">
+            <td>开通功能</td>
+            <td>
+                <radio name="featuresType" value="default" :v-value="'default'">默认功能</radio>
+                &nbsp; &nbsp;
+                <radio name="featuresType" :v-value="'all'">全部功能</radio>
+                <p class="comment">用户默认开通的功能可以在<a href="/users/setting" target="_blank">[这里]</a>设置。</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+        <tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>手机号</td>
+                <td>
+                    <input type="text" name="mobile" maxlength="11"/>
+                </td>
+            </tr>
+            <tr>
+                <td>联系电话</td>
+                <td>
+                    <input type="text" name="tel" maxlength="100"/>
+                </td>
+            </tr>
+            <tr>
+                <td>电子邮箱</td>
+                <td>
+                    <input type="text" name="email" maxlength="100"/>
+                </td>
+            </tr>
+            <tr>
+                <td>OTP认证</td>
+                <td>
+                    <checkbox name="otpOn">启用OTP</checkbox>
+                    <p class="comment">启用OTP认证后，在用户登录的时候需要同时填写OTP动态密码。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td>
+                    <textarea rows="3" name="remark"></textarea>
+                </td>
+            </tr>
+        </tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

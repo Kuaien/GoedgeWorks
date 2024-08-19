@@ -1,0 +1,39 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" method="get" action="/finance/accounts">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" name="keyword" v-model="keyword" placeholder="用户名、全名"/>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+            &nbsp;
+            <a href="/finance/accounts" v-if="keyword.length > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<p class="comment" v-if="accounts.length == 0">暂时还没有用户账户。</p>
+<table class="ui table selectable celled" v-if="accounts.length > 0">
+    <thead>
+        <tr>
+            <th>用户</th>
+            <th class="three wide">余额</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="account in accounts">
+        <td>
+            <a :href="'/finance/accounts/account?accountId=' + account.id"><user-link :v-user="account.user" :v-keyword="keyword"></user-link></a>
+        </td>
+        <td>
+            {{account.total}}元
+        </td>
+        <td>
+            <a :href="'/finance/accounts/account?accountId=' + account.id">详情</a>
+        </td>
+    </tr>
+</table>
+
+<div class="page" v-html="page"></div>

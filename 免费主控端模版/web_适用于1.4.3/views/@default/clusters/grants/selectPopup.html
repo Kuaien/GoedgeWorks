@@ -1,0 +1,40 @@
+{$layout "layout_popup"}
+
+<h3>选择SSH认证</h3>
+
+<form class="ui form">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" placeholder="搜索名称、用户名等" v-model="keyword"/>
+        </div>
+    </div>
+</form>
+
+<div class="ui divider"></div>
+
+<span v-if="grants.length == 0">暂时还没有可用的认证。</span>
+
+<h4 v-if="suggestGrants.length > 0">可能的认证</h4>
+<div class="grants-box" v-if="suggestGrants.length > 0">
+    <div class="grant-box" v-for="grant in suggestGrants">
+        <div :class="{blue:grantId == grant.id}" @click.prevent="selectGrant(grant)"><a href="">{{grant.name}}</a> <span v-if="grant.username.length > 0" class="small grey">（{{grant.username}}）</span>
+            <div class="method">
+                <span class="small grey">{{grant.methodName}}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+
+<h4>全部认证</h4>
+<div class="grants-box">
+    <div class="grant-box" v-for="grant in grants">
+        <div :class="{blue:grantId == grant.id}" @click.prevent="selectGrant(grant)"><a href="">{{grant.name}}</a> <span v-if="grant.username.length > 0" class="small grey">（{{grant.username}}）</span>
+            <div class="method">
+                <span class="small grey">{{grant.methodName}}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<p class="comment">请点击使用某个认证。</p>

@@ -1,0 +1,25 @@
+{$layout}
+{$template "../menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    <form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+        <csrf-token></csrf-token>
+        <input type="hidden" name="clusterId" :value="clusterId"/>
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">启用自定义页面功能</td>
+                <td>
+                    <checkbox name="isOn" v-model="pagesPolicy.isOn"></checkbox>
+                    <p class="comment">选中后，表示当前集群下的网站都可以使用当前设置的自定义页面。</p>
+                </td>
+            </tr>
+        </table>
+
+        <div v-show="pagesPolicy.isOn">
+            <http-pages-box :v-pages="pagesPolicy.pages"></http-pages-box>
+        </div>
+
+        <submit-btn></submit-btn>
+    </form>
+</div>

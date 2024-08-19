@@ -1,0 +1,18 @@
+.chart-box {
+  height: 14em;
+}
+.traffic-map-box {
+  height: 16em;
+}
+.traffic-map-box div::-webkit-scrollbar {
+  width: 4px;
+}
+h4 span {
+  font-size: 0.8em;
+  color: grey;
+  font-weight: normal !important;
+}
+.menu .item span.small {
+  font-size: 0.8em;
+}
+/*# sourceMappingURL=index.css.map */

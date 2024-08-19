@@ -1,0 +1,32 @@
+{$layout "layout_popup"}
+
+<h3>添加流量包</h3>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">流量包尺寸 *</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <input type="text" name="size" size="4" maxlength="4" ref="focus"/>
+                    </div>
+                    <div class="ui field">
+                        <select class="ui dropdown" name="unit">
+                            <option v-for="unit in unitOptions" :value="unit.code">{{unit.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="comment">保存后不允许再修改此选项。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>价格</td>
+            <td><span class="grey">在创建后设置</span></td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

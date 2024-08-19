@@ -1,0 +1,44 @@
+{$layout}
+{$template "../menu"}
+{$template "menu"}
+
+<p class="comment" style="padding: 0"><a :href="Tea.url('.update', { postId: post.id })">[修改文章]</a> </p>
+
+<table class="ui table definition selectable">
+    <tr>
+        <td>所属产品</td>
+        <td>{{post.productName}}</td>
+    </tr>
+    <tr>
+        <td class="title">文章分类</td>
+        <td>
+            <span v-if="post.category != null && post.category.id > 0">{{post.category.name}}</span>
+            <span v-else class="disabled">已删除</span>
+        </td>
+    </tr>
+    <tr>
+        <td class="title">文章标题</td>
+        <td>
+            {{post.subject}}
+        </td>
+    </tr>
+    <tr>
+        <td>文章类型</td>
+        <td>
+            <span v-if="post.type == 'url'">URL</span>
+            <span v-if="post.type == 'normal'">常规</span>
+        </td>
+    </tr>
+    <tr v-show="post.type == 'url'">
+        <td>URL</td>
+        <td>
+           {{post.url}}
+        </td>
+    </tr>
+    <tr v-show="post.type == 'normal'">
+        <td>内容</td>
+        <td>
+            <div v-html="post.body"></div>
+        </td>
+    </tr>
+</table>

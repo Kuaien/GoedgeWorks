@@ -1,0 +1,32 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">启用在线支付</td>
+            <td>
+                <checkbox name="enablePay" v-model="config.enablePay"></checkbox>
+                <p class="comment">启用后，用户在用户系统中在线创建和支付订单。此功能需要你已经添加了支付方式。<span v-if="!hasValidMethods" class="red">暂时没有添加可用的支付方式，此功能将不可用。</span></p>
+            </td>
+        </tr>
+        <tr>
+            <td>不启用支付时的提示</td>
+            <td>
+                <textarea name="disablePageHTML" v-model="config.disablePageHTML" :class="{disabled: config.enablePay}" rows="3"></textarea>
+                <p class="comment">在没有启用在线支付或者没有可用的在线支付方式时的提示文字。支持HTML。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>订单过期时间</td>
+            <td>
+                <time-duration-box :v-name="'orderLifeJSON'" :v-value="config.orderLife"></time-duration-box>
+                <p class="comment">超过这个时间订单不能再支付。</p>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

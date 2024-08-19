@@ -1,0 +1,41 @@
+{$layout}
+{$template "../settings_menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+    {$template "menu"}
+
+    <div class="margin"></div>
+    <div v-show="webConfig.cache == null || !webConfig.cache.isOn">
+        <p class="comment">没有开启缓存，暂时无法预热缓存。</p>
+    </div>
+    <div v-show="webConfig.cache != null && webConfig.cache.isOn">
+        <p class="comment">可以在这里批量预热一组URL。</p>
+        <form method="post" class="ui form" data-tea-action="$" data-tea-before="before" data-tea-success="success" data-tea-fail="fail" data-tea-done="done" data-tea-timeout="3600">
+            <input type="hidden" name="serverId" :value="serverId"/>
+            <input type="hidden" name="webId" :value="webId"/>
+            <table class="ui table definition selectable">
+                <tr>
+                    <td>URL列表</td>
+                    <td>
+                        <textarea name="keys" rows="10" ref="focus"></textarea>
+                        <p class="comment">每行一个URL。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title">操作结果</td>
+                    <td>
+                        <div v-if="isRequesting">数据发送中...</div>
+                        <span class="red" v-if="!isRequesting && !isOk && message.length > 0">失败：{{message}}</span>
+                        <div v-if="!isRequesting && !isOk && failKeys.length > 0" class="fail-keys-box">
+                            <div v-for="failKey in failKeys">
+                                <span class="red">{{failKey.key}}: {{failKey.reason}}</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <submit-btn v-if="!isRequesting">提交</submit-btn>
+        </form>
+    </div>
+</div>

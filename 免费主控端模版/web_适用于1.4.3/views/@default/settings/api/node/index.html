@@ -1,0 +1,80 @@
+{$layout}
+{$template "menu"}
+
+<table class="ui table selectable definition">
+	<tr>
+		<td class="title">节点名称</td>
+		<td>
+			{{node.name}}
+		</td>
+	</tr>
+	<tr>
+		<td>状态</td>
+		<td>
+			<label-on :v-is-on="node.isOn"></label-on>
+		</td>
+	</tr>
+	<tr>
+		<td>GRPC监听端口</td>
+		<td>
+			<network-addresses-view :v-addresses="node.listens"></network-addresses-view>
+			<p class="comment">API节点进程监听的网络端口。</p>
+		</td>
+	</tr>
+	<tr v-if="node.hasHTTPS">
+		<td>HTTPS证书</td>
+		<td>
+            <div v-if="node.certs != null && node.certs.length > 0">
+                <ssl-certs-view :v-certs="node.certs"></ssl-certs-view>
+            </div>
+            <span v-else class="red">还没有设置证书，可能会导致HTTPS相关服务不可用。</span>
+		</td>
+	</tr>
+	<tr>
+		<td>GRPC外部访问地址</td>
+		<td>
+			<network-addresses-view :v-addresses="node.accessAddrs"></network-addresses-view>
+			<p class="comment">通过GRPC访问API节点的网络地址。</p>
+		</td>
+	</tr>
+    <tr v-if="node.restIsOn">
+        <td>HTTP外部访问地址</td>
+        <td>
+            <network-addresses-view :v-addresses="node.restAccessAddrs"></network-addresses-view>
+            <p class="comment">通过HTTP访问API节点的网络地址。</p>
+        </td>
+    </tr>
+    <tr v-if="node.statusIsValid">
+        <td>CPU用量</td>
+        <td>{{node.status.cpuUsageText}} &nbsp; <span v-if="node.status.cpuPhysicalCount > 0" class="small grey">（{{node.status.cpuPhysicalCount}}核心/{{node.status.cpuLogicalCount}}线程）</span></td>
+    </tr>
+    <tr v-if="node.statusIsValid">
+        <td>内存用量</td>
+        <td>{{node.status.memUsageText}}</td>
+    </tr>
+    <tr v-if="node.statusIsValid">
+        <td>版本</td>
+        <td>v{{node.status.buildVersion}}
+            &nbsp; <span class="red" v-if="newVersion.length > 0">需要升级到新版本v{{newVersion}}</span>
+        </td>
+    </tr>
+    <tr v-if="node.statusIsValid">
+        <td>主程序位置</td>
+        <td>{{node.status.exePath}}</td>
+    </tr>
+    <tr>
+        <td>主节点</td>
+        <td>
+            <span v-if="node.isPrimary" class="green">Y</span>
+            <span v-else class="disabled">N</span>
+            <p class="comment" v-if="node.isPrimary">设置为主节点后，主要的后台任务会在此节点上运行。</p>
+        </td>
+    </tr>
+	<tr>
+		<td>描述</td>
+		<td>
+			<span v-if="node.description.length > 0">{{node.description}}</span>
+			<span v-else class="disabled">暂时还没有描述。</span>
+		</td>
+	</tr>
+</table>

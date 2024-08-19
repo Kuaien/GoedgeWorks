@@ -1,0 +1,117 @@
+{$layout}
+{$template "user_menu"}
+
+<table class="ui table definition selectable">
+    <tr>
+        <td>状态</td>
+        <td>
+            <span v-if="!user.isVerified" class="red">
+                信息未审核 &nbsp; <a href="" @click.prevent="verify">[审核]</a>
+            </span>
+            <span v-else-if="user.isRejected" class="red">已拒绝
+                 &nbsp; <a href="" @click.prevent="verify">[重新审核]</a>
+            </span>
+            <span v-else>
+                <label-on :v-is-on="user.isOn"></label-on>
+            </span>
+            <p class="comment" v-if="user.isVerified && user.isRejected && user.rejectReason.length > 0">拒绝原因：{{user.rejectReason}}</p>
+        </td>
+    </tr>
+    <tr>
+        <td class="title">用户名</td>
+        <td>
+            {{user.username}}
+        </td>
+    </tr>
+    <tr>
+        <td>全名</td>
+        <td>
+            {{user.fullname}}
+        </td>
+    </tr>
+    <tr>
+        <td>关联集群</td>
+        <td>
+            <span v-if="user.cluster != null">{{user.cluster.name}} <link-icon :href="'/clusters/cluster?clusterId=' + user.cluster.id"></link-icon></span>
+            <span v-else class="disabled">没有设置。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>手机号</td>
+        <td>
+            <span v-if="user.mobile.length > 0">{{user.mobile}}</span>
+            <span v-else class="disabled">没有设置。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>联系电话</td>
+        <td>
+            <span v-if="user.tel.length > 0">{{user.tel}}</span>
+            <span v-else class="disabled">没有设置。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>常用电子邮箱</td>
+        <td>
+            <span v-if="user.email.length > 0">{{user.email}}</span>
+            <span v-else class="disabled">没有设置。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>已绑定电子邮箱</td>
+        <td>
+            <span v-if="user.verifiedEmail.length > 0">{{user.verifiedEmail}}</span>
+            <span v-else class="disabled">没有设置。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>备注</td>
+        <td>
+            <span v-if="user.remark.length > 0">{{user.remark}}</span>
+            <span v-else class="disabled">没有设置。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>带宽算法</td>
+        <td>
+            <span v-if="user.bandwidthAlgo.length > 0">
+                <span v-if="user.bandwidthAlgo == 'secondly'">峰值带宽</span>
+                <span v-if="user.bandwidthAlgo == 'avg'">平均带宽</span>
+            </span>
+            <span v-else class="disabled">使用默认。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>注册IP</td>
+        <td>
+            <span v-if="user.registeredIP.length == 0" class="disabled">-</span>
+            <span v-else-if="user.registeredRegion.length == 0">{{user.registeredIP}}</span>
+            <span v-else>{{user.registeredIP}}<span class="grey small">（{{user.registeredRegion}}）</span></span>
+        </td>
+    </tr>
+</table>
+
+<h3>OTP认证</h3>
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">状态</td>
+        <td>
+            <span v-if="otp != null && otp.isOn" class="green">已启用</span>
+            <span v-else class="disabled">未启用</span>
+        </td>
+    </tr>
+    <tr v-if="otp != null && otp.isOn">
+        <td colspan="2"><more-options-indicator>更多信息</more-options-indicator></td>
+    </tr>
+    <tr v-if="otp != null && otp.isOn && moreOptionsVisible">
+        <td>认证二维码</td>
+        <td>
+            <img alt="qrcode" :src="'./otpQrcode?userId=' + user.id"/>
+            <p class="comment"><a :href="'./otpQrcode?userId=' + user.id + '&download=true'">[下载]</a> &nbsp; 可以通过二维码快速添加OTP认证信息到认证App中。</p>
+        </td>
+    </tr>
+    <tr v-if="otp != null && otp.isOn && moreOptionsVisible">
+        <td>密钥</td>
+        <td>{{otp.params.secret}}</td>
+    </tr>
+</table>

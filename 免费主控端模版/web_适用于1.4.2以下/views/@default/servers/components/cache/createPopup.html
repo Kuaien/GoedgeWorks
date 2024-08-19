@@ -1,0 +1,135 @@
+{$layout "layout_popup"}
+
+<h3>创建缓存策略</h3>
+
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<table class="ui table definition selectable">
+		<tr>
+			<td class="title">策略名称 *</td>
+			<td><input type="text" name="name" maxlength="100" ref="focus"/> </td>
+		</tr>
+		<tr>
+			<td class="color-border">缓存类型 *</td>
+			<td>
+				<select class="ui dropdown auto-width" name="type" v-model="policyType">
+					<option v-for="type in types" :value="type.type">{{type.name}}</option>
+				</select>
+			</td>
+		</tr>
+		<!-- 文件缓存选项 -->
+		<tbody v-if="policyType == 'file'">
+			<tr>
+				<td class="color-border">缓存目录 *</td>
+				<td>
+					<input type="text" name="fileDir" maxlength="500" value="/opt/cache"/>
+					<p class="comment">存放文件缓存的目录，通常填写绝对路径。</p>
+				</td>
+			</tr>
+            <tr>
+                <td class="color-border">缓存硬盘最大用量 *</td>
+                <td>
+                    <size-capacity-box :v-name="'capacityJSON'" :v-count="128" :v-unit="'gb'" :key="'capacityJSON1'"></size-capacity-box>
+                    <p class="comment">单个节点上缓存所在硬盘的最大用量，超出此用量或硬盘接近用尽时，将会自动尝试清理旧数据，如果为0表示没有限制。</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="color-border">内存最大容量</td>
+                <td>
+                   <size-capacity-box :v-name="'fileMemoryCapacityJSON'" :v-count="1" :v-unit="'gb'" :key="'fileMemoryCapacityJSON'"></size-capacity-box>
+                    <p class="comment">单个节点上作为一级缓存的内存最大容量，可以作为硬盘缓冲区和存储热点缓存内容，如果为0表示不使用内存作为一级缓存。</p>
+                </td>
+            </tr>
+		</tbody>
+
+        <tbody v-if="policyType == 'memory'">
+            <tr>
+                <td>内存最大容量</td>
+                <td>
+                    <size-capacity-box :key="'a'" :v-name="'capacityJSON'" :v-count="2" :v-unit="'gb'" :key="'capacityJSON2'"></size-capacity-box>
+                    <p class="comment">单个节点上允许缓存的最大容量，如果为0表示没有限制。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <tr>
+            <td>最大内容尺寸</td>
+            <td>
+                <size-capacity-box :v-name="'maxSizeJSON'" :v-count="256" :v-unit="'mb'" :key="'maxSizeJSON'"></size-capacity-box>
+                <p class="comment">允许缓存的单个内容最大尺寸，如果为0表示没有限制。</p>
+            </td>
+        </tr>
+
+		<tr>
+			<td colspan="2"><more-options-indicator></more-options-indicator></td>
+		</tr>
+        <tbody v-show="moreOptionsVisible && policyType == 'file'">
+            <tr>
+                <td class="color-border">缓存硬盘最小空余空间</td>
+                <td>
+                    <size-capacity-box :v-name="'fileMinFreeSizeJSON'" :v-count="0" :v-unit="'gb'" :key="'minFreeSizeJSON'"></size-capacity-box>
+                    <p class="comment">缓存硬盘保留的最小空余空间，如果为0表示自动限制（目前默认保留5GiB）。</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="color-border">缓存文件句柄缓存</td>
+                <td>
+                    <input type="text" name="fileOpenFileCacheMax" maxlength="6" value="0" style="width: 10em"/>
+                    <p class="comment"><pro-warning-label></pro-warning-label>保持在内存中的缓存文件句柄的数量，提升缓存文件打开速度，同时也会占用系统更多的内存，建议数量不超过缓存文件数量的百分之一；0表示不启用。</p>
+                </td>
+            </tr>
+            <tr v-show="teaIsPlus">
+                <td class="color-border">开启Sendfile</td>
+                <td>
+                    <checkbox name="fileEnableSendfile"></checkbox>
+                    <p class="comment"><pro-warning-label></pro-warning-label><plus-label></plus-label>使用sendfile提升发送缓存文件的效率。</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="color-border">允许读取不完整的Partial Content</td>
+                <td>
+                    <checkbox name="enableIncompletePartialContent" checked="checked"></checkbox>
+                    <p class="comment">允许在有一部分内容缓存的情况下读取分区内容，剩余的部分将会自动回源读取。</p>
+                </td>
+            </tr>
+           <!-- <tr v-show="moreOptionsVisible && policyType == 'file'">
+                <td class="color-border">启用MMAP</td>
+                <td>
+                    <checkbox name="enableMMAP"></checkbox>
+                    <p class="comment">选中后，表示允许系统自动利用MMAP提升缓存读取性能。</p>
+                </td>
+            </tr>-->
+        </tbody>
+		<tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>同步写入压缩缓存</td>
+                <td>
+                    <checkbox name="syncCompressionCache"></checkbox>
+                    <p class="comment">选中后，在压缩设置开启的情况下，在缓存源站内容的同时，也会同步写入压缩缓存；不选中，表示在源站内容缓存后，下一次调用才会缓存压缩内容，防止同一时间内硬盘IO负载过高。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>预热超时时间</td>
+                <td>
+                    <time-duration-box :v-name="'fetchTimeoutJSON'" :v-unit="'minute'" maxlength="6"></time-duration-box>
+                    <p class="comment">预热读取源站的超时时间，默认20分钟。</p>
+                </td>
+            </tr>
+			<tr>
+				<td>描述</td>
+				<td>
+					<textarea maxlength="200" name="description" rows="3"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>启用当前策略</td>
+				<td>
+					<div class="ui checkbox">
+						<input type="checkbox" name="isOn" value="1" checked="checked"/>
+						<label></label>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

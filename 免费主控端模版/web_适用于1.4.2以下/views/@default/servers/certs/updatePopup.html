@@ -1,0 +1,63 @@
+{$layout "layout_popup"}
+
+<h3>修改证书<span><span v-if="certConfig.dnsNames != null && certConfig.dnsNames.length > 0">&nbsp; （包含{{certConfig.dnsNames[0]}}<var v-if="certConfig.dnsNames.length > 1" style="font-style: normal">等{{certConfig.dnsNames.length}}个</var>域名）</span></span></h3>
+
+<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+	<input type="hidden" name="certId" :value="certConfig.id"/>
+    <input type="hidden" name="textMode" :value="textMode ? 1 : 0"/>
+	<table class="ui table definition selectable">
+		<tr>
+			<td class="title">证书说明 *</td>
+			<td>
+				<input type="text" name="name" maxlength="100" ref="focus" v-model="certConfig.name"/>
+				<p class="comment">可以简单说明证书的用途。</p>
+			</td>
+		</tr>
+		<tr>
+			<td>证书类型</td>
+			<td>
+				<select class="ui dropdown auto-width" name="isCA" v-model="isCA">
+					<option value="0">加密证书</option>
+					<option value="1">CA证书</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><span v-if="textMode">输入证书内容</span><span v-else>选择证书文件</span></td>
+			<td>
+                <input type="file" name="certFile" accept="application/x-pem-file, application/pkcs10, application/x-pkcs12, application/x-x509-user-cert, application/x-x509-ca-cert, application/pkix-cert, .pem" v-if="!textMode"/>
+                <file-textarea class="wide-code" ref="certTextField" spellcheck="false" name="certText" placeholder="-----BEGIN CERTIFICATE-----" v-if="textMode" style="font-size: 0.7em"></file-textarea>
+                <p class="comment"><a href="" @click.prevent="switchTextMode">[<span v-if="!textMode">输入内容</span><span v-else>上传文件</span>]</a>。文件内容中通常含有"-----BEGIN CERTIFICATE-----"类似的信息<span v-if="textMode">，可以直接拖动证书文件到输入框，留空表示不修改</span>。</p>
+			</td>
+		</tr>
+		<tr v-show="isCA == 0">
+			<td><span v-if="textMode">输入私钥内容</span><span v-else>选择私钥文件</span></td>
+			<td>
+                <input type="file" name="keyFile" accept="application/pkcs8, .key" v-if="!textMode"/>
+                <file-textarea class="wide-code" spellcheck="false" name="keyText" placeholder="-----BEGIN RSA PRIVATE KEY-----" v-if="textMode" style="font-size: 0.7em"></file-textarea>
+                <p class="comment"><a href="" @click.prevent="switchTextMode">[<span v-if="!textMode">输入内容</span><span v-else>上传文件</span>]</a>。文件内容中通常含有"-----BEGIN RSA PRIVATE KEY-----"类似的信息<span v-if="textMode">，可以直接拖动证书文件到输入框，留空表示不修改</span>。</p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><more-options-indicator></more-options-indicator></td>
+		</tr>
+		<tbody v-show="moreOptionsVisible">
+			<tr>
+				<td>详细说明</td>
+				<td>
+					<textarea rows="3" name="description" maxlength="200" v-model="certConfig.description"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>启用当前证书</td>
+				<td>
+					<div class="ui checkbox">
+						<input type="checkbox" name="isOn" value="1" v-model="certConfig.isOn"/>
+						<label></label>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<submit-btn></submit-btn>
+</form>

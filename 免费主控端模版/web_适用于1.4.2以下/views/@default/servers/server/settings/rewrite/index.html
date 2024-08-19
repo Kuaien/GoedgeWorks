@@ -1,0 +1,10 @@
+{$layout}
+{$template "../settings_menu"}
+{$template "/left_menu_with_menu"}
+
+<div class="right-box with-menu">
+	<first-menu class="second-menu">
+		<a class="item" @click.prevent="createRewriteRule()">[创建]</a>
+	</first-menu>
+	<http-rewrite-rule-list :v-web-id="webId" :v-rewrite-rules="rewriteRules"></http-rewrite-rule-list>
+</div>
