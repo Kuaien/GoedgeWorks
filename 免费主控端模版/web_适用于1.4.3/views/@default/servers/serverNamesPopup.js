@@ -2,8 +2,6 @@ Tea.context(function () {
 	let allServerNames = this.serverNames.$copy();
 
 	this.keyword = ""
-	
-	window.parent.postMessage(window.TEA.ACTION.data.serverNames, "*");
 
 	this.$delay(function () {
 		let that = this

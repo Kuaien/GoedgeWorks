@@ -1,4 +1,4 @@
-<first-menu class="second-menu">
+<first-menu>
     <menu-item href="/finance/accounts">账户列表</menu-item>
     <menu-item :href="'.?accountId=' + account.id" code="index">"{{account.user.fullname}}<span class="small">（{{account.user.username}}）</span>"账户详情</menu-item>
     <menu-item :href="'.logs?accountId=' + account.id" code="log">收支明细</menu-item>

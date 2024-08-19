@@ -1,48 +1,38 @@
 # Goedge主控端模版
-基于goedge1.4.1版本开发的主控端模版，支持1.3.9和1.4.2版本
+开源CDN系统GoEdge主控端模版，适用于1.3.9~1.4.3版本(edge-admin)
 
 本项目也提供付费技术支持服务，有任何问题请联系TG：[@kuaien66][2]
 
 ## 在线演示
-
-> 主控端：https://edge.console.aifan.top/
-> 
-> 账号：kdmin
-> 
-> 密码：kk54321
-
+````shell
+# 主控端：https://edge.console.aifan.top/
+# 账   号：kdmin
+# 密   码：kk54321
+````
 
 ## 安装说明
+```shell
+# 1、进入goedge-admin（主控端）安装目录
+cd $你的edge-admin安装目录/
 
-1、进入goedge-admin（主控端）安装目录
- 
-> cd $你的edge-admin安装目录/
+# 2、备份该目录下的 web 文件夹
+mv web web_bak
 
-2、备份该目录下的 web 文件夹
- 
-> mv web web_bak
+# 3、下载最新的模版文件
+	# 如果你的主控端是1.4.2以下版本（含1.4.2）
+	wget -O ./web.zip https://github.com/Kuaien/Goedge-Admin-Theme/releases/latest/download/goedge-admin-1.4.2.zip
+	
+	# 如果你的主控端是1.4.3版本
+	wget -O ./web.zip https://github.com/Kuaien/Goedge-Admin-Theme/releases/latest/download/goedge-admin-1.4.3.zip
 
-3、下载最新的模版文件
+# 4、解压模版文件
+unzip ./web.zip
 
-> 1.4.2以下版本
-> 
-> wget -O ./web.zip https://github.com/Kuaien/Goedge-Admin-Theme/releases/latest/download/goedge-admin-theme.zip
->
-> 1.4.3版本
->
-> wget -O ./web.zip https://github.com/Kuaien/Goedge-Admin-Theme/releases/download/v1.0.5/goedge-admin-theme.zip
-
-4、解压模版文件
-
-> unzip ./web.zip
-
-5、重启 edge-admin 服务
-
-> ./bin/edge-admin restart
-
+# 5、重启 edge-admin 服务
+./bin/edge-admin restart
+```
 
 ## 模版预览
-
 ![多颜色切换][3]
 ![登录页][4]
 ![首页][5]

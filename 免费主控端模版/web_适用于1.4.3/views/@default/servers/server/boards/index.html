@@ -25,35 +25,43 @@
 </div>
 
 <!-- 总体统计 -->
-<columns-grid v-if="!isLoading">
-    <div class="ui column">
-        <h4>上月峰值带宽</h4>
-        <div class="value"><bits-var :v-bits="lastMonthlyPeekBandwidthBits"></bits-var></div>
-    </div>
-    <div class="ui column">
-        <h4>当月峰值带宽</h4>
-        <div class="value"><bits-var :v-bits="monthlyPeekBandwidthBits"></bits-var></div>
-    </div>
-    <div class="ui column">
-        <h4>当天峰值带宽</h4>
-        <div class="value"><bits-var :v-bits="dailyPeekBandwidthBits"></bits-var></div>
-    </div>
-    <div class="ui column">
-        <h4>当前峰值带宽</h4>
-        <div class="value"><bits-var :v-bits="minutelyPeekBandwidthBits"></bits-var></div>
-    </div>
-    <div class="ui column">
-        <h4>当天独立IP</h4>
-        <div class="value">
-            <span v-if="dailyCountIPs > 0">{{dailyCountIPsFormat}}</span>
-            <span v-else class="disabled">尚无数据</span>
-        </div>
-    </div>
-    <div class="ui column">
-        <h4>当天流量</h4>
-        <div class="value"><bytes-var :v-bytes="dailyTrafficBytes"></bytes-var></div>
-    </div>
-</columns-grid>
+<div class="ui all-chart">
+	<div class="ui three columns grid counter-chart" v-if="!isLoading">
+		<div class="ui column">
+			<a class="ui cologe"><i class="ui icon icon44"></i></a>
+			<h4>上月峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="lastMonthlyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column">
+			<a class="ui cologe"><i class="ui icon icon45"></i></a>
+			<h4>当月峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="monthlyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column with-border">
+			<a class="ui cologe"><i class="ui icon icon38"></i></a>
+			<h4>当天峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="dailyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column" style="border-bottom: 1px rgba(0, 0, 0, 0.1) solid;">
+			<a class="ui cologe"><i class="ui icon icon37"></i></a>
+			<h4>当前峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="minutelyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column">
+			<a class="ui cologe"><i class="ui icon icon28"></i></a>
+			<h4>当天独立IP</h4>
+			<div class="value">
+				<span v-if="dailyCountIPs > 0">{{dailyCountIPsFormat}}</span>
+				<span v-else class="disabled">尚无数据</span>
+			</div>
+		</div>
+		<div class="ui column with-border">
+			<a class="ui cologe"><i class="ui icon icon34"></i></a>
+			<h4>当天流量</h4>
+			<div class="value"><bytes-var :v-bytes="dailyTrafficBytes"></bytes-var></div>
+		</div>
+	</div>
+</div>
 
 <chart-columns-grid>
     <div class="ui column">

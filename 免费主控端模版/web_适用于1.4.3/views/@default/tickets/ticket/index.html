@@ -1,6 +1,6 @@
 {$layout}
 
-<first-menu class="second-menu">
+<first-menu>
     <menu-item v-if="fromURL.length > 0" :href="fromURL">工单列表</menu-item>
     <menu-item v-if="fromURL.length == 0" :href="'/tickets?status=' + ticket.status">工单列表</menu-item>
 </first-menu>

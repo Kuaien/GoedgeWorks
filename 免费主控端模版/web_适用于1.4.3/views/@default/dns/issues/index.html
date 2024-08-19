@@ -1,10 +1,10 @@
 {$layout}
 
-<first-menu class="second-menu">
+<first-menu>
 	<span class="item" v-if="issues.length > 0">共<span class="red">{{issues.length}}</span>个问题</span>
 	<span class="item" v-if="issues.length > 0">|</span>
 	<a href="/dns/issues" title="刷新" class="item" @click.prevent="reload">刷新</a>
-	<span class="item disabled">|</span>
+	<span class="item">|</span>
 	<span class="item"><tip-icon content="这里是一个全局的DNS解析问题发现页，方便我们诊断并修复问题。"></tip-icon></span>
 </first-menu>
 

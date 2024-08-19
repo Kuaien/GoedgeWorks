@@ -1,8 +1,8 @@
 {$layout}
 
-<first-menu class="second-menu">
+<first-menu>
 	<menu-item :href="'/dns'">所有集群</menu-item>
-	<span class="item disabled">|</span>
+	<span class="item">|</span>
 	<menu-item :href="'/dns/clusters/cluster?clusterId=' + cluster.id" active="true">{{cluster.name}}</menu-item>
 </first-menu>
 

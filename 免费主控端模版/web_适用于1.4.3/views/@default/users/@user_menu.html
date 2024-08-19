@@ -1,6 +1,6 @@
-<first-menu class="second-menu">
+<first-menu>
     <menu-item href="/users">用户列表</menu-item>
-    <span class="item disabled">|</span>
+    <span class="item">|</span>
     <menu-item :href="'/users/user?userId=' + user.id" code="index">{{user.fullname}}&nbsp; <span class="small">({{user.username}})</span></menu-item>
     <menu-item :href="'/users/user/servers?userId=' + user.id" code="server" v-if="teaIsPlus">网站列表</menu-item>
     <menu-item :href="'/users/update?userId=' + user.id" code="update">修改</menu-item>

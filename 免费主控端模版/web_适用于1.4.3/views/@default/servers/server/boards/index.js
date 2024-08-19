@@ -90,6 +90,7 @@ Tea.context(function () {
 		teaweb.renderLineChart({
 			id: "bandwidth-chart",
 			values: this.bandwidthStats,
+			color: teaweb.DefaultChartColor,
 			axis: axis,
 			x: function (stat) {
 				return stat.timeAt

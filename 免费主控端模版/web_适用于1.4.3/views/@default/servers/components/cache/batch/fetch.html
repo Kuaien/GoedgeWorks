@@ -7,19 +7,10 @@
 <form method="post" class="ui form" data-tea-action="$" data-tea-before="before" data-tea-success="success" data-tea-fail="fail" data-tea-done="done" data-tea-timeout="3600">
     <csrf-token></csrf-token>
     <table class="ui table definition selectable">
-		<tr v-if="serverList">
-			<td class="title">快捷选择网站</td>
-			<td style="position: relative;">
-				<select class="ui dropdown auto-width" v-model="serverId" @change="changeServer">
-				    <option value="">选择网站</option>
-				    <option v-for="server in serverList" :value="server.id">{{server.name}}({{server.firstServerName}})</option>
-				</select>
-			</td>
-		</tr>
         <tr>
             <td>要预热的URL列表</td>
             <td>
-                <textarea name="keys" rows="15" ref="focus"></textarea>
+                <textarea name="keys" rows="20" ref="focus"></textarea>
                 <p class="comment">每行一个URL。</p>
             </td>
         </tr>
@@ -38,4 +29,3 @@
     </table>
     <submit-btn v-if="!isRequesting">提交</submit-btn>
 </form>
-<iframe v-if="serverId" :src="'/servers/serverNamesPopup?serverId='+serverId" style="display: none;"></iframe>

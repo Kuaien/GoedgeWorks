@@ -31,8 +31,7 @@
     <div class="main-menu" :class="{'mobile-menu': !menuShow}" v-cloak="">
         <div class="ui labeled menu vertical blue inverted tiny borderless">
 			<a href="/" class="brand">
-				<i class="ui icon leaf" v-if="teaLogoFileId == 0"></i><img alt="logo" v-if="teaLogoFileId > 0" :src="'/ui/image/' + teaLogoFileId"/>{{teaTitle}}<sup v-if="teaShowVersion">v{{teaVersion}}<span v-if="teaVersion.split('.').length == 4" title="当前版本为测试版，再次感谢您参与测试"> beta</span></sup>
-			</a>
+				<i class="ui icon leaf" v-if="teaLogoFileId == 0"></i><img alt="logo" v-if="teaLogoFileId > 0" :src="'/ui/image/' + teaLogoFileId"/>{{teaTitle}}<sup v-if="teaShowVersion">v{{teaVersion}}<span v-if="teaVersion.split('.').length == 4" title="当前版本为测试版，再次感谢您参与测试"> beta</span></sup></a>
             <!--<a :href="Tea.url('dashboard')" class="item" :class="{active:teaMenu == 'dashboard'}">
                 <i class="ui dashboard icon"></i>
                 <span>仪表板</span>

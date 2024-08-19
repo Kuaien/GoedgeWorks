@@ -2425,7 +2425,7 @@ Vue.component("switch-user-icon", {
 			userId: userId
 		}
 	},
-	methods: {switch-user-icon
+	methods: {
 		switchUser: function (userId) {
 			teaweb.confirm("确定要切换至这个用户吗？", function () {
 				this.$post("/users/switch")

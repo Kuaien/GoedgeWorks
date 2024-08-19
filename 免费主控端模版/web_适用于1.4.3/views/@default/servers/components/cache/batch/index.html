@@ -8,15 +8,6 @@
 <form method="post" class="ui form" data-tea-action="$" data-tea-before="before" data-tea-success="success" data-tea-fail="fail" data-tea-done="done" data-tea-timeout="300">
     <csrf-token></csrf-token>
     <table class="ui table definition selectable">
-		<tr v-if="serverList">
-			<td class="title">快捷选择网站</td>
-			<td style="position: relative;">
-				<select class="ui dropdown auto-width" v-model="serverId" @change="changeServer">
-				    <option value="">选择网站</option>
-				    <option v-for="server in serverList" :value="server.id">{{server.name}}({{server.firstServerName}})</option>
-				</select>
-			</td>
-		</tr>
         <tr>
             <td class="title">URL类型</td>
             <td>
@@ -30,7 +21,7 @@
                 <span v-if="keyType == 'prefix'">要刷新的URL目录列表</span>
             </td>
             <td>
-                <textarea name="keys" rows="15" ref="keysBox"></textarea>
+                <textarea name="keys" rows="20" ref="keysBox"></textarea>
                 <p class="comment" v-if="keyType == 'key'">每行一个URL，比如<code-label>https://example.com/hello/world.html</code-label>。</p>
                 <p class="comment" v-if="keyType == 'prefix'">每行一个URL目录，比如<code-label>https://example.com/hello/</code-label>；如果只填写域名部分，表示清理全站，比如<code-label>https://example.com/</code-label>。</p>
             </td>
@@ -50,4 +41,3 @@
     </table>
     <submit-btn v-if="!isRequesting">提交</submit-btn>
 </form>
-<iframe v-if="serverId" :src="'/servers/serverNamesPopup?serverId='+serverId" style="display: none;"></iframe>

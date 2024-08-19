@@ -1,7 +1,7 @@
 {$layout}
 {$template "/datepicker"}
 
-<first-menu class="second-menu">
+<first-menu>
     <menu-item :href="path + '?' + query('')" :active="hasError == 0 && hasWAF == 0">所有日志</menu-item>
     <menu-item :href="path + '?' + query('hasError=1')" :active="hasError > 0">错误日志</menu-item>
     <menu-item :href="path + '?' + query('hasWAF=1')" :active="hasWAF > 0">WAF日志</menu-item>

@@ -1,6 +1,6 @@
 {$layout}
 
-<first-menu class="second-menu">
+<first-menu>
     <menu-item href=".?type=available" :active="type == 'available'">有效套餐({{countAvailable}})</menu-item>
     <menu-item href=".?type=expiring7" :active="type == 'expiring7'">7天内过期(<span v-if="countExpiring7 > 0" class="red">{{countExpiring7}}</span><span v-else>0</span>)</menu-item>
     <menu-item href=".?type=expiring30" :active="type == 'expiring30'">30天内过期(<span v-if="countExpiring30 > 0" class="red">{{countExpiring30}}</span><span v-else>0</span>)</menu-item>
