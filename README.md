@@ -5,9 +5,9 @@
 
 ## 在线演示
 ````shell
-# 主控端：https://edge.console.aifan.top/
-# 账 号：kdmin
-# 密 码：kk54321
+主控端：https://edge.console.aifan.top/
+账 号：kdmin
+密 码：kk54321
 ````
 
 ## 安装说明
@@ -51,7 +51,6 @@ unzip ./web.zip
 AD: 接goedge模版、插件、脚本定制，需要的可联系TG：[@kuaien66][2]
 
 
-  [1]: https://github.com/Kuaien/Goedge-Admin-Theme/tree/main/%E5%85%A8%E5%A5%97%E4%B8%BB%E9%A2%98%E6%A8%A1%E7%89%88%28%E5%90%AB%E4%B8%BB%E6%8E%A7,%E7%94%A8%E6%88%B7,%E5%AE%98%E7%BD%91%29
   [2]: https://t.me/kuaien66
   [3]: https://bbs.naixi.net/data/attachment/forum/202408/06/183449b3vuvkfbk8pku8ff.jpg
   [4]: https://bbs.naixi.net/data/attachment/forum/202408/06/183453udzpj5l5wsissdej.jpg
