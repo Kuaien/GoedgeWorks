@@ -5,6 +5,9 @@
 #
 #   GoEdge模版、插件、脚本定制请联系TG: https://t.me/kuaien66
 #
+
+# 建议安装Chrome114版本，最新版的Chrome运行会报错，因为selenium库不支持
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
@@ -62,6 +65,12 @@ print('————————————————————————�
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
+# Linux服务器建议开启以下配置
+# chrome_options.add_argument("--no-sandbox")  # 禁用沙盒
+# chrome_options.add_argument("--disable-gpu")  # 禁用 GPU
+# chrome_options.add_argument("--disable-dev-shm-usage")  # 禁用共享内存
+# chrome_options.add_argument("--remote-debugging-port=9222")  # 启用远程调试
+# chrome_options.add_argument("--user-data-dir=/tmp/chrome_temp_profile")  # 使用新的用户数据目录
 driver = webdriver.Chrome(options=chrome_options)
 driver.set_window_size(300, 300)
 driver.get("https://www.itdog.cn/http/")
@@ -204,6 +213,7 @@ if block_ip_list:
 
     print(edit_ips)
     print(message_text)
+    # 下发通知到Telegram
     telegram_url = "https://api.telegram.org/bot{}/sendMessage".format(telegram_token)
     payload = {
         "chat_id": telegram_group,
