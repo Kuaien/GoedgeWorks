@@ -20,13 +20,16 @@
         <tr>
             <td>浏览器图标</td>
             <td>
-                <div v-if="config.faviconFileId > 0">
-                    <a :href="'/ui/image/' + config.faviconFileId" target="_blank"><img :src="'/ui/image/' + config.faviconFileId" style="width:32px;border:1px #ccc solid;"/></a>
+                <div class="img-box" v-if="config.faviconFileId > 0">
+                    <a :href="'/ui/image/' + config.faviconFileId" target="_blank"><img :src="'/ui/image/' + config.faviconFileId"/></a>
+					<div class="remove" @click.prevent="removeImgTap('faviconFileId')">
+						<i class="ui icon remove"></i>
+					</div>
                 </div>
                 <div v-else>
                     <span class="disabled">还没有上传。</span>
                 </div>
-                <div style="margin-top: 0.8em">
+                <div>
                     <input type="file" name="faviconFile" accept=".png"/>
                 </div>
                 <p class="comment">在浏览器标签栏显示的图标，请使用PNG格式。</p>
@@ -35,13 +38,16 @@
         <tr>
             <td>Logo图</td>
             <td>
-                <div v-if="config.logoFileId > 0">
-                    <a :href="'/ui/image/' + config.logoFileId" target="_blank"><img :src="'/ui/image/' + config.logoFileId" style="width:32px;border:1px #ccc solid; padding: 4px; background: #276AC6"/></a>
+                <div class="img-box" v-if="config.logoFileId > 0">
+                    <a :href="'/ui/image/' + config.logoFileId" target="_blank"><img :src="'/ui/image/' + config.logoFileId"/></a>
+					<div class="remove" @click.prevent="removeImgTap('logoFileId')">
+						<i class="ui icon remove"></i>
+					</div>
                 </div>
                 <div v-else>
                     <span class="disabled">还没有上传。</span>
                 </div>
-                <div style="margin-top: 0.8em">
+                <div>
                     <input type="file" name="logoFile" accept=".png"/>
                 </div>
                 <p class="comment">显示在系统控制面板界面上的图标，请使用PNG格式；将会被用于深色背景之上，请使用浅色勾勒线条。</p>
@@ -161,13 +167,16 @@
         <tr v-show="config.portal.isOn">
             <td>Logo图</td>
             <td>
-                <div v-if="config.portal.logoFileId > 0">
-                    <a :href="'/ui/image/' + config.portal.logoFileId" target="_blank"><img :src="'/ui/image/' + config.portal.logoFileId" style="width:32px;border:1px #ccc solid; padding: 4px;" alt=""/></a>
+                <div class="img-box" v-if="config.portal.logoFileId > 0">
+                    <a :href="'/ui/image/' + config.portal.logoFileId" target="_blank"><img :src="'/ui/image/' + config.portal.logoFileId" alt=""/></a>
+					<div class="remove" @click.prevent="removeImgTap('portal')">
+						<i class="ui icon remove"></i>
+					</div>
                 </div>
                 <div v-else>
                     <span class="disabled">还没有上传。</span>
                 </div>
-                <div style="margin-top: 0.8em">
+                <div>
                     <input type="file" name="portalLogoFile" accept=".png"/>
                 </div>
                 <p class="comment">显示在门户页面上的图标，请使用PNG格式。</p>

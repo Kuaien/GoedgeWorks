@@ -39,4 +39,8 @@ Tea.context(function () {
 			}
 		})
 	})
+	
+	this.removeImgTap = function(name){
+		this.config[name] = '';
+	}
 })

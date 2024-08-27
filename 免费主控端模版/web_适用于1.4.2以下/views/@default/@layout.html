@@ -85,6 +85,7 @@
 					<a href="" class="item" @click.prevent="switchLang"><i class="icon language"></i></a>
 					<!-- 背景颜色 -->
 					<a href="" class="item" @click.prevent="changeTheme()"><i class="icon adjust"></i></a>
+					<a href="" class="item" @click.prevent="notesShow=true"><i class="icon icon35"></i></a>
 				</div>
 				<div class="navs user">
 					<!-- 用户信息 -->
@@ -112,6 +113,17 @@
 			    {$TEA.VIEW}
 			    <div class="clear"></div>
 				<div class="power">Theme Power by <a href="https://github.com/Kuaien/Goedge-Admin-Theme" target="_blank">@Kuaien</a></div>
+				<div v-draggable class="notes-box" v-show="notesShow">
+					<div class="head">
+						<div class="title">便签</div>
+						<div class="close" @click.prevent="notesShow=false">
+							<i class="ui icon remove"></i>
+						</div>
+					</div>
+					<div class="notes">
+						<textarea @pointerdown.stop.native rows="5" @input="handleNotes" v-model="notesText"></textarea>
+					</div>
+				</div>
 			</div>
 		</div>
     </div>

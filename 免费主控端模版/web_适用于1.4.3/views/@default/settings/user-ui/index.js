@@ -57,4 +57,12 @@ Tea.context(function () {
 			this.config.clientIPHeaderNames += " " + headerNames
 		}
 	}
+	
+	this.removeImgTap = function(name){
+		if(name=='portal'){
+			this.config.portal.logoFileId = '';
+		}else{
+			this.config[name] = '';
+		}
+	}
 })

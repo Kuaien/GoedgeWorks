@@ -28,6 +28,50 @@ Tea.context(function () {
 		this.menuShow = !this.menuShow
 	}
 	
+	let notes = localStorage.getItem('notes');
+	if(notes){
+		this.notesText = notes;
+	}else{
+		this.notesText = "便签中的内容会存储在本地，这样即便你关掉了浏览器，在下次打开时依然会读取到上一次的记录。是个非常小巧实用的本地备忘录";
+	}
+	this.notesShow = false;
+	this.openNotes = function(status){
+		this.notesShow = status;
+	}
+	this.handleNotes = function(){
+		localStorage.setItem('notes', this.notesText);
+	}
+	Vue.directive('draggable', {
+		bind: function (el, binding, vnode) {
+			var isDragging = false;
+			var offsetX = 0;
+			var offsetY = 0;
+			el.addEventListener('mousedown', function (event) {
+				if (event.target.tagName.toLowerCase() === 'textarea') {
+					return;
+				}
+				isDragging = true;
+				offsetX = event.clientX - el.offsetLeft;
+				offsetY = event.clientY - el.offsetTop;
+			});
+			document.addEventListener('mousemove', function (event) {
+				if (isDragging) {
+					var left = event.clientX - offsetX;
+					var top = event.clientY - offsetY;
+	
+					el.style.left = left + 'px';
+					el.style.top = top + 'px';
+	
+					vnode.context.left = left;
+					vnode.context.top = top;
+				}
+			});
+			document.addEventListener('mouseup', function (event) {
+				isDragging = false;
+			});
+		}
+	})
+	
 	/**
 	 * 切换模板
 	 */
