@@ -17,7 +17,9 @@ AccessID = 'k1ySpOeOAcQV8vNG'
 # AccessKey密钥
 AccessKey = 'q573ukqK0BPLY1SJjo58PQG00KFNg2HY'
 # 平台用户ID（创建网站和申请证书的时候一定要选择平台用户）
-userId = 1
+userId = 42
+# 是否开启自动跳转HTTPS
+HttpToHttps = True
 
 
 # 获取操作Token
@@ -48,24 +50,30 @@ def findAllUserServers():
 # 查找网站配置
 def findEnabledServerConfig(serverId):
     data = {"serverId": serverId}
-    r = requests.post('{}/ServerService/findEnabledServerConfig'.format(WebApiUrl), data=json.dumps(data), headers=headers)
+    r = requests.post('{}/ServerService/findEnabledServer'.format(WebApiUrl), data=json.dumps(data), headers=headers)
     data = r.json()
-    data_base = data['data']['serverJSON']
-    data_encode = base64.b64decode(data_base).decode('utf-8')
-    data_json = json.loads(data_encode)
+    data_json = data['data']['server']
     site_data = {
         "id": data_json['id'],
+        "webId": data_json['webId'],
         "type": data_json['type'],
         "name": data_json['name'],
-        "serverNames": data_json['serverNames'],
+        "serverNames": [],
         "isOn": True,
+        "sslPolicy": None,
         "listen": [{'protocol': 'https', 'host': '', 'portRange': '443'}],
-        "sslPolicy": None
     }
-    if data_json['https'] and data_json['https']['sslPolicy']:
-        site_data['isOn'] = data_json['https']['isOn']
-        site_data['listen'] = data_json['https']['listen']
-        site_data['sslPolicy'] = data_json['https']['sslPolicy']['certs']
+    server_json = json.loads(base64.b64decode(data_json['serverNamesJSON']).decode('utf-8'))[0]
+    if 'subNames' in server_json and server_json['subNames']:
+        site_data['serverNames'] = [server_json['subNames'][0]]
+    else:
+        site_data['serverNames'] = [server_json['name']]
+    if 'httpsJSON' in data_json:
+        https_json = json.loads(base64.b64decode(data_json['httpsJSON']).decode('utf-8'))
+        site_data['isOn'] = https_json['isOn']
+        site_data['listen'] = https_json['listen']
+        if 'sslPolicy' in https_json and https_json['sslPolicy']:
+            site_data['sslPolicy'] = https_json['sslPolicy']
     return site_data
 
 # 列出单页匹配的证书
@@ -108,10 +116,25 @@ def updateServerHTTPS(site):
     }
     r = requests.post('{}/ServerService/updateServerHTTPS'.format(WebApiUrl), data=json.dumps(data), headers=headers)
     data = r.json()
+    status = False
     if data['code'] == 200:
-        print("--SSL证书绑定成功！")
+        status = True
+    return status
+
+
+# 更改跳转到HTTPS设置
+def updateHTTPWebRedirectToHTTPS(webId):
+    https_json = {"isPrior":False,"isOn":True,"host":"","port":0,"status":0,"onlyDomains":[],"exceptDomains":[]}
+    data = {
+        "httpWebId": webId,
+        "redirectToHTTPSJSON": base64.b64encode(json.dumps(https_json).encode('utf-8')).decode('utf-8')
+    }
+    r = requests.post('{}/HTTPWebService/updateHTTPWebRedirectToHTTPS'.format(WebApiUrl), data=json.dumps(data), headers=headers)
+    data = r.json()
+    if data['code'] == 200:
+        print("--自动跳转到HTTPS开启成功")
     else:
-        print("--SSL证书绑定失败: {}".format(data['message']))
+        print("--自动跳转到HTTPS开启失败,{}".format(data['message']))
 
 
 user_sites = findAllUserServers()
@@ -120,10 +143,7 @@ for site in user_sites:
     site_config = findEnabledServerConfig(site['id'])
     if not site_config['sslPolicy']:
         print("{} 未绑定SSL证书，正在查询可绑定证书...".format(site_config['name']))
-        domains = [site_config['serverNames'][0]['name']]
-        if site_config['serverNames'][0]['subNames']:
-            domains = site_config['serverNames'][0]['subNames']
-
+        domains = site_config['serverNames']
         # 列出单页匹配的证书
         ssl_config = listSSLCerts(domains)
         if ssl_config:
@@ -131,14 +151,18 @@ for site in user_sites:
             sslPolicyId = createSSLPolicy(ssl_config['id'])
             if sslPolicyId:
                 site_config['sslPolicyRef'] = {'isOn': True, 'sslPolicyId': sslPolicyId}
-                updateServerHTTPS(site_config)
+                ssl_status = updateServerHTTPS(site_config)
+                if ssl_status:
+                    print("--SSL证书绑定成功！")
+                    if HttpToHttps:
+                        updateHTTPWebRedirectToHTTPS(site_config['webId'])
+                else:
+                    print("--SSL证书绑定失败")
             else:
                 print('--生成SSL策略失败，请重试')
         else:
             print("--未查询到相关SSL证书！")
     else:
         print("{} 已绑定SSL证书！".format(site_config['name']))
-        print("--证书申请时间: {}".format(datetime.fromtimestamp(site_config['sslPolicy'][0]['timeBeginAt']).strftime('%Y-%m-%d %H:%M')))
-        print("--证书到期时间: {}".format(datetime.fromtimestamp(site_config['sslPolicy'][0]['timeEndAt']).strftime('%Y-%m-%d %H:%M')))
         
     print('-------------------')
