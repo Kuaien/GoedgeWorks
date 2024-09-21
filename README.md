@@ -16,6 +16,7 @@
 
  - 🌟[aiFanCDN模版🆓][3]
  - 🐯[TigerCDN模版][4]
+ - 🦊[FoxCDN模版][15]
  
 ### 🧩插件Plugin
 
@@ -64,3 +65,4 @@
   [12]: https://github.com/Kuaien/GoedgeWorks/blob/main/%E5%85%8D%E8%B4%B9%E4%B8%BB%E6%8E%A7%E7%AB%AF%E8%84%9A%E6%9C%AC/%E6%A3%80%E6%B5%8B%E7%BD%91%E7%AB%99%E8%A7%A3%E6%9E%90%E7%9A%84IP%E6%98%AF%E5%90%A6%E8%A2%AB%E5%A2%99.py
   [13]: https://github.com/Kuaien/GoedgeWorks/blob/main/%E5%85%8D%E8%B4%B9%E5%8D%95%E9%A1%B5%E6%A8%A1%E7%89%88/5%E7%A7%92%E7%9B%BE%E6%A8%A1%E7%89%88.html
   [14]: https://t.me/kuaien66
+  [15]: https://github.com/Kuaien/GoedgeWorks/tree/main/%E4%BB%98%E8%B4%B9%E5%AE%9A%E5%88%B6%E6%A8%A1%E7%89%88/FoxCDN
