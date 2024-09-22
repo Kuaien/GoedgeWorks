@@ -24,6 +24,7 @@
  - 🔐[批量申请SSL证书][6]
  - 👱‍♂[️支付宝人脸核身][7]
  - 💸[USDT支付模块][8]
+ - 🌈[彩虹易支付模块][16]
  
 ### 🕹️脚本Script
 
@@ -66,3 +67,4 @@
   [13]: https://github.com/Kuaien/GoedgeWorks/blob/main/%E5%85%8D%E8%B4%B9%E5%8D%95%E9%A1%B5%E6%A8%A1%E7%89%88/5%E7%A7%92%E7%9B%BE%E6%A8%A1%E7%89%88.html
   [14]: https://t.me/kuaien66
   [15]: https://github.com/Kuaien/GoedgeWorks/tree/main/%E4%BB%98%E8%B4%B9%E5%AE%9A%E5%88%B6%E6%A8%A1%E7%89%88/FoxCDN
+  [16]: https://github.com/Kuaien/GoedgeWorks/tree/main/%E4%BB%98%E8%B4%B9%E5%AE%9A%E5%88%B6%E6%8F%92%E4%BB%B6/%E5%BD%A9%E8%99%B9%E6%98%93%E6%94%AF%E4%BB%98%E6%A8%A1%E5%9D%97
