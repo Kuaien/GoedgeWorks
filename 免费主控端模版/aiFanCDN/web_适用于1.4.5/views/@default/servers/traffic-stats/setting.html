@@ -1,0 +1,60 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" data-tea-success="success" data-tea-action="$">
+    <csrf-token></csrf-token>
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">带宽百分位</td>
+            <td>
+                <div class="ui input right labeled">
+                    <input type="text" maxlength="3" size="3" style="width: 4em" name="bandwidthPercentile" v-model="config.bandwidthPercentile"/>
+                    <span class="ui label">th</span>
+                </div>
+                <p class="comment">取值在1-100之间。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>默认日期范围</td>
+            <td>
+                <b-select
+                    name="defaultBandwidthDateRange"
+                    v-model="config.defaultBandwidthDateRange"
+                    auto-width
+                    :options="[
+                        ...dateRanges.map(dateRange => ({
+                            label: dateRange.name,
+                            value: dateRange.code,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="defaultBandwidthDateRange" v-model="config.defaultBandwidthDateRange">
+                    <option v-for="dateRange in dateRanges" :value="dateRange.code">{{dateRange.name}}</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr>
+            <td>带宽算法</td>
+            <td>
+                <b-select
+                    name="bandwidthAlgo"
+                    v-model="config.bandwidthAlgo"
+                    auto-width
+                    :options="[
+                        {label: '峰值带宽', value: 'secondly'},
+                        {label: '平均带宽', value: 'avg'},
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="bandwidthAlgo" v-model="config.bandwidthAlgo">
+                    <option value="secondly">峰值带宽</option>
+                    <option value="avg">平均带宽</option>
+                </select> -->
+                <p class="comment" v-if="config.bandwidthAlgo == 'secondly'">按在计时时间段内（5分钟）最高带宽峰值计算，比如5分钟内最高的某个时间点带宽为100Mbps，那么就认为此时间段内的峰值带宽为100Mbps。修改此选项会同时影响到带宽计费。</p>
+                <p class="comment" v-if="config.bandwidthAlgo == 'avg'">按在计时时间段内（5分钟）平均带宽计算，即此时间段内的总流量除以时间段的秒数，比如5分钟（300秒）内总流量600MiB，那么带宽即为<code-label>600MiB * 8bit/300s = 16Mbps</code-label>；通常平均带宽算法要比峰值带宽要少很多。修改此选项会同时影响到带宽计费。</p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

@@ -1,0 +1,24 @@
+{$layout}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+    {$template "/code_editor"}
+
+    <div class="right-box">
+        {$template "../location_menu"}
+        {$template "../left_menu"}
+
+        <div class="right-box tiny">
+            <form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+                <input type="hidden" name="webId" :value="webId"/>
+                <csrf-token></csrf-token>
+
+                <http-request-scripts-config-box
+                        :v-request-scripts-config="requestScriptsConfig"
+                        :v-is-location="true"></http-request-scripts-config-box>
+
+                <submit-btn></submit-btn>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+{$layout "layout"}
+{$template "/code_editor"}
+{$template "policy_menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success" data-tea-timeout="30" data-tea-done="done" data-tea-before="before">
+    <input type="hidden" name="policyId" :value="policy.id"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">发送内容</td>
+            <td>
+                <source-code-box id="json-data-box" type="application/json" :read-only="false" name="bodyJSON">{$.testJSON}</source-code-box>
+            </td>
+        </tr>
+    </table>
+    <submit-btn v-if="!isRequesting && policy.isOn"></submit-btn>
+    <p class="comment" v-if="!policy.isOn">当前策略未启用，无法执行测试</p>
+    <button class="ui button disabled" type="button" v-if="isRequesting">发送中...</button>
+</form>

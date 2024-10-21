@@ -1,0 +1,97 @@
+{$layout}
+
+<first-menu>
+    <menu-item href=".?type=available" :active="type == 'available'">有效套餐({{countAvailable}})</menu-item>
+    <menu-item href=".?type=expiring7" :active="type == 'expiring7'">7天内过期(<span v-if="countExpiring7 > 0" class="red">{{countExpiring7}}</span><span v-else>0</span>)</menu-item>
+    <menu-item href=".?type=expiring30" :active="type == 'expiring30'">30天内过期(<span v-if="countExpiring30 > 0" class="red">{{countExpiring30}}</span><span v-else>0</span>)</menu-item>
+    <menu-item href=".?type=expired" :active="type == 'expired'">过期套餐({{countExpired}})</menu-item>
+    <span class="item disabled">|</span>
+    <menu-item @click.prevent="createUserPlan">[新购套餐]</menu-item>
+</first-menu>
+
+<div class="margin"></div>
+<form class="ui form" method="get" action="/ns/userPlans">
+    <input type="hidden" name="type" :value="type"/>
+    <div class="ui fields inline">
+        <div class="ui field">
+            <b-select
+                name="planId"
+                v-model="planId"
+                auto-width
+                :options="[
+                    {label: '[套餐]', value: '0'},
+                    ...plans.map(plan => ({
+                        label: plan.name,
+                        value: plan.id,
+                    }))
+                ]"
+            ></b-select>
+
+            <!-- <select class="ui dropdown auto-width" name="planId" v-model="planId">
+                <option value="0">[套餐]</option>
+                <option v-for="plan in plans" :value="plan.id">{{plan.name}}</option>
+            </select> -->
+        </div>
+        <div class="ui field">
+            <b-select
+                name="periodUnit"
+                v-model="periodUnit"
+                auto-width
+                :options="[
+                {label: '[付费周期]', value: ''},
+                {label: '按月', value: 'monthly'},
+                {label: '按年', value: 'yearly'},
+                ]"
+            ></b-select>
+
+            <!-- <select class="ui dropdown auto-width" name="periodUnit" v-model="periodUnit">
+                <option value="">[付费周期]</option>
+                <option value="monthly">按月</option>
+                <option value="yearly">按年</option>
+            </select> -->
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">检索</button>
+            &nbsp;
+            <a href="/ns/userPlans" v-if="planId > 0 || periodUnit.length > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="userPlans.length == 0" large>暂时还没有用户套餐。</b-empty>
+
+<table class="ui table selectable celled" v-if="userPlans.length > 0">
+    <thead>
+        <tr>
+            <th>用户</th>
+            <th class="four wide">套餐</th>
+            <th class="two wide">有效期</th>
+            <th class="width6">付费周期</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="userPlan in userPlans">
+        <td>
+            <span v-if="userPlan.user != null">
+                <user-link :v-user="userPlan.user"></user-link>
+            </span>
+            <span v-else class="disabled">已删除</span>
+        </td>
+        <td>
+            <span v-if="userPlan.plan != null">{{userPlan.plan.name}}</span>
+            <span v-else class="disabled">已删除</span>
+        </td>
+        <td>{{userPlan.dayTo}}</td>
+        <td>
+            <span v-if="userPlan.periodUnit == 'monthly'">按月</span>
+            <span v-if="userPlan.periodUnit == 'yearly'">按年</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateUserPlan(userPlan.id)">修改</a> &nbsp;
+            <a href="" @click.prevent="deleteUserPlan(userPlan.id)">删除</a>
+        </td>
+    </tr>
+</table>
+
+
+<page-box></page-box>

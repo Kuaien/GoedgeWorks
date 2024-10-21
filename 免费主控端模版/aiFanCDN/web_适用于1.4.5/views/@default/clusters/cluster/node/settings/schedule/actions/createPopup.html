@@ -1,0 +1,35 @@
+{$layout "layout_popup"}
+
+<!-- <h3>添加调度动作</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="nodeId" :value="nodeId"/>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">执行条件 *</td>
+            <td>
+                <node-schedule-conds-box :v-params="params" :v-operators="operators" @changeparam="changeParam"></node-schedule-conds-box>
+            </td>
+        </tr>
+        <tr>
+            <td>执行动作 *</td>
+            <td>
+                <node-schedule-action-box :v-actions="actions"></node-schedule-action-box>
+            </td>
+        </tr>
+        <tr v-show="param != null && param.hasDuration">
+            <td>持续时间 *</td>
+            <td>
+                <div class="ui input right labeled">
+                    <input type="text" maxlength="3" style="width: 4em" value="60" name="durationMinutes"/>
+                    <span class="ui label">分钟</span>
+                </div>
+                <p class="comment">表示当前动作执行后多久自动还原为原始状态。</p>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

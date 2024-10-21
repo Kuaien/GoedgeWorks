@@ -1,0 +1,35 @@
+{$layout}
+{$template "../menu"}
+
+<second-menu>
+    <menu-item @click.prevent="createPeriod">[添加有效期选项]</menu-item>
+</second-menu>
+
+<div v-if="!enableTrafficPackages">
+    <div class="margin"></div>
+    <div class="ui message warning">尚未在 <a href="/finance/fee">[计费设置]</a> 里开启"启用流量包"选项，用户将无法使用设置的流量包。</div>
+</div>
+
+<b-empty v-if="periods.length == 0">暂时还没有有效期选项设置。</b-empty>
+
+<table class="ui table celled selectable" v-if="periods.length > 0">
+    <thead>
+        <tr>
+            <th>有效期选项</th>
+            <th class="width6">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="period in periods">
+        <td>
+            <a href="" @click.prevent="updatePeriod(period.id)">{{period.count}}{{period.unitName}} <i class="icon expand small"></i></a>
+        </td>
+        <td>
+            <label-on :v-is-on="period.isOn"></label-on>
+        </td>
+        <td>
+            <a href="" @click.prevent="updatePeriod(period.id)">修改</a> &nbsp;
+            <a href="" @click.prevent="deletePeriod(period.id)">删除</a>
+        </td>
+    </tr>
+</table>

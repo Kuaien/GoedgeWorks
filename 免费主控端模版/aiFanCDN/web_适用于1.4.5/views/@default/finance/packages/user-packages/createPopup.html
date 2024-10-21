@@ -1,0 +1,72 @@
+{$layout "layout_popup"}
+
+<!-- <h3>添加用户流量包</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <input type="hidden" name="packageId" :value="packageId"/>
+    <input type="hidden" name="regionId" :value="regionId"/>
+    <input type="hidden" name="periodId" :value="periodId"/>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td>选择用户 *</td>
+            <td>
+                <user-selector></user-selector>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">选择流量包规格 *</td>
+            <td>
+                <span v-if="packages.length > 0"><a v-for="p in packages" class="ui label basic" :class="{blue: p.id == packageId}" @click.prevent="selectPackage(p.id)">{{p.size}}{{p.unit.toUpperCase().replace(/(.)B/, "$1iB")}}</a></span>
+                <span v-else="" class="red">没有流量包可供选择</span>
+            </td>
+        </tr>
+        <tr>
+            <td>选择区域 *</td>
+            <td>
+                <span v-if="regions.length > 0"><a v-for="region in regions" class="ui label basic" :class="{blue: region.id == regionId && hasRegionPrice(region.id), disabled: !hasRegionPrice(region.id)}" @click.prevent="selectRegion(region.id)">{{region.name}}</a></span>
+                <span v-else="" class="red">没有区域可供选择</span>
+            </td>
+        </tr>
+        <tr>
+            <td>选择有效期 *</td>
+            <td>
+                <span v-if="periods.length > 0"><a v-for="period in periods" class="ui label basic" :class="{blue: period.id == periodId && hasPeriodPrice(period.id), disabled: !hasPeriodPrice(period.id)}" @click.prevent="selectPeriod(period.id)">{{period.count}}{{period.unitName}}</a></span>
+                <span v-else="" class="red">没有有效期可供选择</span>
+            </td>
+        </tr>
+        <tr>
+            <td>流量包数量 *</td>
+            <td>
+                <div class="ui input">
+                    <b-select
+                        name="count"
+                        v-model="count"
+                        @change="changeCount"
+                        :options="[
+                            ...''.padStart(' ', 20).split('').map(i => ({
+                                label: i,
+                                value: i,
+                            }))
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown" name="count" v-model="count" @change="changeCount">
+                        <option v-for="i in 20" :value="i">{{i}}</option>
+                    </select> -->
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>价格</td>
+            <td>
+                <span v-if="amount == 0" class="disabled">没有找到对应价格</span>
+                <span v-if="amount > 0">{{amount}}元</span>
+                <p class="comment">管理员操作时，此价格仅供展示，并不会从用户账户中扣款。</p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn :class="{disabled: amount <= 0}"></submit-btn>
+</form>

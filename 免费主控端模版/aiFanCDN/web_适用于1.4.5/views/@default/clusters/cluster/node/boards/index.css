@@ -1,0 +1,16 @@
+.message.loading {
+  padding: 1.5em;
+}
+.chart-box {
+  height: 14em;
+}
+h4 span {
+  font-size: 0.8em;
+  color: grey;
+}
+.tabular.menu a span {
+  font-size: 0.8em;
+  font-weight: normal;
+  color: grey;
+}
+/*# sourceMappingURL=index.css.map */

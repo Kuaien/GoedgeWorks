@@ -1,0 +1,36 @@
+{$layout "layout_popup"}
+
+<!-- <h3>添加带宽区间</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="100" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td>最低带宽 *</td>
+            <td>
+                <div class="ui input right labeled">
+                    <input type="text" name="minMB" maxlength="12" style="width:10em" v-model="minMB" autocomplete="off"/>
+                    <span class="ui label">Mbps</span>
+                </div>
+                <p class="comment">使用比特作为最小单位。<span v-if="minSize.length > 0">相当于：{{minSize}}。</span></p>
+            </td>
+        </tr>
+        <tr>
+            <td>最高带宽 *</td>
+            <td>
+                <div class="ui input right labeled">
+                    <input type="text" name="maxMB" maxlength="12" style="width:10em" v-model="maxMB" autocomplete="off"/>
+                    <span class="ui label">Mbps</span>
+                </div>
+                <p class="comment">使用比特作为最小单位，0表示没有限制。<span v-if="maxSize.length > 0">相当于：{{maxSize}}。</span></p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

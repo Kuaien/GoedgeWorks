@@ -1,0 +1,83 @@
+{$layout}
+{$template "menu"}
+
+<second-menu>
+    <menu-item :class="{active: selectedType == 'isp'}" @click.prevent="selectRouteType('isp')">运营商</menu-item>
+    <menu-item :class="{active: selectedType == 'chinaProvince'}" @click.prevent="selectRouteType('chinaProvince')">中国省市</menu-item>
+    <menu-item :class="{active: selectedType == 'worldRegion'}" @click.prevent="selectRouteType('worldRegion')">全球国家地区</menu-item>
+    <menu-item :class="{active: selectedType == 'agent'}" @click.prevent="selectRouteType('agent')">搜索引擎</menu-item>
+</second-menu>
+
+<!-- 运营商 -->
+<div v-if="selectedType == 'isp'">
+    <table class="ui table selectable celled" style="width: 30em">
+        <thead>
+            <tr>
+                <th>运营商</th>
+                <th>代号</th>
+            </tr>
+        </thead>
+        <tr v-for="route in ispRoutes">
+            <td>{{route.name}}</td>
+            <td>{{route.code}}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- 中国省市 -->
+<div v-if="selectedType == 'chinaProvince'">
+    <table class="ui table selectable celled" style="width: 30em">
+        <thead>
+            <tr>
+                <th>省市</th>
+                <th>代号</th>
+            </tr>
+        </thead>
+        <tr v-for="route in chinaProvinceRoutes">
+            <td>{{route.name}}</td>
+            <td>{{route.code}}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- 全球国家地区 -->
+<div v-if="selectedType == 'worldRegion'">
+    <table class="ui table selectable celled" style="width: 30em">
+        <thead>
+            <tr>
+                <th>国家/地区</th>
+                <th>代号</th>
+            </tr>
+        </thead>
+        <tr v-for="route in worldRegionRoutes">
+            <td>{{route.name}}</td>
+            <td>{{route.code}}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- 搜索引擎 -->
+<div v-if="selectedType == 'agent'">
+    <div>
+        <a href="/ns/routes/exportAgentIPs">[导出IP]</a> &nbsp; &nbsp;
+        <a href="" @click.prevent="importAgentIPs">[导入IP]</a>
+    </div>
+    <table class="ui table selectable celled" style="width: 30em">
+        <thead>
+        <tr>
+            <th>搜索引擎</th>
+            <th>代号</th>
+            <th>IP数量</th>
+        </tr>
+        </thead>
+        <tr v-for="route in agentRoutes">
+            <td>{{route.name}}</td>
+            <td>{{route.code}}</td>
+            <td>
+                <span v-if="route.countIPs > 0">{{route.countIPs}}</span>
+                <span v-else class="disabled">-</span>
+            </td>
+        </tr>
+    </table>
+    <p class="comment" v-if="hasEmptyAgents">在集群开启"监测搜索引擎"后，上表中没有IP的搜索引擎在访问智能DNS时会自动被记录。</p>
+</div>

@@ -1,0 +1,69 @@
+{$layout}
+{$template "../menu"}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        {$template "menu"}
+
+        <div v-show="!http3Policy.isOn">
+            <div class="margin"></div>
+            <p class="ui message">当前集群尚未启用HTTP/3功能，不需要做任何测试。</p>
+        </div>
+
+        <div v-show="http3Policy.isOn">
+            <div class="margin"></div>
+            <form class="ui form" data-tea-action="$" data-tea-before="before" data-tea-done="done" data-tea-success="success" data-tea-timeout="1800">
+            <input type="hidden" name="clusterId" :value="clusterId"/>
+            <input type="hidden" name="port" :value="http3Policy.port"/>
+            <table class="ui table definition selectable">
+                <tr>
+                    <td class="title">测试网址 *</td>
+                    <td>
+                            <input type="text" name="url" ref="focus" placeholder="https://..."/>
+                        <p class="comment">即待测试的网址，<strong>需要确保对应的网站已经启用了HTTP/3功能</strong>；系统会自动访问每个节点上的网址内容，以便确定HTTP/3是否在此节点上工作正常。</p>
+                    </td>
+                </tr>
+            </table>
+
+            <submit-btn v-if="!isRequesting">开始测试</submit-btn>
+            <button class="ui button disabled" type="button" v-if="isRequesting">测试中，请耐心等待...</button>
+            </form>
+
+            <!-- 测试结果 -->
+            <div v-if="isTested">
+                <b-settings-header
+                    style="font-size: 0.8em"
+                    @action="resetResults"
+                    action-text="清除"
+                >
+                    测试结果
+                </b-settings-header>
+                <!-- <h4>测试结果 &nbsp; <a href="" @click.prevent="resetResults" style="font-size: 0.8em">[清除]</a> </h4> -->
+                <b-empty v-if="results.length == 0">暂时还没有任何可以测试的节点。</b-empty>
+                <div v-if="results.length > 0">
+                    <table class="ui table celled selectable" style="width: 40em">
+                        <thead>
+                            <tr>
+                                <th style="width: 18em">节点</th>
+                                <th style="width: 18em">IP</th>
+                                <th>测试结果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="result in results">
+                                <td>{{result.nodeName}} <link-icon :href="'/clusters/cluster/node?clusterId=' + clusterId + '&nodeId=' + result.nodeId"></link-icon></td>
+                                <td>{{result.ip}}</td>
+                                <td>
+                                    <span class="green" v-if="result.isOk">成功</span>
+                                    <span v-else class="red">失败 <tip-icon :content="result.error"></tip-icon></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

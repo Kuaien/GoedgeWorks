@@ -1,0 +1,29 @@
+{$layout "layout_popup"}
+{$template "/code_editor"}
+
+<!-- <h3>创建脚本</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">脚本文件名 *</td>
+            <td>
+                <input type="text" name="filename" maxlength="50" ref="focus" placeholder="xxx.js" spellcheck="false"/>
+            </td>
+        </tr>
+        <tr>
+            <td>脚本说明 *</td>
+            <td>
+                <input type="text" name="name" maxlength="50" placeholder="脚本用途"/>
+            </td>
+        </tr>
+        <tr>
+            <td>脚本代码</td>
+            <td>
+                <source-code-box type="application/javascript" :read-only="false" name="code" height="200"></source-code-box>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

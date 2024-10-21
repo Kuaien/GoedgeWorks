@@ -1,0 +1,66 @@
+{$layout}
+{$template "menu"}
+
+<div v-if="!canUsePlans">
+    <div class="ui message warning">尚未在 <a href="/finance/fee">[计费设置]</a> 里开启"使用套餐计费"选项，用户将无法使用套餐。</div>
+</div>
+
+<b-empty v-if="plans.length == 0">暂时还没有套餐。</b-empty>
+
+<table class="ui table selectable celled" v-if="plans.length > 0" id="sortable-table">
+    <thead>
+        <tr>
+            <th style="width:3em"></th>
+            <th>名称</th>
+            <th>集群</th>
+            <th>网站数</th>
+            <th class="four wide">价格设置</th>
+            <th class="width6">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tbody v-for="plan in plans" :v-id="plan.id">
+        <tr>
+            <td style="text-align: center;"><i class="icon bars handle grey"></i> </td>
+            <td>
+                <a :href="'/plans/plan?planId=' + plan.id">{{plan.name}}</a>
+                <div v-if="plan.description.length > 0"><span class="small grey">{{plan.description}}</span></div>
+                <div>
+                    <grey-label v-if="plan.priceType == 'period'">按时间周期</grey-label>
+                    <grey-label v-if="plan.priceType == 'traffic'">按流量</grey-label>
+                    <grey-label v-if="plan.priceType == 'bandwidth'">按带宽</grey-label>
+                </div>
+            </td>
+            <td>
+                <span v-if="plan.cluster.id > 0">
+                    <link-icon :href="'/clusters/cluster?clusterId=' + plan.cluster.id">{{plan.cluster.name}}</link-icon>
+                </span>
+                <span v-else class="red">[已删除]</span>
+            </td>
+            <td>
+                <span v-if="plan.totalServers > 0">{{plan.totalServers}}</span>
+                <span v-else class="disabled">没有限制</span>
+            </td>
+            <td>
+                <!-- 价格设置 -->
+                <plan-price-view :v-plan="plan"></plan-price-view>
+
+                <!-- 流量限制 -->
+                <plan-limit-view :value="plan"></plan-limit-view>
+
+                <!-- 带宽限制 -->
+                <plan-bandwidth-limit-view :value="plan"></plan-bandwidth-limit-view>
+            </td>
+            <td><label-on :v-is-on="plan.isOn"></label-on></td>
+            <td>
+                <a :href="'/plans/plan?planId=' + plan.id">详情</a> &nbsp;
+                <a href="" @click.prevent="deletePlan(plan.id)">删除</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p v-if="plans.length > 0" class="comment">可以拖动左侧的<i class="icon bars"></i>排序。</p>
+<div id="bottom"></div>
+
+<div class="page" v-html="filterPageContent(page)"></div>

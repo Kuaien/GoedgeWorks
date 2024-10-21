@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    {$if eq .faviconFileId 0}
+    <link rel="shortcut icon" href="/images/favicon.png"/>
+    {$else}
+    <link rel="shortcut icon" href="/ui/image/{$ .faviconFileId}"/>
+    {$end}
+    <title>登入{$ htmlEncode .systemName}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
+    {$TEA.VUE}
+    {$TEA.SEMANTIC}
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<script type="text/javascript" src="/js/utils.min.js"></script>
+	<script type="text/javascript" src="/js/sweetalert2/dist/sweetalert2.all.min.js"></script>
+	<script type="text/javascript" src="/js/components.js"></script>
+	<link rel="stylesheet" href="/primeicons/primeicons.min.css" />
+	<link rel="stylesheet" type="text/css" href="/_/@default/ui_override.css" media="all"/>
+	<script type="text/javascript" src="/_/@default/darkMode.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="/css/custom/login.css" />
+</head>
+<body class="login-dialog-body">
+<div>
+	<div class="form-box">
+		<form method="post" class="ui form" data-tea-action="$" data-tea-before="submitBefore" data-tea-done="submitDone" data-tea-success="submitSuccess" autocomplete="off">
+			<csrf-token></csrf-token>
+			<input type="hidden" name="password" v-model="passwordMd5"/>
+			<input type="hidden" name="token" v-model="token"/>
+			<div id="dlg-user-login" class="login-dialog">
+				<div class="ui header">{$ htmlEncode .systemName}管理登入</div>
+				<div class="ui text">请输入您的账号详细资料</div>
+				<div class="ui field">
+					<div class="ui tips">用户名</div>
+					<div class="ui left icon input">
+						<input type="text" name="username" v-model="username" maxlength="200" ref="usernameRef" @input="changeUsername"/>
+					</div>
+				</div>
+				<div class="ui field">
+					<div class="ui tips">密码</div>
+					<div class="ui left icon input">
+						<input type="password" v-model="password" maxlength="200" @input="changePassword()" ref="passwordRef"/>
+					</div>
+				</div>
+				<div class="ui field" v-if="rememberLogin">
+					<checkbox name="remember" value="1" checked="checked"> 保持登入</checkbox>
+				</div>
+				<button class="ui button primary fluid" type="submit" v-if="!isSubmitting">登入</button>
+				<button class="ui button primary fluid disabled" type="submit" v-if="isSubmitting">登入中...</button>
+			</div>
+		</form>
+		<div class="power">Theme Power by <a href="https://github.com/Kuaien/GoedgeWorks" target="_blank">@Kuaien</a></div>
+	</div>
+</div>
+</body>
+</html>

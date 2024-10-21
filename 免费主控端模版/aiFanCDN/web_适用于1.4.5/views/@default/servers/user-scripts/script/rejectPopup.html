@@ -1,0 +1,17 @@
+{$layout "layout_popup"}
+
+<!-- <h3>驳回脚本</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="scriptId" :value="scriptId"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">驳回理由 *</td>
+            <td>
+                <textarea rows="3" ref="focus" maxlength="100" name="reason"></textarea>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

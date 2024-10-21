@@ -1,0 +1,6 @@
+<first-menu>
+    <menu-item href="/finance/orders/methods">支付方式</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item :href="'/finance/orders/methods/method?methodId=' + method.id" code="index">"{{method.name}}"详情</menu-item>
+    <menu-item :href="'/finance/orders/methods/method/update?methodId=' + method.id" code="update">修改</menu-item>
+</first-menu>

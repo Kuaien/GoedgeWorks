@@ -1,0 +1,29 @@
+{$layout}
+
+<first-menu>
+    <menu-item @click.prevent="createCategory">[添加分类]</menu-item>
+</first-menu>
+
+<b-empty v-if="categories.length == 0">暂时还没有分类。</b-empty>
+
+<table class="ui table selectable celled" v-if="categories.length > 0">
+    <thead>
+        <tr>
+            <th>分类名</th>
+            <th class="width10">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="category in categories">
+        <td>
+            <a href="" @click.prevent="updateCategory(category.id)">{{category.name}} <i class="icon expand small"></i></a>
+        </td>
+        <td>
+            <label-on :v-is-on="category.isOn"></label-on>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateCategory(category.id)">修改</a> &nbsp;
+            <a href="" @click.prevent="deleteCategory(category.id)">删除</a>
+        </td>
+    </tr>
+</table>

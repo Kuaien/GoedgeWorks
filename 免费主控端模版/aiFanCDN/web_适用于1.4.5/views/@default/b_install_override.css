@@ -1,0 +1,24 @@
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .install-box {
+    width: 100%!important;
+    position: static;
+    margin-left: 0;
+    box-sizing: border-box;
+    padding-bottom: 5em;
+  }
+  .install-box .ui.steps {
+    overflow-x: auto;
+    flex-direction: row;
+  }
+  .install-box .ui.steps > .ui.step {
+    width: auto!important;
+  }
+  .install-box .step-container {
+    padding: 0 1em;
+  }
+}

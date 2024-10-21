@@ -1,0 +1,33 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success" data-tea-timeout="120" data-tea-before="before" data-tea-done="done">
+    <csrf-token></csrf-token>
+
+    <table class="ui table selectable definition">
+        <tr>
+            <td>IP库名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="50" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">选择IP库文件 *</td>
+            <td>
+                <!-- <input type="file" name="file" accept=".db"/> -->
+                <file-upload name="file" accept=".db" />
+                <p class="comment">只允许上传GoEdge专有格式的数据库文件。</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">选择IP库类型</td>
+            <td>
+                <checkbox name="type" value="ipLibraryArtifact" checked>默认IP库</checkbox>
+                <checkbox name="type" value="riskIpArtifact">风险IP库</checkbox>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn v-show="!isUploading">开始上传</submit-btn>
+    <button class="ui button disabled" type="button" v-if="isUploading">IP库上传中...</button>
+</form>

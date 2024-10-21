@@ -1,0 +1,26 @@
+{$layout "layout_popup"}
+
+<!-- <h3>选择节点初始化脚本</h3> -->
+
+<form class="ui form">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" placeholder="搜索名称" v-model="keyword"/>
+        </div>
+    </div>
+</form>
+
+<div class="ui divider"></div>
+
+<span v-if="scripts.length == 0">目前还没有节点初始化脚本。</span>
+
+<b-settings-header>全部脚本</b-settings-header>
+<!-- <h4>全部脚本</h4> -->
+<div class="grants-box">
+    <div class="grant-box" v-for="script in scripts">
+        <div :class="{blue:scriptId == script.id}" @click.prevent="selectNodeInitScript(script)"><a href="">{{script.name}}</a>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<p class="comment">请单击以使用节点初始化脚本。</p>

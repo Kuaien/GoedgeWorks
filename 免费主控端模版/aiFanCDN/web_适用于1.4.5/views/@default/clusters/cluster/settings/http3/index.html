@@ -1,0 +1,41 @@
+{$layout}
+{$template "../menu"}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        {$template "menu"}
+
+        <form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+            <csrf-token></csrf-token>
+            <input type="hidden" name="clusterId" :value="clusterId"/>
+            <table class="ui table definition selectable">
+                <tr>
+                    <td class="title">启用HTTP/3功能</td>
+                    <td>
+                        <checkbox name="isOn" v-model="http3Policy.isOn"></checkbox>
+                        <p class="comment">选中后，表示当前集群下的网站可以使用HTTP/3功能；单个网站可以在HTTPS设置页面里启用HTTP/3。</p>
+                    </td>
+                </tr>
+                <tbody v-show="http3Policy.isOn">
+                    <tr>
+                        <td>UDP端口</td>
+                        <td>
+                            <input type="text" style="width: 5em" maxlength="4" name="port" v-model="http3Policy.port"/>
+                            <p class="comment">HTTP/3通讯使用的UDP端口，范围在1-1024，请在服务器安全策略或者防火墙中设置此端口为通过。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>支持手机浏览器</td>
+                        <td>
+                            <checkbox name="supportMobileBrowsers" v-model="http3Policy.supportMobileBrowsers"></checkbox>
+                            <p class="comment">在手机浏览器上也尝试开启HTTP/3；当下部分手机浏览器对HTTP/3支持的并不完善，请根据自己的需要决定是否启用。</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <submit-btn></submit-btn>
+        </form>
+    </div>
+</div>

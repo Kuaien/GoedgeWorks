@@ -1,0 +1,97 @@
+{$layout}
+{$template "../menu"}
+{$template "menu"}
+
+{$var "header"}
+<link href="/js/quill/quill.snow.css" rel="stylesheet">
+<script src="/js/quill/quill.min.js"></script>
+{$end}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="body" v-model="body"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td>所属产品 *</td>
+            <td>
+                <b-select
+                    name="productCode"
+                    v-model="productCode"
+                    auto-width
+                    :options="[
+                        {label: '[所属产品]', value: ''},
+                        ...products.map(product => ({
+                            label: product.name,
+                            value: product.code,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="productCode">
+                    <option value="">[所属产品]</option>
+                    <option v-for="product in products" :value="product.code">{{product.name}}</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr>
+            <td class="title">文章分类 *</td>
+            <td>
+                <b-select
+                    name="categoryId"
+                    v-model="categoryId"
+                    auto-width
+                    :options="[
+                        {label: '[选择分类]', value: '0'},
+                        ...categories.map(category => ({
+                            label: category.name,
+                            value: category.id,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="categoryId">
+                    <option value="0">[选择分类]</option>
+                    <option v-for="category in categories" :value="category.id">{{category.name}}</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr>
+            <td class="title">文章标题 *</td>
+            <td>
+                <input type="text" name="subject" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td>文章类型 *</td>
+            <td>
+                <b-select
+                    name="type"
+                    v-model="type"
+                    auto-width
+                    :options="[
+                        {label: '常规', value: 'normal'},
+                        {label: 'URL', value: 'url'},
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="type" v-model="type">
+                    <option value="normal">常规</option>
+                    <option value="url">URL</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr v-show="type == 'url'">
+            <td>URL *</td>
+            <td>
+                <input type="text" name="url" maxlength="200"/>
+            </td>
+        </tr>
+        <tr v-show="type == 'normal'">
+            <td>内容 *</td>
+            <td>
+                <div id="editor"></div>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

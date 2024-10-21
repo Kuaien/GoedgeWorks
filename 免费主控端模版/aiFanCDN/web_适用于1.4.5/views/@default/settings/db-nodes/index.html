@@ -1,0 +1,51 @@
+{$layout}
+
+<first-menu>
+	<a href="" class="item" @click.prevent="createNode()">[添加节点]</a>
+</first-menu>
+
+<b-empty v-if="nodes.length == 0">暂时还没有数据库节点。</b-empty>
+
+<table class="ui table selectable celled" v-if="nodes.length > 0">
+	<thead>
+		<tr>
+			<th>节点名称</th>
+            <th>数据库引擎</th>
+			<th>连接地址</th>
+			<th>数据库名</th>
+            <th>数据库版本</th>
+            <th>用量</th>
+			<th class="center width10">状态</th>
+			<th class="two op">操作</th>
+		</tr>
+	</thead>
+	<tr v-for="node in nodes">
+        <td><a :href="'/settings/db-nodes/node?nodeId=' + node.id">{{node.name}}</a></td>
+        <td>{{node.dbEngine}}</td>
+		<td>{{node.host}}:{{node.port}}</td>
+		<td>{{node.database}}</td>
+        <td>
+            <span v-if="node.status.version.length > 0">v{{node.status.version}}</span>
+            <span class="disabled" v-else>-</span>
+        </td>
+        <td>
+            <span v-if="node.status.isOk">{{node.status.size}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+		<td class="center">
+            <div v-if="node.isOn">
+                <span v-if="node.status.isOk" class="green">连接正常</span>
+                <a href="" title="点击查看具体错误" v-else @click.prevent="showError(node.status.error)"><span class="red" style="border-bottom: 1px #db2828 dashed">连接错误</span></a>
+            </div>
+            <span v-else>
+                <label-on :v-is-on="node.isOn"></label-on>
+            </span>
+        </td>
+		<td>
+            <a :href="'/settings/db-nodes/node?nodeId=' + node.id">详情</a>
+			<a href="" @click.prevent="deleteNode(node.id)">删除</a>
+		</td>
+	</tr>
+</table>
+
+<div class="page" v-html="filterPageContent(page)"></div>

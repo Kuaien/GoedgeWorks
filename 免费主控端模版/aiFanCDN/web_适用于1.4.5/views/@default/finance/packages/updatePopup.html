@@ -1,0 +1,26 @@
+{$layout "layout_popup"}
+
+<!-- <h3>修改流量包</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <input type="hidden" name="packageId" :value="package.id"/>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">流量包尺寸</td>
+            <td>
+                {{package.size}}{{package.unit}}
+            </td>
+        </tr>
+        <tr>
+            <td>启用</td>
+            <td>
+                <checkbox name="isOn" v-model="package.isOn"></checkbox>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

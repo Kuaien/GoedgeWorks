@@ -1,0 +1,21 @@
+table thead th span {
+  font-weight: normal;
+  font-size: 0.8em;
+}
+table td.health-check-status-box {
+  text-align: center!important;
+}
+table td.health-check-status-box a {
+  display: none;
+}
+table td.health-check-status-box span.status {
+  display: none;
+  font-size: 0.8em;
+}
+table td.health-check-status-box:hover a {
+  display: inline;
+}
+table td.health-check-status-box:hover span.status {
+  display: inline;
+}
+/*# sourceMappingURL=index.css.map */

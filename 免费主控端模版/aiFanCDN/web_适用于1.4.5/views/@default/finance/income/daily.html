@@ -1,0 +1,27 @@
+{$layout}
+
+<first-menu>
+    <menu-item href="/finance/income/monthly">按月统计</menu-item>
+    <menu-item :href="'/finance/income/daily?month=' + month" class="active">{{month}}</menu-item>
+</first-menu>
+
+<table class="ui table selectable celled" v-if="stats.length > 0">
+    <thead>
+        <tr>
+            <th>日期</th>
+            <th>收入</th>
+            <th>支出</th>
+        </tr>
+    </thead>
+    <tr v-for="stat in stats">
+        <td>{{stat.day}}</td>
+        <td>
+            <span v-if="stat.income > 0">{{stat.income}}元</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td>
+            <span v-if="stat.expense > 0">-{{stat.expense}}元</span>
+            <span v-else class="disabled">-</span>
+        </td>
+    </tr>
+</table>

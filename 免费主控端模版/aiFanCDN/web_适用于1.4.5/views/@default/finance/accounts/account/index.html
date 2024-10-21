@@ -1,0 +1,54 @@
+{$layout}
+{$template "menu"}
+
+<table class="ui table selectable definition">
+    <tr>
+        <td class="title">余额</td>
+        <td>{{account.total}}元</td>
+    </tr>
+    <tr>
+        <td>冻结</td>
+        <td>{{account.totalFrozen}}元 &nbsp; <tip-icon content="冻结后不能使用的余额"></tip-icon></td>
+    </tr>
+</table>
+
+<b-settings-header>最近收支明细</b-settings-header>
+<!-- <h3>最近收支明细</h3> -->
+<b-empty v-if="logs.length == 0">暂时还没有操作日志。</b-empty>
+
+<table class="ui table selectable celled" v-if="logs.length > 0">
+    <thead>
+        <tr>
+            <th class="two wide">操作类型</th>
+            <th class="two wide">操作金额</th>
+            <th class="two wide">冻结金额</th>
+            <th class="two wide">剩余余额</th>
+            <th class="two wide">剩余冻结余额</th>
+            <th class="four wide">时间</th>
+        </tr>
+    </thead>
+    <tbody v-for="log in logs">
+        <tr>
+            <td>
+                <span v-if="log.event != null">{{log.event.name}}</span>
+                <span v-else class="disabled">其他</span>
+            </td>
+            <td>
+                <span v-if="log.delta != 0" :class="{red: log.delta < 0, green: log.delta > 0}">{{log.delta}}元</span>
+                <span v-else class="disabled">0</span>
+            </td>
+            <td>
+                <span v-if="log.deltaFrozen != 0">{{log.deltaFrozen}}元</span>
+                <span v-else class="disabled">0</span>
+            </td>
+            <td>{{log.total}}元</td>
+            <td><span :class="{disabled: log.totalFrozen == 0}">{{log.totalFrozen}}元</span></td>
+            <td>{{log.createdTime}}</td>
+        </tr>
+        <tr v-if="log.description.length > 0">
+            <td colspan="10">
+                <span class="grey">描述：<keyword :v-word="keyword">{{log.description}}</keyword></span>
+            </td>
+        </tr>
+    </tbody>
+</table>

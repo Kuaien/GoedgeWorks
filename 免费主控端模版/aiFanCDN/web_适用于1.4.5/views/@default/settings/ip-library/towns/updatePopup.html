@@ -1,0 +1,35 @@
+{$layout "layout_popup"}
+
+<!-- <h3>定制区/县信息</h3> -->
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="townId" :value="town.id"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">省份/州名称</td>
+            <td>{{town.name}}</td>
+        </tr>
+        <tr>
+            <td>内置别名</td>
+            <td>
+                <div v-if="town.codes.length > 0">
+                    <span v-for="code in town.codes" class="ui label basic">{{code}}</span>
+                </div>
+                <span v-else class="disabled">无</span>
+            </td>
+        </tr>
+        <tr>
+            <td>自定义名称</td>
+            <td>
+                <input type="text" name="customName" maxlength="100" v-model="town.customName"/>
+            </td>
+        </tr>
+        <tr>
+            <td>自定义别名</td>
+            <td>
+                <values-box name="customCodes" :v-values="town.customCodes"></values-box>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

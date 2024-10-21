@@ -1,0 +1,42 @@
+{$layout}
+
+<second-menu>
+    <menu-item @click.prevent="createSystem">[添加新操作系统]</menu-item>
+</second-menu>
+
+<form class="ui form" method="get" action="/settings/client-systems">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" name="keyword" v-model="keyword" placeholder="关键词"/>
+        </div>
+        <div class="ui field">
+            <button type="submit" class="ui button">搜索</button>&nbsp;
+            <a href="/settings/client-systems" v-if="keyword.length > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="systems.length == 0">暂时还没有操作系统信息。</b-empty>
+
+<table class="ui table selectable celled" v-if="systems.length > 0">
+    <thead>
+        <tr>
+            <th class="three wide">操作系统名称</th>
+            <th>代号</th>
+            <th class="two wide">数据ID</th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="system in systems">
+        <td>{{system.name}}</td>
+        <td>
+            <span class="ui label basic" v-for="code in system.codes"><keyword :v-word="keyword">{{code}}</keyword></span>
+        </td>
+        <td>{{system.dataId}}</td>
+        <td>
+            <a href="" @click.prevent="updateSystem(system.dataId)">修改</a>
+        </td>
+    </tr>
+</table>
+
+<page-box></page-box>

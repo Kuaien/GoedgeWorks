@@ -1,0 +1,40 @@
+{$layout}
+{$template "menu"}
+
+<div class="ui message warning" v-if="config.trafficPrice != null && !config.trafficPrice.supportRegions">
+    尚未开启按区域流量计费。 &nbsp; <a href="/finance/fee">[修改]</a>
+</div>
+
+<b-empty v-if="regions.length == 0">暂时还没有区域。</b-empty>
+
+<table class="ui table selectable small definition celled" v-if="regions.length > 0">
+    <thead class="full-width">
+        <tr>
+            <th class="three wide">区域\流量区间</th>
+            <th v-for="item in items" class="center">
+                {{item.name}}
+                <br/>
+                <span>{{item.minSize}}-{{item.maxSize}}</span>
+                <br/>
+                &nbsp; <a href="" title="修改" @click.prevent="updateItem(item.id)"><i class="icon pencil small"></i></a> &nbsp;
+                <a href="" title="删除" @click.prevent="deleteItem(item.id)"><i class="pi pi-times"></i></a>
+            </th>
+            <th class="width10 center">
+                <a href="" @click.prevent="createItem" style="visibility: visible">[+添加流量区间]</a>
+            </th>
+        </tr>
+    </thead>
+    <tr v-for="region in regions">
+        <td class="">{{region.name}}</td>
+        <td v-for="item in items" class="center">
+            <div>
+                <span v-if="region.prices[item.id.toString()] != null">¥{{region.prices[item.id.toString()]}}元/GiB &nbsp;</span>
+                <span v-else>&nbsp;</span>
+            </div>
+            <div>
+                <a href="" title="修改单位价格" @click.prevent="updatePrice(region.id, item.id)">[设置]</a>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+</table>

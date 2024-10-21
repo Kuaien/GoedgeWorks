@@ -1,0 +1,46 @@
+{$layout}
+
+<first-menu>
+    <menu-item @click.prevent="createScript">
+        <i class="pi pi-pen-to-square"></i>
+        创建脚本
+    </menu-item>
+    <span class="item"><tip-icon content="在这里添加的脚本会在脚本上下文启动的时候直接运行，定义的函数和类可以在其他脚本中直接引用。"></tip-icon></span>
+</first-menu>
+
+<p class="ui message" v-if="hasUpdates">
+    <a href="" @click.prevent="publishScripts">脚本库已被修改，点此发布到边缘节点。</a>
+</p>
+
+<b-empty v-if="scripts.length == 0">暂时还没有脚本。</b-empty>
+<div v-if="scripts.length > 0">
+    <div class="margin"></div>
+    <table class="ui table selectable">
+        <thead>
+            <tr>
+                <th>脚本文件名</th>
+                <th>脚本说明</th>
+                <th>修改时间</th>
+                <th class="two wide">状态</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="script in scripts">
+            <td>
+                <a :href="'/servers/scripts/script?scriptId=' + script.id">{{script.filename}}</a>
+                <span v-if="script.isChanged" title="已修改">*</span>
+            </td>
+            <td>{{script.name}}</td>
+            <td>{{script.updatedTime}}</td>
+            <td>
+                <label-on :v-is-on="script.isOn"></label-on>
+            </td>
+            <td>
+                <a :href="'/servers/scripts/script?scriptId=' + script.id">详情</a> &nbsp;
+                <a href="" @click.prevent="deleteScript(script.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="page" v-html="filterPageContent(page)"></div>

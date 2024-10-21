@@ -1,0 +1,23 @@
+{$layout "layout_popup"}
+{$template "/code_editor"}
+
+<!-- <h3>修改脚本</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td>脚本名 *</td>
+            <td>
+                <input type="text" name="name" maxlength="50" placeholder="脚本名"/>
+            </td>
+        </tr>
+        <tr>
+            <td>脚本代码</td>
+            <td>
+                <source-code-box type="application/javascript" :read-only="false" name="code" height="200"></source-code-box>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

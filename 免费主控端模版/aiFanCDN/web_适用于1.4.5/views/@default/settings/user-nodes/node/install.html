@@ -1,0 +1,32 @@
+{$layout}
+{$template "menu"}
+{$template "/code_editor"}
+
+<b-settings-header>安装步骤</b-settings-header>
+<!-- <h3>安装步骤</h3> -->
+<ol class="ui list">
+	<li>按照下面的配置信息替换<code-label>configs/api_user.yaml</code-label>内容；如果文件不存在，请先创建</li>
+	<li>使用<code-label>bin/edge-user start</code-label>启动节点</li>
+	<li>可以在<code-label>logs/run.log</code-label>中查看启动是否有异常</li>
+    <li>配置修改后，使用<code-label>bin/edge-user restart</code-label>重启节点</li>
+</ol>
+
+<div class="ui divider"></div>
+<b-settings-header>配置信息</b-settings-header>
+<!-- <h3>配置信息</h3> -->
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">配置文件</td>
+        <td>
+            configs/api_user.yaml &nbsp; <download-link :v-element="'api-code'" :v-file="'api_user.yaml'">[下载]</download-link>
+        </td>
+    </tr>
+	<tr>
+		<td class="title">配置内容</td>
+		<td>
+			<source-code-box id="api-code" type="text/yaml">rpc.endpoints: [ {{apiEndpoints}} ]
+nodeId: "{{node.uniqueId}}"
+secret: "{{node.secret}}"</source-code-box>
+		</td>
+	</tr>
+</table>

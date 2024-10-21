@@ -1,0 +1,75 @@
+{$layout "layout_popup"}
+
+<!-- <h3>添加高防实例</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <input type="hidden" name="packageId" :value="selectedPackageId"/>
+    <input type="hidden" name="periodId" :value="selectedPeriodId"/>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td>选择用户 *</td>
+            <td>
+                <user-selector></user-selector>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">选择线路 *</td>
+            <td>
+                <a v-for="network in allNetworks" class="ui label basic" :class="{blue: network.id == selectedNetworkId}" @click.prevent="selectNetwork(network.id)">{{network.name}}</a>
+                <p class="comment" v-for="network in allNetworks" v-if="network.id == selectedNetworkId && network.description.length > 0">{{network.name}}：{{network.description}}</p>
+            </td>
+        </tr>
+        <tr>
+            <td>选择防护带宽 *</td>
+            <td>
+                <a v-for="protectionBandwidth in allProtectionBandwidthSizes" v-if="hasProtectionBandwidth(protectionBandwidth)" class="ui label basic" :class="{blue: protectionBandwidth == selectedProtectionBandwidth}" @click.prevent="selectProtectionBandwidth(protectionBandwidth)">{{protectionBandwidth}}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>选择业务带宽 *</td>
+            <td>
+                <a v-for="serverBandwidth in allServerBandwidthSizes" v-if="hasServerBandwidth(serverBandwidth)" class="ui label basic" :class="{blue: serverBandwidth == selectedServerBandwidth}" @click.prevent="selectServerBandwidth(serverBandwidth)">{{serverBandwidth}}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>选择有效期 *</td>
+            <td>
+                <a v-for="period in allPeriods" class="ui label basic" v-if="hasPeriod(period.id)" :class="{blue: period.id == selectedPeriodId}" @click.prevent="selectPeriod(period.id)">{{period.count}}{{period.unitName}}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>选择实例数量 *</td>
+            <td>
+                <div class="ui input">
+                    <b-select
+                        name="count"
+                        v-model="count"
+                        @change="changeCount(this.count)"
+                        :options="[
+                            ...' '.repeat(max).split('').map((v, index) => ({
+                                label: index + 1,
+                                value: index + 1,
+                            })),
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown" name="count" v-model="count" @change="changeCount(this.count)">
+                        <option v-for="i in max" :value="i">{{i}}</option>
+                    </select> -->
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>价格</td>
+            <td>
+                <span v-if="amount == 0" class="disabled">没有找到对应价格</span>
+                <span v-if="amount > 0">{{amount}}元</span>
+                <p class="comment">管理员操作时，此价格仅供展示，并不会从用户账户中扣款。</p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn :class="{disabled: amount <= 0}"></submit-btn>
+</form>

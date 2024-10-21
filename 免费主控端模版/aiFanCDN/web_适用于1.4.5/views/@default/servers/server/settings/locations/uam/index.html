@@ -1,0 +1,21 @@
+{$layout}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        {$template "../location_menu"}
+        {$template "../left_menu"}
+
+        <div class="right-box tiny">
+            <form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+                <input type="hidden" name="webId" :value="webId"/>
+                <csrf-token></csrf-token>
+
+                <uam-config-box :v-uam-config="uamConfig" :v-is-location="true"></uam-config-box>
+
+                <submit-btn></submit-btn>
+            </form>
+        </div>
+    </div>
+</div>

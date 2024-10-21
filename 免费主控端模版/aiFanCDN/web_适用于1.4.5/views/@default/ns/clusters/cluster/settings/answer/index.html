@@ -1,0 +1,42 @@
+{$layout}
+{$template "../menu"}
+
+<div class="left-right-box-container">
+	{$template "/left_menu"}
+
+	<div class="right-box">
+		<form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+			<input type="hidden" name="clusterId" :value="clusterId"/>
+			<table class="ui table selectable definition">
+				<tr>
+					<td class="title">应答模式 *</td>
+					<td>
+						<b-select
+							name="mode"
+							v-model="config.mode"
+							auto-width
+							:options="[
+								...modes.map(mode => ({
+									label: mode.name,
+									value: mode.code,
+								}))
+							]"
+						></b-select>
+
+						<!-- <select name="mode" class="ui dropdown auto-width" v-model="config.mode">
+							<option v-for="mode in modes" :value="mode.code">{{mode.name}}</option>
+						</select> -->
+						<p class="comment" v-for="mode in modes" v-if="mode.code == config.mode">{{mode.description}}</p>
+					</td>
+				</tr>
+					<tr v-show="config.mode == 'random'">
+						<td>最多结果数量</td>
+						<td>
+							<input type="text" name="maxSize" v-model="config.maxSize"/>
+						</td>
+					</tr>
+			</table>
+			<submit-btn></submit-btn>
+		</form>
+	</div>
+</div>

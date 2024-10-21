@@ -1,0 +1,28 @@
+{$layout "layout_popup"}
+
+<!-- <h3 v-show="type == 'allow'">选择允许的省份</h3>
+<h3 v-show="type == 'deny'">选择封禁的省份</h3> -->
+
+<form class="ui form">
+    <table class="ui table">
+        <tr>
+            <td>
+                <first-menu>
+                    <div class="item right">
+                        <checkbox v-model="isCheckingAll" @click.prevent="checkAll">全选</checkbox>
+                    </div>
+                </first-menu>
+
+                <div class="province-list" style="margin-top:0.5em">
+                    <div class="item" v-for="province in provinces">
+                        <checkbox v-model="province.isChecked" @click.prevent="selectProvince(province)">
+                            {{province.name}}
+                        </checkbox>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </td>
+        </tr>
+    </table>
+    <button class="ui button primary" type="button" @click.prevent="submit">确定</button>
+</form>

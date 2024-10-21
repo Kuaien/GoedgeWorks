@@ -1,0 +1,97 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+
+<div v-if="countClusters == 0">
+    <b-empty>
+        暂时还没有集群，请先 <a href="/ns/clusters/create">创建集群</a>。
+    </b-empty>
+</div>
+
+<div v-if="countClusters > 0">
+    <form class="ui form" method="get" action="/ns/domains" v-show="!hasSelectedDomains">
+        <div class="ui fields inline">
+            <div class="ui field">
+                <ns-cluster-selector :v-cluster-id="clusterId"></ns-cluster-selector>
+            </div>
+            <div class="ui field">
+                <ns-user-selector :v-user-id="userId" @change="changeUserId"></ns-user-selector>
+            </div>
+            <div class="ui field" v-if="hasGroups">
+                <ns-domain-group-selector :v-domain-group-id="groupId" ref="groupSelector"></ns-domain-group-selector>
+            </div>
+            <div class="ui field">
+                <input type="text" name="keyword" v-model="keyword" placeholder="域名..."/>
+            </div>
+            <div class="ui field">
+                <button class="ui button" type="submit">搜索</button>
+                &nbsp;
+                <a :href="Tea.url('.')" v-if="clusterId > 0 || userId > 0 || groupId > 0 || keyword.length > 0">[清除条件]</a>
+            </div>
+        </div>
+    </form>
+
+    <form class="ui form" v-show="hasSelectedDomains">
+        <div class="ui fields inline">
+            <div class="ui field">
+                <button class="ui button basic" type="button" @click.prevent="deleteDomains">批量删除选中域名</button>
+            </div>
+            <div class="ui field">
+                <button class="ui button basic" type="button" @click.prevent="cancelDomains">取消</button>
+            </div>
+        </div>
+    </form>
+
+    <div v-if="domains.length == 0">
+        <b-empty>暂时还没有域名。</b-empty>
+    </div>
+
+    <!-- 域名列表 -->
+    <table class="ui table selectable celled" v-if="domains.length > 0">
+        <thead>
+            <tr>
+                <th style="width: 1em">
+                    <checkbox v-model="selectedAll"></checkbox>
+                </th>
+                <th>域名</th>
+                <th class="four wide">集群</th>
+                <th class="four wide">用户</th>
+                <th class="width5">状态</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="domain in domains">
+            <td>
+                <checkbox ref="domainCheckbox" :v-value="domain.id" :checked="selectedAll ? 'checked' : ''"
+                          @input="changeSelectedDomains" :status="domain.status"></checkbox>
+            </td>
+            <td>
+                <a :href="'/ns/domains/records?domainId=' + domain.id"><keyword :v-word="keyword">{{domain.name}}</keyword></a>
+                <div v-if="domain.groups.length > 0">
+                    <a v-for="group in domain.groups" :href="'/ns/domains?userId=' + group.userId + '&groupId=' + group.id"><grey-label :key="group.id">{{group.name}}</grey-label></a>
+                </div>
+            </td>
+            <td>
+                {{domain.cluster.name}}<link-icon :href="'/ns/clusters/cluster?clusterId=' + domain.cluster.id"></link-icon>
+            </td>
+            <td>
+                <span v-if="domain.user != null">
+                    {{domain.user.fullname}} ({{domain.user.username}})
+                </span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td>
+                <a :href="'/ns/domains/domain?domainId=' + domain.id">
+                    <span v-if="!domain.isOn" class="red">已停用</span>
+                    <span v-if="domain.isOn" :class="{green:domain.status == 'verified', red:domain.status == 'rejected' || domain.status == 'forbidden', grey:domain.status == 'none'}">{{domain.statusName}}</span>
+                </a>
+            </td>
+            <td>
+                <a :href="'/ns/domains/records?domainId=' + domain.id">详情</a> &nbsp; <a href="" @click.prevent="deleteDomain(domain.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+
+    <page-box></page-box>
+</div>

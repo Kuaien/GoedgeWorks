@@ -1,0 +1,55 @@
+{$layout}
+{$template "../menu"}
+
+<div class="margin"></div>
+
+<form class="ui form" action="/settings/ip-library/provinces">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <combo-box :v-items="countries" name="countryId" :v-value="countryId" placeholder="国家/地区"></combo-box>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="provinces.length == 0">暂时还没有省份/州。</b-empty>
+
+<p class="ui basic message" v-if="provinces.length > 0">共 {{provinces.length}} 个省份/州。</p>
+
+<table class="ui table selectable celled" v-if="provinces.length > 0">
+    <thead>
+        <tr>
+            <th style="width: 3em">ID</th>
+            <th style="width: 12em">省份/州名称</th>
+            <th style="width: 12em">内置别名</th>
+            <th style="width: 12em">自定义名称 <tip-icon content="修改在界面上显示的省份/州名称"></tip-icon></th>
+            <th style="width: 12em">自定义别名 <tip-icon content="可以在IP库中通过别名找到当前省份/州，比如”广西“、”广西壮族自治区“"></tip-icon></th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="province in provinces">
+        <td>{{province.id}}</td>
+        <td>{{province.name}}</td>
+        <td>
+            <div v-if="province.codes.length > 0">
+                <span v-for="code in province.codes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">无</span>
+        </td>
+        <td>
+            <span v-if="province.customName.length > 0">{{province.customName}}</span>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <div v-if="province.customCodes.length > 0">
+                <span v-for="code in province.customCodes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateProvince(province.id)">修改</a>
+        </td>
+    </tr>
+</table>

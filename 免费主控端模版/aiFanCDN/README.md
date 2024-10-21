@@ -1,5 +1,5 @@
 # aiFanCDN主控端模版
-开源CDN系统GoEdge主控端模版，适用于1.3.9~1.4.3版本(edge-admin)
+开源CDN系统GoEdge主控端模版，适用于1.3.9~1.4.5版本(edge-admin)
 
 本项目也提供付费技术支持服务，有任何问题请联系TG：[@kuaien66][2]
 
@@ -24,6 +24,9 @@ mv web web_bak
 	
 	# 如果你的主控端是1.4.3版本
 	wget -O ./web.zip https://github.com/Kuaien/Goedge-Admin-Theme/releases/latest/download/aifan-goedge-admin-1.4.3.zip
+	
+	# 如果你的主控端是1.4.5版本（1.4.5去除了主题颜色切换，增加暗黑模式）
+	wget -O ./web.zip https://github.com/Kuaien/Goedge-Admin-Theme/releases/latest/download/aifan-goedge-admin-1.4.5.zip
 
 # 4、解压模版文件
 unzip ./web.zip

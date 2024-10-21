@@ -1,0 +1,31 @@
+{$layout}
+{$template "/code_editor"}
+
+<first-menu>
+    <menu-item href="/clusters/grants">认证列表</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item href="/clusters/grants/scripts">节点初始化脚本库</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item :href="'.script?scriptId=' + script.id">"{{script.name}}"详情</menu-item>
+    <menu-item :href="'.update?scriptId=' + script.id" class="active">修改</menu-item>
+</first-menu>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="scriptId" :value="script.id"/>
+    <table class="ui table definition selectable">
+        <tr>
+            <td>脚本名 *</td>
+            <td>
+                <input type="text" name="name" maxlength="50" placeholder="脚本用途" v-model="script.name"/>
+            </td>
+        </tr>
+        <tr>
+            <td>脚本代码</td>
+            <td>
+                <source-code-box type="application/javascript" :read-only="false" name="code" height="200" focus="true">{{script.code}}</source-code-box>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

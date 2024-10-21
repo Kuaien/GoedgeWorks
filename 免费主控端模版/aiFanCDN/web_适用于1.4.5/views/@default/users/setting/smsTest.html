@@ -1,0 +1,31 @@
+{$layout "layout_popup"}
+
+<!-- <h3>短信发送测试</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="successSend" data-tea-before="before" data-tea-done="done">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="configJSON" :value="JSON.stringify(config)"/>
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="color-border">收信人手机号 *</td>
+            <td>
+                <input type="text" name="toMobile" placeholder="138xxxxxxx" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">测试内容 *</td>
+            <td>
+                <textarea name="body" rows="3" maxlength="50">测试短信内容</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">验证码</td>
+            <td>
+                <input type="text" name="code" maxlength="10" style="width: 10em"/>
+                <p class="comment">可选参数，仅验证类短信需要填写。</p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn v-show="!isSending">发送测试短信</submit-btn>
+    <button class="ui button disabled" type="button" v-show="isSending">发送中...</button>
+</form>

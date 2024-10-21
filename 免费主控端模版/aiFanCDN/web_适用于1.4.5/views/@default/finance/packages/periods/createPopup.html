@@ -1,0 +1,35 @@
+{$layout "layout_popup"}
+
+<!-- <h3>添加有效期选项</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">有效期选项 *</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <input type="text" name="count" size="4" maxlength="4" ref="focus" placeholder="数量"/>
+                    </div>
+                    <div class="ui field">
+                        <b-select
+                            name="unit"
+                            v-model="unit"
+                            :options="[
+                                {label: '月', value: 'month'},
+                                {label: '年', value: 'year'},
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown" name="unit">
+                            <option value="month">月</option>
+                            <option value="year">年</option>
+                        </select> -->
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <submit-btn></submit-btn>
+</form>

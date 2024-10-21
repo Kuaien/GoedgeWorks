@@ -1,0 +1,46 @@
+{$layout}
+
+{$template "../menu"}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        <div class="margin"></div>
+
+        <warning-message>此功能为试验功能，目前只能做一些简单的网络数据包统计。</warning-message>
+
+        <form class="ui form" data-tea-action="$" data-tea-success="success">
+            <csrf-token></csrf-token>
+
+            <input type="hidden" name="clusterId" :value="clusterId"/>
+            <table class="ui table definition selectable">
+                <tr>
+                    <td class="title">启用数据包统计</td>
+                    <td>
+                        <b-select
+                            name="status"
+                            v-model="policy.status"
+                            auto-width
+                            :options="[
+                                {label: '自动', value: 'auto'},
+                                {label: '启用', value: 'on'},
+                                {label: '停用', value: 'off'},
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown auto-width" name="status" v-model="policy.status">
+                            <option value="auto">自动</option>
+                            <option value="on">启用</option>
+                            <option value="off">停用</option>
+                        </select> -->
+                        <p class="comment" v-if="policy.status == 'auto'">自动根据服务器硬件配置决定是否启用，避免影响性能。</p>
+                        <p class="comment" v-if="policy.status == 'on'">强制启用；如果节点服务器配置较低，可能会严重影响性能，建议仅在8线程以上CPU节点服务器上选择强制启用。</p>
+                        <p class="comment" v-if="policy.status == 'off'">完全关闭此功能。</p>
+                    </td>
+                </tr>
+            </table>
+            <submit-btn></submit-btn>
+        </form>
+    </div>
+</div>

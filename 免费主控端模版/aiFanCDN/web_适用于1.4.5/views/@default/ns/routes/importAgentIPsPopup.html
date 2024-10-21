@@ -1,0 +1,20 @@
+{$layout "layout_popup"}
+
+<!-- <h3>导入IP</h3> -->
+<form class="ui form" data-tea-action="$" data-tea-success="success" data-tea-before="before" data-tea-done="done">
+    <csrf-token></csrf-token>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">选择IP数据文件 *</td>
+            <td>
+                <!-- <input type="file" name="file" accept=".json"/> -->
+                <file-upload name="file" accept=".json" />
+                <p class="comment">文件名通常是AGENT_IP_LIST.json。</p>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn v-show="!isSending">导入</submit-btn>
+    <button class="ui button disabled" type="button" v-show="isSending">导入中...</button>
+</form>

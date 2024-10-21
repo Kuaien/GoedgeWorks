@@ -1,0 +1,39 @@
+{$layout}
+{$template "menu"}
+
+<div class="ui margin"></div>
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">集群名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="50" ref="focus" placeholder=""/>
+            </td>
+        </tr>
+        <tr>
+            <td>管理员电子邮箱 *</td>
+            <td><input type="text" name="email" placeholder="比如 joe@example.org"/>
+                <p class="comment">域名管理员电子邮箱地址，用于生成SOA记录等处。</p>
+            </td>
+        </tr>
+    </table>
+
+    <b-settings-header sub-title="（DNS Hosts）">DNS主机域名</b-settings-header>
+    <!-- <h4>DNS主机域名<span style="font-size: 0.7em; color: grey">（DNS Hosts）</span></h4> -->
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">DNS主机域名</td>
+            <td>
+                <values-box name="hosts" placeholder="比如 ns1.example.com"></values-box>
+                <p class="comment">类似于<code-label>ns1.example.com</code-label>；需要确保这些域名已经解析到集群节点。</p>
+            </td>
+        </tr>
+    </table>
+
+    <b-settings-header>访问日志设置</b-settings-header>
+    <!-- <h4>访问日志设置</h4> -->
+    <ns-access-log-ref-box :v-access-log-ref="accessLogRef"></ns-access-log-ref-box>
+
+    <submit-btn></submit-btn>
+</form>

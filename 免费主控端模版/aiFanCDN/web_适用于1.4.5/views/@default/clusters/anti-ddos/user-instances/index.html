@@ -1,0 +1,67 @@
+{$layout}
+{$template "../menu"}
+
+<second-menu>
+    <menu-item @click.prevent="createUserInstance">[添加用户实例]</menu-item>
+</second-menu>
+
+<b-empty v-if="userInstances.length == 0">暂时还没有用户实例。</b-empty>
+
+<div v-if="userInstances.length > 0">
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th>用户</th>
+                <th>高防产品</th>
+                <th>高防IP</th>
+                <th style="width: 7em">有效期</th>
+                <th style="width: 7em">开始日期</th>
+                <th style="width: 7em">结束日期</th>
+                <th class="width6">防护对象</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="userInstance in userInstances">
+            <td><user-link :v-user="userInstance.user"></user-link></td>
+            <td>
+                <span v-if="userInstance.package.id > 0">{{userInstance.package.summary}}</span>
+                <span v-else class="red">已删除</span>
+            </td>
+            <td>
+                <div v-if="userInstance.ipAddresses != null && userInstance.ipAddresses.length > 0">
+                    <div v-for="ip in userInstance.ipAddresses">
+                        {{ip}}
+                    </div>
+                </div>
+                <span v-else class="red">无有效IP</span>
+            </td>
+            <td>{{userInstance.periodCount}}{{userInstance.periodUnitName}}</td>
+            <td>{{userInstance.dayFrom}}</td>
+            <td>{{userInstance.dayTo}}
+                <div v-if="userInstance.isExpired">
+                    <span v-if="userInstance.isExpired" class="small red">已过期</span>
+                </div>
+            </td>
+            <td>
+                <!-- 防护对象 -->
+                <a href="" v-if="userInstance.isAvailable" @click.prevent="updateObjectsPopup(userInstance.id)">
+                    <span v-if="userInstance.countObjects > 0">{{userInstance.countObjects}}个对象</span>
+                    <span v-else>设置</span>
+                </a>
+                <span v-else class="disabled">{{userInstance.countObjects}}</span>
+                &nbsp;
+            </td>
+            <td>
+                <!-- 续费 -->
+                <span v-if="userInstance.instance.userInstanceId == userInstance.id"><a href="" @click.prevent="renewUserInstance(userInstance.id)">续期</a></span>
+                <span v-else class="disabled">续期</span> &nbsp;
+
+                <!-- 删除 -->
+                <a href="" v-if="userInstance.canDelete" @click.prevent="deleteUserInstance(userInstance.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+
+    <page-box></page-box>
+</div>
+

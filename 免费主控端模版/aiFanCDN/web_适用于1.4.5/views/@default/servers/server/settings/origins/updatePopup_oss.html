@@ -1,0 +1,221 @@
+<!-- 腾讯云COS -->
+<tbody v-if="origin.protocol == 'oss:tencentCOS'">
+    <tr>
+        <td>密钥ID *<br/><em>(Secret Id)</em></td>
+        <td>
+            <input type="text" name="tencentCOSSecretId" maxlength="100" v-model="origin.oss.options.secretId"/>
+            <p class="comment">访问存储桶需要的密钥ID。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>密钥Key *<br/><em>(Secret Key)</em></td>
+        <td>
+            <input type="text" name="tencentCOSSecretKey" maxlength="100"  v-model="origin.oss.options.secretKey"/>
+            <p class="comment">访问存储桶需要的密钥Key。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>所属区域代号 *</td>
+        <td>
+            <input type="text" name="tencentCOSRegion" maxlength="100"  v-model="origin.oss.options.region"/>
+            <p class="comment">COS服务所属区域代号，类似于<code-label>ap-beijing</code-label>。</p>
+        </td>
+    </tr>
+</tbody>
+
+<!-- 阿里云OSS -->
+<tbody v-if="origin.protocol == 'oss:aliyunOSS'">
+    <tr>
+        <td>密钥ID *<br/><em>(AccessKey Id)</em></td>
+        <td>
+            <input type="text" name="aliyunOSSAccessKeyId" maxlength="100" v-model="origin.oss.options.accessKeyId"/>
+            <p class="comment">访问存储空间需要的密钥ID。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>密钥Key *<br/><em>(AccessKey Secret)</em></td>
+        <td>
+            <input type="text" name="aliyunOSSAccessKeySecret" maxlength="100" v-model="origin.oss.options.accessKeySecret"/>
+            <p class="comment">访问存储空间需要的密钥Key。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>地域节点 *</td>
+        <td>
+            <input type="text" name="aliyunOSSEndpoint" maxlength="100" v-model="origin.oss.options.endpoint"/>
+            <p class="comment">地域节点域名（Endpoint），类似于<code-label>oss-cn-shanghai.aliyuncs.com</code-label>。</p>
+        </td>
+    </tr>
+</tbody>
+
+<!-- 华为云 -->
+<tbody v-if="origin.protocol == 'oss:huaweiOBS'">
+    <tr>
+        <td>密钥ID *<br/><em>(AccessKey Id)</em></td>
+        <td>
+            <input type="text" name="huaweiOBSAccessKeyId" maxlength="100" v-model="origin.oss.options.accessKeyId"/>
+            <p class="comment">访问存储桶需要的密钥ID。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>密钥Key *<br/><em>(AccessKey Secret)</em></td>
+        <td>
+            <input type="text" name="huaweiOBSAccessKeySecret" maxlength="100" v-model="origin.oss.options.accessKeySecret"/>
+            <p class="comment">访问存储桶需要的密钥Key。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>区域Endpoint *</td>
+        <td>
+            <div class="ui input left labeled">
+                <span class="ui label">https://</span>
+                <input type="text" name="huaweiOBSEndpoint" maxlength="100" v-model="origin.oss.options.endpoint"/>
+            </div>
+            <p class="comment">区域Endpoint域名，类似于<code-label>obs.cn-north-4.myhuaweicloud.com</code-label>。</p>
+        </td>
+    </tr>
+</tbody>
+
+<!-- 百度云 -->
+<tbody v-if="origin.protocol == 'oss:baiduBOS'">
+    <tr>
+        <td>Access Key *</td>
+        <td>
+            <input type="text" name="baiduBOSAccessKey" maxlength="100" v-model="origin.oss.options.accessKey"/>
+            <p class="comment">访问Bucket需要的Access Key。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>Secret Key *</td>
+        <td>
+            <input type="text" name="baiduBOSSecretKey" maxlength="100" v-model="origin.oss.options.secretKey"/>
+            <p class="comment">访问存储桶需要的Secret Key。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>区域Endpoint *</td>
+        <td>
+            <div class="ui input left labeled">
+                <span class="ui label">https://</span>
+                <input type="text" name="baiduBOSEndpoint" maxlength="100" v-model="origin.oss.options.endpoint"/>
+            </div>
+            <p class="comment">区域Endpoint域名，类似于<code-label>bj.bcebos.com</code-label>。</p>
+        </td>
+    </tr>
+</tbody>
+
+<!-- 七牛云 -->
+<tbody v-if="origin.protocol == 'oss:qiniuKodo'">
+    <tr>
+        <td>AccessKey *<br/><em>(AccessKey)</em></td>
+        <td>
+            <input type="text" name="qiniuKodoAccessKey" maxlength="100" v-model="origin.oss.options.accessKey"/>
+            <p class="comment">访问存储空间需要的密钥ID。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>SecretKey *<br/><em>(SecretKey)</em></td>
+        <td>
+            <input type="text" name="qiniuKodoSecretKey" maxlength="100" v-model="origin.oss.options.secretKey"/>
+            <p class="comment">访问存储空间需要的密钥Key。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>域名</td>
+        <td>
+            <div class="ui fields">
+                <div class="ui field">
+                    <b-select
+                        name="qiniuKodoProtocol"
+                        v-model="origin.oss.options.protocol"
+                        :options="[
+                            {label: 'http://', value: 'http'},
+                            {label: 'https://', value: 'https'},
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown" name="qiniuKodoProtocol" v-model="origin.oss.options.protocol">
+                        <option value="http">http://</option>
+                        <option value="https">https://</option>
+                    </select> -->
+                </div>
+                <div class="ui field">
+                    <input type="text" name="qiniuKodoDomain" v-model="origin.oss.options.domain" style="width: 20em"/>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>访问控制</td>
+        <td>
+            <b-select
+                name="qiniuKodoIsPublic"
+                v-model="origin.oss.options.isPublic"
+                auto-width
+                :options="[
+                    {label: '私有', value: false},
+                    {label: '公开', value: true},
+                ]"
+            ></b-select>
+
+            <!-- <select class="ui dropdown auto-width" name="qiniuKodoIsPublic"  v-model="origin.oss.options.isPublic">
+                <option :value="false">私有</option>
+                <option :value="true">公开</option>
+            </select> -->
+        </td>
+    </tr>
+</tbody>
+
+<!-- Amazon S3 -->
+<tbody v-if="origin.protocol == 'oss:amazonS3' || origin.protocol == 'oss:b2'">
+    <tr>
+        <td>密钥ID *<br/><em>(AK)</em></td>
+        <td>
+            <input type="text" name="amazonS3AccessKeyId" maxlength="100" v-model="origin.oss.options.accessKeyId"/>
+            <p class="comment">访问存储桶需要的密钥ID。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>密钥Key *<br/><em>(SK)</em></td>
+        <td>
+            <input type="text" name="amazonS3AccessKeySecret" maxlength="100" v-model="origin.oss.options.accessKeySecret"/>
+            <p class="comment">访问存储桶需要的密钥Key。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>区域代号 *<br/><em>(Region)</em></td>
+        <td>
+            <input type="text" name="amazonS3Region" maxlength="100" v-model="origin.oss.options.region"/>
+            <p class="comment">所属区域代号，类似于<code-label>us-east-2</code-label>。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>Endpoint<span v-if="origin.protocol != 'oss:amazonS3'">*</span></td>
+        <td>
+            <input type="text" name="amazonS3Endpoint" maxlength="100" v-model="origin.oss.options.endpoint"/>
+            <p class="comment">Endpoint域名，只有非AWS应用时才需要填写。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>Endpoint中存储桶访问样式</td>
+        <td>
+            <b-select
+                name="bucketAddressStyle"
+                v-model="origin.oss.options.bucketAddressStyle"
+                auto-width
+                :options="[
+                    {label: '路径', value: 'path'},
+                    {label: '子域名', value: 'domain'},
+                ]"
+            ></b-select>
+
+            <!-- <select class="ui dropdown auto-width" name="bucketAddressStyle" v-model="origin.oss.options.bucketAddressStyle">
+                <option value="path">路径</option>
+                <option value="domain">子域名</option>
+            </select> -->
+        </td>
+    </tr>
+</tbody>
+
+<!-- 存储桶名称 -->
+<tbody v-for="ossType in ossTypes" v-if="origin.protocol == ossType.code" is="http-oss-bucket-params" :v-params="ossBucketParams" :name="ossType.bucketOptionName" :v-oss-config="origin.oss"></tbody>

@@ -1,0 +1,45 @@
+{$layout}
+{$template "../menu"}
+{$template "menu"}
+
+<b-empty v-if="posts.length == 0">暂时还没有文章。</b-empty>
+
+<div v-if="posts.length > 0">
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th>文章标题</th>
+                <th class="two wide">所属产品</th>
+                <th class="two wide">文章分类</th>
+                <th class="three wide">创建时间</th>
+                <th class="width6">状态</th>
+                <th class="three op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="post in posts">
+            <td> <a :href="Tea.url('.post', {postId: post.id})">{{post.subject}}</a>
+                <div v-if="post.type == 'url'">
+                    <grey-label>URL</grey-label>
+                </div>
+            </td>
+            <td>{{post.productName}}</td>
+            <td>
+                <span v-if="post.category != null && post.category.id > 0">{{post.category.name}}</span>
+                <span v-else class="disabled">已删除</span>
+            </td>
+            <td>{{post.createdTime}}</td>
+            <td>
+                <span v-if="post.isPublished" class="green">已发布</span>
+                <span v-else>未发布</span>
+            </td>
+            <td>
+                <a :href="Tea.url('.post', {postId: post.id})">详情</a> &nbsp;
+                <a href="" @click.prevent="deletePost(post.id)">删除</a> &nbsp;
+                <a href="" @click.prevent="publishPost(post.id)" v-if="!post.isPublished">发布</a>
+                <span v-else class="disabled">发布</span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<page-box></page-box>

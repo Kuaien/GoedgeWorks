@@ -1,0 +1,148 @@
+{$layout}
+{$template "menu"}
+
+<table class="ui table selectable definition">
+    <tr>
+        <td class="title">账单编号</td>
+        <td>{{bill.code}}</td>
+    </tr>
+    <tr>
+        <td>用户</td>
+        <td><user-link :v-user="bill.user"></user-link></td>
+    </tr>
+    <tr>
+        <td>结算周期</td>
+        <td>{{bill.pricePeriodName}}</td>
+    </tr>
+    <tr>
+        <td>月份</td>
+        <td>{{bill.month}}</td>
+    </tr>
+    <tr v-if="bill.pricePeriod == 'daily'">
+        <td>日期</td>
+        <td>
+            <span v-if="bill.pricePeriod == 'daily'">
+                <span v-if="bill.dayFrom == bill.dayTo">{{bill.dayFrom}}</span>
+                <span v-else>{{bill.dayFrom}} - {{bill.dayTo}}</span>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>项目</td>
+        <td>{{bill.typeName}}</td>
+    </tr>
+    <tr>
+        <td>金额</td>
+        <td>¥{{bill.amount}}元
+            <span v-if="!bill.canPay" class="small grey">&nbsp;（预估）</span>
+        </td>
+    </tr>
+    <tr>
+        <td>描述</td>
+        <td>{{bill.description}}</td>
+    </tr>
+    <tr>
+        <td>已支付</td>
+        <td>
+            <span class="green" v-if="bill.isPaid">Y</span>
+            <span v-else class="disabled">N</span>
+        </td>
+    </tr>
+    <tr>
+        <td>操作</td>
+        <td>
+            <span v-if="bill.isPaid" class="disabled" title="已支付，无需重复支付">已支付</span>
+            <span v-else>
+                 <a href="" v-if="bill.canPay" @click.prevent="payBill(bill.id)">支付</a>
+                <span v-else class="disabled"></span>
+            </span>
+        </td>
+    </tr>
+</table>
+
+<div v-if="serverBills.length > 0">
+    <b-settings-header>网站/套餐子账单</b-settings-header>
+    <!-- <h4>网站/套餐子账单</h4> -->
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th>网站</th>
+                <th>套餐</th>
+                <th>流量</th>
+                <th>带宽</th>
+                <th>费用</th>
+                <th>更新时间</th>
+            </tr>
+        </thead>
+        <tr v-for="serverBill in serverBills">
+            <td>
+                <span v-if="serverBill.server != null && serverBill.server.id > 0">{{serverBill.server.name}}</span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td>
+                <span v-if="serverBill.plan.id > 0">
+                    {{serverBill.plan.name}}
+                    <span class="small grey" v-if="serverBill.plan.priceType == 'traffic'">（按流量计费）</span>
+                    <span class="small grey" v-if="serverBill.plan.priceType == 'bandwidth'">（按带宽计费）</span>
+                </span>
+                <span v-else>默认
+                    <span v-if="serverBill.priceType == 'traffic'" class="small grey">（按流量计费）</span>
+                    <span v-if="serverBill.priceType == 'bandwidth'" class="small grey">（按带宽计费）</span>
+                    <span v-if="serverBill.priceType.length == 0" class="small grey">（按区域流量计费）</span>
+                </span>
+            </td>
+            <td>{{serverBill.traffic}}</td>
+            <td>{{serverBill.bandwidthPercentileSize}}<span class="grey small">（{{serverBill.bandwidthPercentile}}th）</span></td>
+            <td>{{serverBill.amount}}元</td>
+            <td>{{serverBill.createdTime}}</td>
+        </tr>
+    </table>
+    <div v-html="page"></div>
+</div>
+
+<div v-if="trafficBills.length > 0">
+    <b-settings-header>流量子账单</b-settings-header>
+    <!-- <h4>流量子账单</h4> -->
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th>区域</th>
+                <th>计费方式</th>
+                <th>计费带宽</th>
+                <th>带宽百分位</th>
+                <th>计费流量</th>
+                <th>流量包使用</th>
+                <th>单位价格</th>
+                <th>总价格</th>
+            </tr>
+        </thead>
+        <tr v-for="trafficBill in trafficBills">
+            <td>
+                <span v-if="trafficBill.region.id > 0">{{trafficBill.region.name}}</span>
+                <span v-else class="disabled">[未分区]</span>
+            </td>
+            <td>{{trafficBill.priceTypeName}}</td>
+            <td>
+                <span v-if="trafficBill.priceType == 'bandwidth'">{{trafficBill.bandwidthMB}}</span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td>
+                <span v-if="trafficBill.priceType == 'bandwidth'">{{trafficBill.bandwidthPercentile}}th</span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td>
+                <span v-if="trafficBill.priceType == 'traffic'">{{trafficBill.trafficGB}}</span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td>
+                <span v-if="trafficBill.priceType == 'traffic' && trafficBill.trafficPackageGB != '0B'">{{trafficBill.trafficPackageGB}}</span>
+                <span v-else class="disabled">-</span>
+            </td>
+            <td>
+                <span v-if="trafficBill.priceType == 'bandwidth'">{{trafficBill.pricePerUnit}}元/Mbps</span>
+                <span v-if="trafficBill.priceType == 'traffic'">{{trafficBill.pricePerUnit}}元/GiB</span>
+            </td>
+            <td>{{trafficBill.amount}}元</td>
+        </tr>
+    </table>
+</div>

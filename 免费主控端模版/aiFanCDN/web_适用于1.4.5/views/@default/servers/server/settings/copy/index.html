@@ -1,0 +1,120 @@
+{$layout "layout_popup"}
+
+<!-- <h3>批量复制配置</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success" data-tea-done="done" data-tea-before="before">
+    <csrf-token></csrf-token>
+
+    <input type="hidden" name="serverId" :value="serverId"/>
+    <input type="hidden" name="configCode" :value="configCode"/>
+    <input type="hidden" name="targetsJSON" :value="JSON.stringify(targets)"/>
+
+    <table class="ui table definition selectable">
+        <tbody>
+            <tr>
+                <td class="title">将当前配置复制到</td>
+                <td>
+                    <b-select
+                        v-model="targetType"
+                        @change="changeTargetType"
+                        auto-width
+                        :options="[
+                            {label: '[选择目标]', value: ''},
+                            ...targetOptions.map(option => ({
+                                label: option.name,
+                                value: option.code,
+                            }))
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown auto-width" v-model="targetType" @change="changeTargetType">
+                        <option value="">[选择目标]</option>
+                        <option v-for="option in targetOptions" :value="option.code">{{option.name}}</option>
+                    </select> -->
+                    <p class="comment" v-if="configCode == 'waf'">目前只能同步WAF设置的启用和停用，不能复制规则、IP名单等。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- WAF特殊选项 -->
+        <tbody v-show="configCode == 'waf'">
+            <tr>
+                <td>同时拷贝国家/地区/省份封禁</td>
+                <td>
+                    <checkbox name="wafCopyRegions"></checkbox>
+                    <p class="comment">WAF设置专有选项。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 选择分组 -->
+        <tbody v-show="targetType == 'group'">
+            <tr v-show="userId > 0">
+                <td>当前用户下分组</td>
+                <td>
+                    <div class="checkboxes">
+                        <checkbox v-for="userGroup in userGroups" :v-value="userGroup.id" @input="changeGroupId(userGroup.id)">{{userGroup.name}}</checkbox>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>管理员创建的分组</td>
+                <td>
+                    <div class="checkboxes">
+                        <checkbox v-for="adminGroup in adminGroups" :v-value="adminGroup.id" @input="changeGroupId(adminGroup.id)">{{adminGroup.name}}</checkbox>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 选择用户 -->
+        <tbody v-show="targetType == 'user'">
+            <tr>
+                <td>选择用户</td>
+                <td>
+                    <user-selector @change="changeUser"></user-selector>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 选择集群 -->
+        <tbody v-show="targetType == 'cluster'">
+            <tr>
+                <td>选择集群</td>
+                <td>
+                    <node-cluster-combo-box @change="changeCluster"></node-cluster-combo-box>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 选择网站 -->
+       <tbody v-show="targetType == 'server'">
+            <tr>
+                <td>当前用户下网站</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>管理员创建的网站</td>
+                <td></td>
+            </tr>
+        </tbody>
+
+        <!-- 网站数量 -->
+        <tbody>
+            <tr>
+                <td>目标网站数量</td>
+                <td>
+                    <span v-if="countServers < 0">-</span>
+                    <span v-else><strong>{{countServers}}个</strong></span>
+                </td>
+            </tr>
+            <tr v-if="countServers > 0">
+                <td>提醒</td>
+                <td><span class="red">此操作无法撤销，请谨慎确认！</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <submit-btn v-show="!isRequesting">确认复制</submit-btn>
+    <button class="ui button disabled" type="button" v-show="isRequesting">正在复制...</button>
+</form>

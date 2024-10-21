@@ -1,0 +1,51 @@
+{$layout "layout_popup"}
+
+<!-- <h3>流量包"{{package.size}}{{package.unit}}"价格 <span class="grey" style="font-size: 0.7em">（全部{{regions.length * periods.length}}项）</span></h3> -->
+
+<table class="ui table celled selectable definition">
+    <!-- header -->
+    <thead class="full-width">
+        <tr>
+            <th class="two wide">
+                区域\有效期
+            </th>
+            <th v-for="period in periods" style="width: 10em">
+                {{period.name}}
+            </th>
+            <th>
+                <a href="/finance/packages/periods" target="_blank" style="font-weight: normal">[添加有效期]</a>
+            </th>
+        </tr>
+    </thead>
+    <tr v-for="region in regions">
+        <td>{{region.name}}</td>
+        <td v-for="period in periods">
+            <span v-if="prices[region.id + '@' + period.id] > 0">{{prices[region.id + '@' + period.id]}}元</span>
+            <span v-else class="disabled">[无]</span>
+            <div>
+                <a href="" @click.prevent="editPrice(region.id, period.id)"><span class="small">[设置]</span></a>
+                <div v-show="editingRegionId == region.id && editingPeriodId == period.id">
+                    <div class="ui input small right labeled">
+                        <input type="text" size="6" maxlength="6" :ref="'input' + region.id + '_' + period.id" placeholder="价格" @keyup.enter="savePrice(region.id, period.id)" @keypress.enter.prevent="1"/>
+                        <span class="ui label">元</span>
+                    </div>
+                    <div style="margin-top: 0.6em">
+                        <button class="ui button tiny primary" type="button" @click.prevent="savePrice(region.id, period.id)">保存</button> &nbsp; <a href="" title="取消" @click.prevent="cancelEditing"><i class="pi pi-times"></i></a>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+
+    <!-- footer -->
+    <tr>
+        <td>
+            <a href="/clusters/regions" target="_blank" style="font-weight: normal">[添加区域]</a>
+        </td>
+        <td v-for="period in periods">
+
+        </td>
+        <td></td>
+    </tr>
+</table>

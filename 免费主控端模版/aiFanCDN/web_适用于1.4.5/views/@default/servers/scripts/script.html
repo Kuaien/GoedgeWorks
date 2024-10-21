@@ -1,0 +1,35 @@
+{$layout}
+{$template "/code_editor"}
+
+<first-menu>
+    <menu-item href="/servers/scripts">脚本库</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item :href="'.script?scriptId=' + script.id" class="active">"{{script.filename}}"详情</menu-item>
+    <menu-item :href="'.update?scriptId=' + script.id">修改</menu-item>
+</first-menu>
+
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">脚本文件名</td>
+        <td>
+            {{script.filename}}
+        </td>
+    </tr>
+    <tr>
+        <td>状态</td>
+        <td><label-on :v-is-on="script.isOn"></label-on></td>
+    </tr>
+    <tr>
+        <td>脚本说明</td>
+        <td>
+           {{script.name}}
+        </td>
+    </tr>
+    <tr>
+        <td>脚本代码</td>
+        <td>
+            <source-code-box type="application/javascript" name="code">{{script.code}}</source-code-box>
+            <p class="comment"><a :href="'/servers/scripts/update?scriptId=' + script.id + '&editingCode=1'">[修改代码]</a></p>
+        </td>
+    </tr>
+</table>

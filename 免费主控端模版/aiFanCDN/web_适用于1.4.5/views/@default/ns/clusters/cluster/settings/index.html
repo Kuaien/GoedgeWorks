@@ -1,0 +1,104 @@
+{$layout}
+{$template "menu"}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        <form method="post" class="ui form" data-tea-action="$" data-tea-success="success">
+            <csrf-token></csrf-token>
+            <input type="hidden" name="clusterId" :value="cluster.id"/>
+            <table class="ui table selectable definition">
+                <tr>
+                    <td class="title">集群名称 *</td>
+                    <td><input type="text" name="name" maxlength="50" ref="focus" v-model="cluster.name"/></td>
+                </tr>
+                <tr>
+                    <td>管理员电子邮箱 *</td>
+                    <td><input type="text" name="email" placeholder="比如 joe@example.org" v-model="cluster.email"/>
+                        <p class="comment">域名管理员电子邮箱地址，用于生成SOA记录等处。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title">DNS主机域名</td>
+                    <td>
+                        <values-box name="hosts" placeholder="比如 ns1.example.com" :v-values="cluster.hosts"></values-box>
+                        <p class="comment">类似于<code-label>ns1.example.com</code-label>；需要确保这些域名已经解析到集群节点；同时用户需要将DNS主机地址修改为这些域名，然后才可以在我们系统中修改域名解析。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><more-options-indicator></more-options-indicator></td>
+                </tr>
+                <tbody v-show="moreOptionsVisible">
+                    <tr>
+                        <td>时区</td>
+                        <td>
+                            <div class="ui fields inline">
+                                <div class="ui field">
+                                    <b-select
+                                        v-model="timeZoneGroupCode"
+                                        :options="[
+                                            ...timeZoneGroups.map(timeZoneGroup => ({
+                                                label: timeZoneGroup.name,
+                                                value: timeZoneGroup.code,
+                                            }))
+                                        ]"
+                                    ></b-select>
+
+                                    <!-- <select class="ui dropdown" v-model="timeZoneGroupCode">
+                                        <option v-for="timeZoneGroup in timeZoneGroups" :value="timeZoneGroup.code">{{timeZoneGroup.name}}</option>
+                                    </select> -->
+                                </div>
+                                <div class="ui field">
+                                    <b-select
+                                        name="timeZone"
+                                        v-model="cluster.timeZone"
+                                        :options="[
+                                            ...timeZoneLocation.group == timeZoneGroupCode ? timeZoneLocations.map(timeZoneLocation => ({
+                                                label: (timeZoneLocation.name??'') + '（' + (admin.offset??'') + '）',
+                                                value: timeZoneLocation.name,
+                                            })):[],
+                                        ]"
+                                    ></b-select>
+
+                                    <!-- <select class="ui dropdown" name="timeZone" v-model="cluster.timeZone">
+                                        <option v-for="timeZoneLocation in timeZoneLocations" :value="timeZoneLocation.name" v-if="timeZoneLocation.group == timeZoneGroupCode">{{timeZoneLocation.name}} ({{timeZoneLocation.offset}})</option>
+                                    </select> -->
+                                </div>
+                            </div>
+                            <p class="comment">节点记录日志使用的时区。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>自动远程启动</td>
+                        <td>
+                            <checkbox name="autoRemoteStart" v-model="cluster.autoRemoteStart"></checkbox>
+                            <p class="comment">当检测到节点离线时，自动尝试远程启动（前提是节点已经设置了SSH登录认证）。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>监测搜索引擎</td>
+                        <td>
+                            <checkbox name="detectAgents" v-model="cluster.detectAgents"></checkbox>
+                            <p class="comment">实时检测访问DNS的IP是否为常见搜索引擎，发现相关数据后会自动加入到IP数据库中，以实现搜索引擎线路相关功能；此功能需要消耗一定的网络流量用来查询IP相关记录。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>自动检测端口</td>
+                        <td>
+                            <checkbox name="checkingPorts" v-model="cluster.checkingPorts"></checkbox>
+                            <p class="comment">选中后，表示自动检测节点端口连通性，并在节点列表页提示异常；目前仅支持检测UDP端口；如果当前系统所在服务器UDP无法正常通讯，请关闭此选项。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>启用当前集群</td>
+                        <td>
+                            <checkbox name="isOn" value="1" v-model="cluster.isOn"></checkbox>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <submit-btn></submit-btn>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+{$layout "layout_popup"}
+
+<!-- <h3>创建套餐</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">套餐名称 *</td>
+            <td>
+                <input type="text" name="name" ref="focus" maxlength="100"/>
+            </td>
+        </tr>
+        <tr>
+            <td>按月价格 *</td>
+            <td>
+                <div class="ui right labeled input">
+                    <input type="text" name="monthlyPrice" style="width: 6em"/>
+                    <span class="ui label">元/月</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>按年价格 *</td>
+            <td>
+                <div class="ui right labeled input">
+                    <input type="text" name="yearlyPrice" style="width: 6em"/>
+                    <span class="ui label">元/年</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <b-settings-header>功能配置</b-settings-header>
+    <!-- <h4>功能配置</h4> -->
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">支持线路</td>
+            <td>
+                <div class="feature-boxes">
+                    <checkbox name="supportCountryRoutes">支持全球线路</checkbox>
+                    <checkbox name="supportChinaProvinceRoutes">支持国内省份线路</checkbox>
+                    <checkbox name="supportISPRoutes">支持ISP运营商线路</checkbox>
+                    <checkbox name="supportAgentRoutes">支持搜索引擎线路</checkbox>
+                    <checkbox name="supportPublicRoutes">支持官方公用线路<tip-icon content="官方公用线路即当前系统管理员创建的公用的线路。"></tip-icon></checkbox>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>支持健康检查</td>
+            <td>
+                <checkbox name="supportHealthCheck"></checkbox>
+                <p class="comment">支持对A/AAAA记录设置健康检查。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>最小TTL</td>
+            <td>
+                <div class="ui input right labeled">
+                    <input type="text" name="minTTL" maxlength="6" style="width: 5em"/>
+                    <span class="ui label">秒</span>
+                </div>
+                <p class="comment">0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>域名数量限制</td>
+            <td>
+                <input type="text" name="maxDomains" maxlength="6"/>
+                <p class="comment">0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>单域名记录数量限制</td>
+            <td>
+                <input type="text" name="maxRecordsPerDomain" maxlength="6"/>
+                <p class="comment">0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>单记录负载均衡条数限制</td>
+            <td>
+                <input type="text" name="maxLoadBalanceRecordsPerRecord" maxlength="6"/>
+                <p class="comment">0表示不限制。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>自定义线路数量限制</td>
+            <td>
+                <input type="text" name="maxCustomRoutes" value="" maxlength="6"/>
+                <p class="comment">0表示不限制。</p>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

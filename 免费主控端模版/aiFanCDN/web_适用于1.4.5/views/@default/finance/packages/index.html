@@ -1,0 +1,45 @@
+{$layout}
+{$template "menu"}
+
+<second-menu>
+    <menu-item @click.prevent="createPackage">[添加流量包]</menu-item>
+</second-menu>
+
+<div v-if="!enableTrafficPackages">
+    <div class="margin"></div>
+    <div class="ui message warning">尚未在 <a href="/finance/fee">[计费设置]</a> 里开启"启用流量包"选项，用户将无法使用设置的流量包。</div>
+</div>
+
+<b-empty v-if="packages.length == 0">暂时还没有流量包。</b-empty>
+
+<div v-if="packages.length > 0">
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th>流量包尺寸</th>
+                <th class="width10">价格项</th>
+                <th class="width6">状态</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="p in packages">
+            <td>
+                <a href="" @click.prevent="updatePackage(p.id)">{{p.size}}{{p.unit.replace(/(.)B/, "$1iB")}} <i class="icon expand small"></i></a>
+            </td>
+            <td>
+                <a href="" @click.prevent="updatePrices(p.id)">
+                    <span class="" v-if="p.countPrices > 0">{{p.countPrices}}<span class="grey">/{{totalPriceItems}}</span></span>
+                    <span class="" v-else>[设置价格]</span>
+                </a>
+            </td>
+            <td>
+                <label-on :v-is-on="p.isOn"></label-on>
+            </td>
+            <td>
+                <a href="" @click.prevent="updatePackage(p.id)">修改</a>
+                &nbsp;
+                <a href="" @click.prevent="deletePackage(p.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+</div>

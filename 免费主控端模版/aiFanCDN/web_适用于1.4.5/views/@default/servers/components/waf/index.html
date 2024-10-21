@@ -1,0 +1,66 @@
+{$layout}
+
+<first-menu>
+    <menu-item href="/servers/components/waf" code="index">列表</menu-item>
+    <span class="separator">|</span>
+    <a href="" class="item" @click.prevent="createPolicy()">
+        <i class="pi pi-pen-to-square"></i>
+        创建
+    </a>
+</first-menu>
+
+<!-- 搜索 -->
+<div class="margin"></div>
+<form class="ui form" method="get" action="/servers/components/waf">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <node-cluster-combo-box :v-cluster-id="clusterId"></node-cluster-combo-box>
+        </div>
+        <div class="ui field">
+            <input type="text" name="keyword" v-model="keyword" placeholder="策略名称..."/>
+        </div>
+        <div class="ui field">
+            <button type="submit" class="ui button">搜索</button>
+            &nbsp;
+            <a :href="Tea.url('.')" v-if="keyword.length > 0 || clusterId > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<!-- 列表 -->
+<b-empty v-if="policies.length == 0">暂时还没有WAF策略。</b-empty>
+
+<table class="ui table selectable celled" v-if="policies.length > 0">
+    <thead>
+        <tr>
+            <th>策略名称</th>
+            <th class="center">入站规则分组</th>
+            <th class="center">出站规则分组</th>
+            <th class="center">集群数</th>
+            <th class="two wide center">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="policy in policies">
+        <td><a :href="'/servers/components/waf/policy?firewallPolicyId=' + policy.id"><keyword :v-word="keyword">{{policy.name}}</keyword></a></td>
+        <td class="center">
+            <a :href="'/servers/components/waf/groups?firewallPolicyId=' + policy.id +  '&type=inbound'"><span :class="{disabled:policy.countInbound == 0 }">{{policy.countInbound}}</span></a>
+        </td>
+        <td class="center">
+            <a :href="'/servers/components/waf/groups?firewallPolicyId=' + policy.id +  '&type=outbound'"><span :class="{disabled:policy.countOutbound == 0 }">{{policy.countOutbound}}</span></a>
+        </td>
+        <td class="center">{{policy.countClusters}}</td>
+        <td class="center">
+            <span v-if="!policy.isOn" class="red">已停用</span>
+            <div v-else-if="policy.modeInfo != null">
+                <span :class="{green: policy.modeInfo.code == 'defend', blue: policy.modeInfo.code == 'observe', grey: policy.modeInfo.code == 'bypass'}">{{policy.modeInfo.name}}</span>
+            </div>
+        </td>
+        <td>
+            <a :href="'/servers/components/waf/policy?firewallPolicyId=' + policy.id">详情</a> &nbsp;
+            <a href="" @click.prevent="deletePolicy(policy.id)">删除</a>
+        </td>
+    </tr>
+</table>
+
+<div class="page" v-html="filterPageContent(page)"></div>

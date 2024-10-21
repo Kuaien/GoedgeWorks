@@ -1,0 +1,45 @@
+{$layout}
+{$template "../menu"}
+
+<div style="padding: 1em 0">
+    <b-button @click="createMethod">
+        <i class="pi pi-pen-to-square"></i>
+        添加支付方式
+    </b-button>
+</div>
+
+<p class="ui message warning" v-if="!enablePay">暂时未启用在线支付，去<a href="/finance/orders/setting">设置</a>。</p>
+
+<div v-if="methods.length == 0">
+    <b-empty large>暂时还没有支付方式。</b-empty>
+</div>
+
+<table class="ui table selectable celled" v-if="methods.length > 0">
+    <thead>
+        <tr>
+            <th class="three wide">支付方式</th>
+            <th class="three wide">代号</th>
+            <th>描述</th>
+            <th class="width6">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="method in methods">
+        <td>
+            <a :href="'/finance/orders/methods/method?methodId=' + method.id">{{method.name}}</a>
+            <div v-if="method.parentName.length > 0 || (method.clientType.length > 0 && method.clientType != 'all')">
+                <grey-label v-if="method.parentName.length > 0">{{method.parentName}}</grey-label>
+                <grey-label v-if="method.clientType.length > 0 && method.clientType != 'all'">{{method.clientTypeName}}</grey-label>
+            </div>
+        </td>
+        <td>{{method.code}}</td>
+        <td>{{method.description}}</td>
+        <td>
+            <label-on :v-is-on="method.isOn"></label-on>
+        </td>
+        <td>
+            <a :href="'/finance/orders/methods/method?methodId=' + method.id">详情</a> &nbsp;
+            <a href="" @click.prevent="deleteMethod(method.id)">删除</a>
+        </td>
+    </tr>
+</table>

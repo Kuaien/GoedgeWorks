@@ -1,0 +1,368 @@
+{$layout}
+
+<first-menu>
+	<a href="/dns/providers" class="item">DNS账号列表</a>
+	<span class="separator">|</span>
+	<a :href="'/dns/providers/provider?providerId=' + provider.id" class="item active">{{provider.name}}</a>
+</first-menu>
+
+<b-settings-header
+	@action="updateProvider(provider.id)"
+	action-text="修改"
+>
+    账号信息
+</b-settings-header>
+<!-- <h3>账号信息 <a href="" @click.prevent="updateProvider(provider.id)">[修改]</a> </h3> -->
+
+<table class="ui table selectable definition">
+	<tr>
+		<td class="title">账号说明</td>
+		<td>{{provider.name}}</td>
+	</tr>
+	<tr>
+		<td>服务商</td>
+		<td>{{provider.typeName}}</td>
+	</tr>
+
+	<!-- DNSPod -->
+	<tbody v-if="provider.type == 'dnspod'">
+        <tr>
+            <td class="color-border">密钥类型</td>
+            <td>
+                <span v-if="provider.apiParams.apiType == 'tencentDNS'">腾讯云API密钥</span>
+                <span v-else>DNSPod Token</span>
+            </td>
+        </tr>
+        <tr v-if="provider.apiParams.apiType == 'tencentDNS'">
+            <td class="color-border">SecretId</td>
+            <td>{{provider.apiParams.accessKeyId}}</td>
+        </tr>
+        <tr v-if="provider.apiParams.apiType == 'tencentDNS'">
+            <td class="color-border">SecretKey</td>
+            <td>{{provider.apiParams.accessKeySecret}}</td>
+        </tr>
+        <tr v-if="provider.apiParams.apiType != 'tencentDNS'">
+			<td class="color-border">密钥ID</td>
+			<td>{{provider.apiParams.id}}</td>
+		</tr>
+		<tr v-if="provider.apiParams.apiType != 'tencentDNS'">
+			<td class="color-border">密钥Token</td>
+			<td>{{provider.apiParams.token}}</td>
+		</tr>
+        <tr v-if="provider.apiParams.apiType != 'tencentDNS'">
+            <td class="color-border">区域</td>
+            <td>
+                <span v-if="provider.apiParams.region == 'international'">国际站</span>
+                <span v-else>中国站</span>
+            </td>
+        </tr>
+	</tbody>
+
+	<!-- AliDNS -->
+	<tbody v-if="provider.type == 'alidns'">
+		<tr>
+			<td>AccessKeyId</td>
+			<td>{{provider.apiParams.accessKeyId}}</td>
+		</tr>
+		<tr>
+			<td>AccessKeySecret</td>
+			<td>{{provider.apiParams.accessKeySecret}}</td>
+		</tr>
+        <tr>
+            <td>区域ID</td>
+            <td>
+                <span v-if="provider.apiParams.regionId != null && provider.apiParams.regionId.length > 0">{{provider.apiParams.regionId}}</span>
+                <span v-else class="disabled">没有设置。</span>
+            </td>
+        </tr>
+	</tbody>
+
+    <!-- HuaweiDNS -->
+    <tbody v-if="provider.type == 'huaweiDNS'">
+        <tr>
+            <td>AccessKeyId</td>
+            <td>{{provider.apiParams.accessKeyId}}</td>
+        </tr>
+        <tr>
+            <td>AccessKeySecret</td>
+            <td>{{provider.apiParams.accessKeySecret}}</td>
+        </tr>
+        <tr>
+            <td>终端节点</td>
+            <td>
+                <span  v-if="provider.apiParams.endpoint != null && provider.apiParams.endpoint.length > 0">{{provider.apiParams.endpoint}}</span>
+                <span v-else class="disabled">默认</span>
+            </td>
+        </tr>
+    </tbody>
+
+    <!-- CloudFlare -->
+    <tbody v-if="provider.type == 'cloudFlare'">
+        <tr>
+            <td class="color-border">API密钥</td>
+            <td>
+                {{provider.apiParams.apiKey}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">账号邮箱</td>
+            <td>{{provider.apiParams.email}}</td>
+        </tr>
+    </tbody>
+
+    <!-- GoDaddy -->
+    <tbody v-if="provider.type == 'godaddy'">
+        <tr>
+            <td class="color-border">Key</td>
+            <td>
+                {{provider.apiParams.key}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">Secret</td>
+            <td>{{provider.apiParams.secret}}</td>
+        </tr>
+    </tbody>
+
+    <!-- ClouDNS -->
+    <tbody v-if="provider.type == 'cloudns'">
+        <tr v-if="provider.apiParams.authId > 0">
+            <td class="color-border">用户认证ID<em>（auth-id）</em></td>
+            <td>{{provider.apiParams.authId}}</td>
+        </tr>
+        <tr v-if="provider.apiParams.subAuthId > 0">
+            <td class="color-border">子用户认证ID<em>（sub-auth-id）</em></td>
+            <td>{{provider.apiParams.subAuthId}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">认证密码<em>（auth-password）</em></td>
+            <td>{{provider.apiParams.authPassword}}</td>
+        </tr>
+    </tbody>
+
+    <!-- DNS.COM -->
+    <tbody v-if="provider.type == 'dnscom'">
+        <tr>
+            <td class="color-border">API Key</td>
+            <td>{{provider.apiParams.key}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">API Secret</td>
+            <td>{{provider.apiParams.secret}}</td>
+        </tr>
+    </tbody>
+
+
+    <!-- DNS.LA -->
+    <tbody v-if="provider.type == 'dnsla'">
+        <tr>
+            <td class="color-border">API ID</td>
+            <td>{{provider.apiParams.apiId}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">API密钥</td>
+            <td>{{provider.apiParams.secret}}</td>
+        </tr>
+    </tbody>
+
+    <!-- VolcEngine -->
+    <tbody v-if="provider.type == 'volcEngine'">
+        <tr>
+            <td class="color-border">Access Key ID</td>
+            <td>{{provider.apiParams.accessKeyId}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">Secret Access Key</td>
+            <td>{{provider.apiParams.accessKeySecret}}</td>
+        </tr>
+    </tbody>
+
+    <!-- Amazon Route 53 -->
+    <tbody v-if="provider.type == 'amazonRoute53'">
+        <tr>
+            <td class="color-border">Access Key ID</td>
+            <td>{{provider.apiParams.accessKeyId}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">Secret Access Key</td>
+            <td>{{provider.apiParams.accessKeySecret}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">API区域</td>
+            <td>
+                <span v-if="provider.apiParams.region != null && provider.apiParams.region.length > 0">{{provider.apiParams.region}}</span>
+                <span v-else class="disabled">暂未设置</span>
+            </td>
+        </tr>
+    </tbody>
+
+    <tbody v-if="provider.type == 'azureDNS'">
+        <tr>
+            <td class="color-border">订阅ID <br/><em>(Subscription ID)</em></td>
+            <td>
+                {{provider.apiParams.subscriptionId}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">目录(租户) ID <br/><em>(Directory Tenant ID)</em></td>
+            <td>
+                {{provider.apiParams.tenantId}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">应用程序(客户端) ID <br/><em>(Client ID)</em></td>
+            <td>
+                {{provider.apiParams.clientId}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">客户端密码值 <br/><em>(Client Secret Value)</em></td>
+            <td>
+                {{provider.apiParams.clientSecret}}
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">资源组 <br/><em>(Resource Group Name)</em></td>
+            <td>
+                {{provider.apiParams.resourceGroupName}}
+            </td>
+        </tr>
+    </tbody>
+
+    <!-- bunny.net -->
+    <tbody v-if="provider.type == 'bunnyNet'">
+        <tr>
+            <td class="color-border">API密钥</td>
+            <td>
+                {{provider.apiParams.apiKey}}
+            </td>
+        </tr>
+    </tbody>
+
+    <!-- Local EdgeDNS -->
+    <tbody v-if="provider.type == 'localEdgeDNS'">
+        <tr>
+            <td class="color-border">域名服务集群</td>
+            <td>
+                {{provider.localEdgeDNS.name}}
+            </td>
+        </tr>
+    </tbody>
+
+    <!-- EdgeDNS API -->
+    <tbody v-if="provider.type == 'edgeDNSAPI'">
+        <tr>
+            <td class="color-border">API地址</td>
+            <td>{{provider.apiParams.host}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">AccessKey类型</td>
+            <td>
+                <span v-if="provider.apiParams.role == 'user'">平台用户</span>
+                <span v-if="provider.apiParams.role == 'admin'">管理员</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">AccessKey ID</td>
+            <td>{{provider.apiParams.accessKeyId}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">AccessKey密钥</td>
+            <td>{{provider.apiParams.accessKeySecret}}</td>
+        </tr>
+    </tbody>
+
+    <!-- CustomHTTP -->
+    <tbody v-if="provider.type == 'customHTTP'">
+        <tr>
+            <td class="color-border">HTTP URL</td>
+            <td>{{provider.apiParams.url}}</td>
+        </tr>
+        <tr>
+            <td class="color-border">私钥</td>
+            <td>{{provider.apiParams.secret}}</td>
+        </tr>
+    </tbody>
+
+    <tr v-if="provider.minTTL > 0">
+        <td>最小TTL</td>
+        <td>{{provider.minTTL}}秒</td>
+    </tr>
+</table>
+
+<h4>
+    管理的域名
+    &nbsp;
+    <a href="" @click.prevent="syncDomains()" style="font-size: 0.8em">[刷新域名]</a>
+    &nbsp;
+    <a href="" @click.prevent="createDomain()" style="font-size: 0.8em">[添加域名]</a>
+</h4>
+
+<p class="ui message" v-if="isUpdatingDomains">正在检查域名状态...</p>
+
+<second-menu>
+    <menu-item :href="'/dns/providers/provider?providerId=' + provider.id + '&filter='" :active="filter == ''">正常状态</menu-item>
+    <menu-item :href="'/dns/providers/provider?providerId=' + provider.id + '&filter=down'" :active="filter == 'down'">已下线</menu-item>
+    <menu-item :href="'/dns/providers/provider?providerId=' + provider.id + '&filter=deleted'" :active="filter == 'deleted'">已删除</menu-item>
+</second-menu>
+
+<b-empty v-if="domains.length == 0">
+    暂时还没有<span v-if="filter == 'deleted'">已删除</span><span v-if="filter == 'down'">已下线</span><span v-if="filter == ''">可以管理</span>的域名。
+</b-empty>
+
+<table class="ui table selectable celled" v-if="domains.length > 0">
+    <thead>
+        <tr>
+            <th>域名</th>
+            <th class="center" style="width: 7em">线路</th>
+            <th class="center" style="width: 6em">集群</th>
+            <th class="center" style="width: 7em">节点域名</th>
+            <th class="center" style="width: 7em">网站域名</th>
+            <th>数据更新时间</th>
+            <th class="center width10">状态</th>
+            <th class="three op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="(domain, index) in domains">
+        <td>{{domain.name}}</td>
+        <td class="center">
+            <a href="" v-if="domain.countRoutes > 0" @click.prevent="showRoutes(domain.id)">{{domain.countRoutes}}个<popup-icon></popup-icon></a>
+            <span v-else class="disabled">0个</span>
+        </td>
+        <td class="center">
+            <a href="" v-if="domain.countClusters > 0" @click.prevent="viewClusters(domain.id)">{{domain.countClusters}}<popup-icon></popup-icon></a>
+            <span v-else class="disabled">0个</span>
+        </td>
+        <td class="center">
+            <a href="" v-if="domain.countAllNodes > 0" @click.prevent="viewNodes(domain.id)">{{domain.countNodeRecords}}/{{domain.countAllNodes}}个<popup-icon></popup-icon></a>
+            <span v-else class="disabled">0个</span>
+        </td>
+        <td class="center">
+            <a href="" v-if="domain.countAllServers > 0" @click.prevent="viewServers(domain.id)">{{domain.countServerRecords}}/{{domain.countAllServers}}个<popup-icon></popup-icon></a>
+            <span v-else class="disabled">0个</span>
+        </td>
+        <td>
+            <span v-if="domain.dataUpdatedTime.length > 0">{{domain.dataUpdatedTime}}</span>
+            <span v-else class="disabled">尚未更新</span>
+        </td>
+        <td class="center">
+            <span v-if="!domain.isOn"><label-on :v-is-on="domain.isOn"></label-on></span>
+            <div v-else-if="domain.countRoutes == 0 || domain.nodesChanged || domain.serversChanged">
+                <a href=""  style="border-bottom: 1px #db2828 dashed" title="点击和DNS服务商系统同步" @click.prevent="syncDomain(index,domain)" v-if="!domain.isSyncing"><span class="red">需要同步</span></a>
+                <span v-else>正在同步...</span>
+            </div>
+            <div v-else-if="!domain.isUp">
+                <a  href="" style="border-bottom: 1px #db2828 dashed" @click.prevent="alertDown"><span class="red">已下线</span></a>
+            </div>
+        </td>
+        <td>
+            <a href="" @click.prevent="syncDomain(index, domain)" v-if="!domain.isSyncing">同步</a>
+            <span v-else>正在同步...</span>&nbsp;
+            <a href="" @click.prevent="updateDomain(domain.id)" v-if="!domain.isSyncing">修改</a> &nbsp;
+            <a href="" @click.prevent="deleteDomain(domain)" v-if="!domain.isSyncing && !domain.isDeleted">删除</a>
+            <a href="" @click.prevent="recoverDomain(domain)" v-if="!domain.isSyncing && domain.isDeleted">恢复</a>
+        </td>
+    </tr>
+</table>
+
+<page-box></page-box>

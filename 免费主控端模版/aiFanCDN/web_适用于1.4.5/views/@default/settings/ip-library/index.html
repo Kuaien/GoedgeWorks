@@ -1,0 +1,50 @@
+{$layout}
+{$template "menu"}
+
+<b-empty v-if="artifacts.length == 0">暂时还没有IP库。</b-empty>
+
+<table class="ui table selectable celled" v-if="artifacts.length > 0">
+    <thead>
+        <tr>
+            <th>IP库名称</th>
+            <th>IP库类型</th>
+            <th class="two wide">代号</th>
+            <th class="two wide">尺寸</th>
+            <th class="one wide center">下载</th>
+            <th class="two wide">是否正在使用</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="artifact in artifacts" :class="{positive: artifact.isPublic}">
+        <td>{{artifact.name}}
+            <div>
+                <span class="small grey">{{artifact.createdTime}}</span>
+            </div>
+        </td>
+        <td>
+            <span style="color: green;" v-if="artifact.type === 'ipLibraryArtifact'">默认IP库</span>
+            <span style="color: red;" v-else-if="artifact.type === 'riskIpArtifact'">风险IP库</span>
+            <span v-else>未知类型</span>
+        </td>
+        <td>{{artifact.code}}</td>
+        <td>
+            <span v-if="artifact.file != null && artifact.file.size > 0">{{teaweb.formatBytes(artifact.file.size)}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td class="center">
+            <a :href="'/settings/ip-library/download?artifactId=' + artifact.id" title="下载"><i class="icon download small"></i></a>
+        </td>
+        <td>
+            <span v-if="artifact.isPublic" class="green">Y</span>
+            <span v-else class="disabled">N</span>
+        </td>
+        <td>
+            <a href="" v-if="!artifact.isPublic" @click.prevent="updateArtifactPublic(artifact.id, true,artifact.type)">使用</a>
+            <a href="" v-else  @click.prevent="updateArtifactPublic(artifact.id, false,artifact.type)"><span class="red">取消</span></a>
+
+            &nbsp;
+            <a href="" v-if="!artifact.isPublic" @click.prevent="deleteArtifact(artifact.id,artifact.type)">删除</a>
+            <span v-if="artifact.isPublic" class="disabled">删除</span>
+        </td>
+    </tr>
+</table>

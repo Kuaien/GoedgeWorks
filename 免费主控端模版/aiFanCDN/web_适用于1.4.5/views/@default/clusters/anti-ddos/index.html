@@ -1,0 +1,89 @@
+{$layout}
+{$template "menu"}
+
+<div v-show="networks.length == 0">
+    <b-empty large>还没有线路，请先<a href="/clusters/anti-ddos/networks">创建线路</a>。</b-empty>
+</div>
+
+<div v-show="networks.length > 0">
+    <first-menu>
+        <menu-item @click.prevent="createPackage()">[添加高防产品]</menu-item>
+    </first-menu>
+
+    <div v-show="networks.length > 1">
+        <div class="margin"></div>
+        <form class="ui form" method="get" action="/clusters/anti-ddos">
+            <div class="ui fields inline">
+                <div class="ui field">
+                    <b-select
+                        name="networkId"
+                        v-model="networkId"
+                        :options="[
+                            {label: '[所有线路]', value: '0'},
+                            ...networks.map(network => ({
+                            label: network.name??'',
+                            value: network.id??'',
+                            }))
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown" name="networkId" v-model="networkId">
+                        <option value="0">[所有线路]</option>
+                        <option v-for="network in networks" :value="network.id">{{network.name}}</option>
+                    </select> -->
+                </div>
+                <div class="ui field">
+                    <button class="ui button" type="submit">搜索</button>
+                    &nbsp;
+                    <a href="/clusters/anti-ddos" v-if="networkId > 0">[清除条件]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div v-if="packages.length == 0">
+        <b-empty>暂时还没有高防产品。</b-empty>
+    </div>
+
+    <div v-if="packages.length > 0">
+        <div class="margin"></div>
+        <table class="ui table selectable celled">
+            <thead>
+                <tr>
+                    <th>所属线路</th>
+                    <th>防护带宽</th>
+                    <th>业务带宽</th>
+                    <th>实例</th>
+                    <th class="width10">价格项</th>
+                    <th class="width5">状态</th>
+                    <th class="two op">操作</th>
+                </tr>
+            </thead>
+            <tr v-for="p in packages">
+                <td :class="{disabled: !p.network.isOn || !p.isOn}">{{p.network.name}}
+                    <div v-if="!p.network.isOn">
+                        <span class="red small">已停用</span>
+                    </div>
+                </td>
+                <td :class="{disabled: !p.network.isOn || !p.isOn}">{{p.protectionBandwidthSize}}{{p.protectionBandwidthUnit.toBitUpper()}}</td>
+                <td :class="{disabled: !p.network.isOn || !p.isOn}">{{p.serverBandwidthSize}}{{p.serverBandwidthUnit.toBitUpper()}}</td>
+                <td>
+                    <a :href="'/clusters/anti-ddos/instances?selectedPackageId=' + p.id">{{p.countInstances}}</a>
+                </td>
+                <td :class="{disabled: !p.network.isOn || !p.isOn}">
+                    <a href="" @click.prevent="updatePrices(p.id)">
+                        <span class="" v-if="p.countPrices > 0">{{p.countPrices}}<span class="grey">/{{totalPriceItems}}</span></span>
+                        <span class="" v-else>[设置价格]</span>
+                    </a>
+                </td>
+                <td><label-on :v-is-on="p.isOn"></label-on></td>
+                <td>
+                    <a href="" @click.prevent="updatePackage(p.id)">修改</a> &nbsp;
+                    <a href="" @click.prevent="deletePackage(p.id)">删除</a>
+                </td>
+            </tr>
+        </table>
+
+        <page-box></page-box>
+    </div>
+</div>

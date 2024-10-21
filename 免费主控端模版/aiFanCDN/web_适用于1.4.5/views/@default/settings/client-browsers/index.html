@@ -1,0 +1,42 @@
+{$layout}
+
+<second-menu>
+    <menu-item @click.prevent="createBrowser">[添加新浏览器]</menu-item>
+</second-menu>
+
+<form class="ui form" method="get" action="/settings/client-browsers">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <input type="text" name="keyword" v-model="keyword" placeholder="关键词"/>
+        </div>
+        <div class="ui field">
+            <button type="submit" class="ui button">搜索</button>&nbsp;
+            <a href="/settings/client-browsers" v-if="keyword.length > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="browsers.length == 0">暂时还没有浏览器信息。</b-empty>
+
+<table class="ui table selectable celled" v-if="browsers.length > 0">
+    <thead>
+        <tr>
+            <th class="three wide">浏览器名称</th>
+            <th>代号</th>
+            <th class="two wide">数据ID</th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="browser in browsers">
+        <td>{{browser.name}}</td>
+        <td>
+            <span class="ui label basic" v-for="code in browser.codes"><keyword :v-word="keyword">{{code}}</keyword></span>
+        </td>
+        <td>{{browser.dataId}}</td>
+        <td>
+            <a href="" @click.prevent="updateBrowser(browser.dataId)">修改</a>
+        </td>
+    </tr>
+</table>
+
+<page-box></page-box>

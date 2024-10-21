@@ -1,0 +1,45 @@
+{$layout "layout_popup"}
+
+<!-- <h3>设置防护对象</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="userInstanceId" :value="userInstance.id"/>
+
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">用户</td>
+            <td>
+                <div v-if="userInstance.user.id > 0"><user-link :v-user="userInstance.user"></user-link></div>
+                <span v-else class="red">已删除</span>
+            </td>
+        </tr>
+        <tr>
+            <td>高防产品</td>
+            <td>
+                <div v-if="userInstance.package.id > 0">{{userInstance.package.summary}}</div>
+                <span v-else class="red">已删除</span>
+            </td>
+        </tr>
+        <tr>
+            <td>高防IP</td>
+            <td>
+                <div v-if="userInstance.instance.id > 0">
+                    <div v-for="ip in userInstance.instance.ipAddresses">{{ip}}</div>
+                </div>
+                <span v-else class="red">已删除</span>
+            </td>
+        </tr>
+        <tr>
+            <td>防护对象</td>
+            <td>
+                <div v-if="userInstance.isAvailable && userInstance.user.id > 0">
+                    <ad-instance-objects-box :v-objects="userInstance.objects" :v-user-id="userInstance.user.id"></ad-instance-objects-box>
+                </div>
+                <span v-else class="red">实例已经失效，无法设置防护对象</span>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn v-show="userInstance.isAvailable && userInstance.user.id > 0"></submit-btn>
+</form>

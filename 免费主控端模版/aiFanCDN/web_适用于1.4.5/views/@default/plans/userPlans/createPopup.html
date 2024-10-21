@@ -1,0 +1,136 @@
+{$layout "layout_popup"}
+
+<!-- <h3>购买套餐</h3> -->
+<form class="ui form" data-tea-action="$"  data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">用户 *</td>
+            <td><plan-user-selector @change="changeUserId"></plan-user-selector>
+                <p class="comment" v-if="userAccount != null">用户账户余额{{userAccount.total}}元。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>备注名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="50" ref="focus"/>
+                <p class="comment">用于识别不同的套餐。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>套餐 *</td>
+            <td>
+                <b-select
+                    name="planId"
+                    v-model="planId"
+                    @change="changePlanId(planId)"
+                    auto-width
+                    :options="[
+                        {label: '[选择套餐]', value: '0'},
+                        ...plans.map(plan => ({
+                            label: plan.name,
+                            value: plan.id,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="planId" v-model="planId" @change="changePlanId(planId)">
+                    <option value="0">[选择套餐]</option>
+                    <option v-for="plan in plans" :value="plan.id">{{plan.name}}</option>
+                </select> -->
+                <p class="comment" v-if="plan != null">
+                    <span v-if="plan.priceType == 'period'">按时间周期付费，{{plan.monthlyPrice}}元/月，{{plan.seasonallyPrice}}元/季度，{{plan.yearlyPrice}}元/年。</span>
+                    <span v-if="plan.priceType == 'traffic'">按流量付费。</span>
+                </p>
+            </td>
+        </tr>
+
+        <!-- 按时间周期计费 -->
+        <tbody v-if="plan != null && plan.priceType == 'period'">
+            <tr>
+                <td>周期 *</td>
+                <td>
+                    <b-select
+                        name="period"
+                        v-model="period"
+                        auto-width
+                        :options="[
+                            {label: '按月', value: 'monthly'},
+                            {label: '按季度', value: 'seasonally'},
+                            {label: '按年', value: 'yearly'},
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown auto-width" name="period" v-model="period">
+                        <option value="monthly">按月</option>
+                        <option value="seasonally">按季度</option>
+                        <option value="yearly">按年</option>
+                    </select> -->
+                </td>
+            </tr>
+            <tr v-if="period == 'monthly'">
+                <td>月数 *</td>
+                <td>
+                    <div class="ui input right labeled">
+                        <input type="text" name="countMonths" value="1" style="width: 5em" maxlength="4" v-model="countMonths"/>
+                        <span class="ui label">月</span>
+                    </div>
+                </td>
+            </tr>
+            <tr v-if="period == 'seasonally'">
+                <td>季度数 *</td>
+                <td>
+                    <div class="ui input right labeled">
+                        <input type="text" name="countSeasons" value="1" style="width: 5em" maxlength="4" v-model="countSeasons"/>
+                        <span class="ui label">季度</span>
+                    </div>
+                </td>
+            </tr>
+            <tr v-if="period == 'yearly'">
+                <td>年数 *</td>
+                <td>
+                    <div class="ui input right labeled">
+                        <input type="text" name="countYears" value="1" style="width: 5em" maxlength="4" v-model="countYears"/>
+                        <span class="ui label">年</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>预计费用</td>
+                <td>
+                    <span v-if="fee > 0">{{fee}}元</span>
+                    <span v-else>-</span>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 按流量计费 -->
+        <tbody v-if="plan != null && plan.priceType == 'traffic'">
+            <tr>
+                <td>结束日期</td>
+                <td>
+                    <datepicker :v-name="'dayTo'" :v-bottom-left="true" :v-value="defaultDayTo"></datepicker>
+                </td>
+            </tr>
+            <tr>
+                <td>预计费用</td>
+                <td>月结</td>
+            </tr>
+        </tbody>
+
+        <!-- 按带宽计费 -->
+        <tbody  v-if="plan != null && plan.priceType == 'bandwidth'">
+            <tr>
+                <td>结束日期</td>
+                <td>
+                    <datepicker :v-name="'dayTo'" :v-bottom-left="true" :v-value="defaultDayTo"></datepicker>
+                </td>
+            </tr>
+            <tr>
+                <td>预计费用</td>
+                <td>月结</td>
+            </tr>
+        </tbody>
+    </table>
+    <submit-btn></submit-btn>
+</form>

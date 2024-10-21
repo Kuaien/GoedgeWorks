@@ -1,0 +1,68 @@
+{$layout}
+
+<first-menu>
+    <menu-item href="/tickets?status=none" code="none">进行中({{countNewTickets}})</menu-item>
+    <menu-item href="/tickets?status=solved" code="solved">已解决</menu-item>
+    <menu-item href="/tickets?status=closed" code="closed">已关闭</menu-item>
+</first-menu>
+
+<div class="margin"></div>
+<form class="ui form" action="/tickets">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <user-selector :v-user-id="userId" :data-url="'/tickets/users/options'"></user-selector>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+            &nbsp;
+            <a :href="'/tickets?status=' + status" v-if="userId > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="tickets.length == 0">暂时还没有工单。</b-empty>
+
+<table class="ui table selectable celled" v-if="tickets.length > 0">
+    <thead>
+        <tr>
+            <th>工单标题</th>
+            <th class="three wide">用户</th>
+            <th class="three wide">最后操作时间</th>
+            <th class="three wide">最后操作人</th>
+            <th class="two wide">分类</th>
+            <th class="width6">状态</th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="ticket in tickets">
+        <td>
+            <a :href="'/tickets/ticket?ticketId=' + ticket.id + '&fromURL=' + currentURL">{{ticket.subject}}</a>
+        </td>
+        <td>
+            <span v-if="ticket.user != null"><user-link :v-user="ticket.user"></user-link></span>
+            <span v-else class="disabled">已删除</span>
+        </td>
+        <td>{{ticket.lastLogTime}}</td>
+        <td>
+            <span v-if="ticket.latestLog != null && ticket.latestLog.admin != null">
+                <i class="icon user secret"></i> {{ticket.latestLog.admin.fullname}}<span class="grey small">（{{ticket.latestLog.admin.username}}）</span>
+            </span>
+            <span v-else>
+                <span v-if="ticket.user != null"><user-link :v-user="ticket.user"></user-link></span>
+                <span v-else class="disabled">已删除</span>
+            </span>
+        </td>
+        <td>
+            <span v-if="ticket.category != null">{{ticket.category.name}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td>
+            <span :class="{olive: ticket.status == 'none', green: ticket.status == 'solved', red: ticket.status == 'closed'}">{{ticket.statusName}}</span>
+        </td>
+        <td>
+            <a :href="'/tickets/ticket?ticketId=' + ticket.id+ '&fromURL=' + currentURL">详情</a>
+        </td>
+    </tr>
+</table>
+
+<page-box></page-box>

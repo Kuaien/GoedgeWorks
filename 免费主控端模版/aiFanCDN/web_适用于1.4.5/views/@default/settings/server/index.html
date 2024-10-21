@@ -1,0 +1,99 @@
+{$layout}
+
+<div v-if="serverIsChanged">
+    <div class="margin"></div>
+    <warning-message>服务配置已修改，请在命令行下重启后生效（<code-label>edge-admin restart</code-label>）。</warning-message>
+</div>
+
+<b-settings-header
+	@action="!teaDemoEnabled && updateHTTP()"
+	:action-text="teaDemoEnabled?'演示版无法修改':'修改'"
+>
+	通过HTTP访问管理平台
+</b-settings-header>
+<!-- <h3>通过HTTP访问管理平台 <a href="/settings/server/http" v-if="!teaDemoEnabled" @click.prevent="updateHTTP()">修改</a><a v-if="teaDemoEnabled">[演示版无法修改]</a></h3> -->
+
+<b-status-card>
+  <b-status-card-item label="状态">
+    <label-on :v-is-on="serverConfig.http.on"></label-on>
+  </b-status-card-item>
+  <b-status-card-item label="绑定地址" span="full" :comment="[
+		'访问当前管理系统的HTTP地址；如果地址中的IP是0.0.0.0，表示服务器的所有IP都可以访问。',
+	]">
+    <span v-for="listen in serverConfig.http.listen" class="ui label basic">{{listen}}</span>
+  </b-status-card-item>
+</b-status-card>
+
+<!-- <table class="ui table definition selectable">
+	<tr>
+		<td>状态</td>
+		<td>
+			<label-on :v-is-on="serverConfig.http.on"></label-on>
+		</td>
+	</tr>
+	<tr>
+		<td class="title">绑定地址</td>
+		<td>
+			<span v-for="listen in serverConfig.http.listen" class="ui label tiny basic">{{listen}}</span>
+			<p class="ui comment">访问当前管理系统的HTTP地址；如果地址中的IP是0.0.0.0，表示服务器的所有IP都可以访问。</p>
+		</td>
+	</tr>
+</table> -->
+
+<b-settings-header
+	@action="!teaDemoEnabled && updateHTTPS()"
+	:action-text="teaDemoEnabled?'演示版无法修改':'修改'"
+>
+	通过HTTPS访问管理平台
+</b-settings-header>
+<!-- <h3>通过HTTPS访问管理平台 <a href="" v-if="!teaDemoEnabled" @click.prevent="updateHTTPS()">修改</a><a v-if="teaDemoEnabled">[演示版无法修改]</a></h3> -->
+
+<b-status-card>
+  <b-status-card-item label="状态">
+    <label-on :v-is-on="serverConfig.https.on"></label-on>
+  </b-status-card-item>
+	<b-status-card-item label="绑定地址" span="full" :comment="[
+		'访问当前管理系统的HTTPS地址；如果地址中的IP是0.0.0.0，表示服务器的所有IP都可以访问。',
+	]">
+    <span v-for="listen in serverConfig.https.listen" class="ui label basic">{{listen}}</span>
+  </b-status-card-item>
+
+	<b-status-card-item label="证书文件" sub-label="（Cert）">
+    <span v-if="serverConfig.https.cert.length > 0">{{serverConfig.https.cert}}</span>
+		<span class="disabled" v-else>还没有设置证书</span>
+  </b-status-card-item>
+	<b-status-card-item label="私钥文件" sub-label="（Key）">
+    <span v-if="serverConfig.https.key.length > 0">{{serverConfig.https.key}}</span>
+		<span class="disabled" v-else>还没有设置私钥</span>
+  </b-status-card-item>
+</b-status-card>
+
+<!-- <table class="ui table definition selectable">
+	<tr>
+		<td>状态</td>
+		<td>
+			<label-on :v-is-on="serverConfig.https.on"></label-on>
+		</td>
+	</tr>
+	<tr>
+		<td class="title">绑定地址</td>
+		<td>
+			<span v-for="listen in serverConfig.https.listen" class="ui label tiny basic">{{listen}}</span>
+			<p class="ui comment">访问当前管理系统的HTTPS地址；如果地址中的IP是0.0.0.0，表示服务器的所有IP都可以访问。</p>
+		</td>
+	</tr>
+	<tr>
+		<td>证书文件<span class="small">（Cert）</span></td>
+		<td>
+			<span v-if="serverConfig.https.cert.length > 0">{{serverConfig.https.cert}}</span>
+			<span class="disabled" v-else>还没有设置证书</span>
+		</td>
+	</tr>
+	<tr>
+		<td>私钥文件<span class="small">（Key）</span></td>
+		<td>
+			<span v-if="serverConfig.https.key.length > 0">{{serverConfig.https.key}}</span>
+			<span class="disabled" v-else>还没有设置私钥</span>
+		</td>
+	</tr>
+</table> -->

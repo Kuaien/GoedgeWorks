@@ -1,0 +1,17 @@
+{$layout}
+{$template "menu"}
+
+<form data-tea-action="$" data-tea-success="success" data-tea-before="before" data-tea-done="done" data-tea-timeout="1800" spellcheck="false">
+    <csrf-token></csrf-token>
+    <b-status-card>
+        <b-status-card-item label="注册码 *" span="full" :comment="[
+            '请输入商业版/企业版注册码。',
+        ]">
+            <textarea style="width:100%; border-radius: .5em;" rows="8" name="key" ref="focus"></textarea>
+        </b-status-card-item>
+    </b-status-card>
+    
+    <div class="margin"></div>
+    <submit-btn v-show="!isRequesting">激活</submit-btn>
+    <button class="ui button disabled" v-show="isRequesting">激活中...</button>
+</form>

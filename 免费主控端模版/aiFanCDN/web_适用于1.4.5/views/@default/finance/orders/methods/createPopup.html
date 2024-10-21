@@ -1,0 +1,146 @@
+{$layout "layout_popup"}
+
+<!-- <h3>添加支付方式</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <table class="ui table selectable definition">
+        <tr>
+            <td class="title">支付方式名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="30" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td>类型</td>
+            <td>
+                <b-select
+                    name="parentCode"
+                    v-model="parentCode"
+                    auto-width
+                    :options="[
+                        {label: '[自定义支付方式]', value: ''},
+                        ...presetMethods.map(presetMethod => ({
+                            label: presetMethod.name,
+                            value: presetMethod.code,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select name="parentCode" class="ui dropdown auto-width" v-model="parentCode">
+                    <option value="">[自定义支付方式]</option>
+                    <option v-for="presetMethod in presetMethods" :value="presetMethod.code">{{presetMethod.name}}</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr>
+            <td>支付方式代号 *</td>
+            <td>
+                <input type="text" name="code" maxlength="60"/>
+                <p class="comment">只能包含数字、字母和下划线；自定义支付页面可以根据此代号判断订单来自哪种支付方式。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>支付方式说明 *</td>
+            <td>
+                <textarea rows="3" name="description" maxlength="100"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>支持终端</td>
+            <td>
+                <b-select
+                    name="clientType"
+                    v-model="clientTypeCode"
+                    auto-width
+                    :options="[
+                        ...clientTypes.map(clientType => ({
+                            label: clientType.name,
+                            value: clientType.code,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="clientType" v-model="clientTypeCode">
+                    <option v-for="clientType in clientTypes" :value="clientType.code">{{clientType.name}}</option>
+                </select> -->
+                <p class="comment" v-for="clientType in clientTypes" v-if="clientType.code == clientTypeCode">{{clientType.description}}</p>
+            </td>
+        </tr>
+        <tr v-show="clientTypeCode == 'mobile'">
+            <td>二维码扫描提示</td>
+            <td>
+                <input type="text" name="qrcodeTitle" maxlength="100"/>
+                <p class="comment">用来提示用户使用App扫描二维码，类似于"请使用支付宝APP扫描下方二维码完成支付："。</p>
+            </td>
+        </tr>
+
+        <!-- 自定义支付方式 -->
+        <tbody v-if="parentCode == ''">
+            <tr>
+                <td>自定义支付URL *</td>
+                <td>
+                    <input type="text" name="url" maxlength="200"/>
+                    <p class="comment">用户选择此支付方式后，系统会将订单信息放在此URL参数中。</p>
+                </td>
+            </tr>
+        </tbody>
+
+        <!-- 支付宝 -->
+        <tbody v-if="parentCode == 'alipay'">
+            <tr>
+                <td>APPID *</td>
+                <td>
+                    <input type="text" name="paramsAlipayAppId" maxlength="20"/>
+                    <p class="comment">签约的支付宝应用ID，为一组数字。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>私钥 *</td>
+                <td>
+                    <textarea name="paramsAlipayPrivateKey" spellcheck="false"></textarea>
+                    <p class="comment">如果你获得的是证书文件，你需要将文件内容拷贝到这里。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>应用公钥证书 *</td>
+                <td>
+                    <textarea name="paramsAlipayAppPublicCert" spellcheck="false"></textarea>
+                    <p class="comment">如果你获得的是证书文件，你需要将文件内容拷贝到这里。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>支付宝公钥证书 *</td>
+                <td>
+                    <textarea name="paramsAlipayPublicCert" spellcheck="false"></textarea>
+                    <p class="comment">如果你获得的是证书文件，你需要将文件内容拷贝到这里。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>支付宝根证书 *</td>
+                <td>
+                    <textarea name="paramsAlipayRootCert" spellcheck="false"></textarea>
+                    <p class="comment">如果你获得的是证书文件，你需要将文件内容拷贝到这里。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>产品代号 *</td>
+                <td>
+                    <input type="text" name="paramsAlipayProductCode" maxlength="100" value="QUICK_WAP_WAY"/>
+                    <p class="comment">和支付宝签约的产品代号。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>沙箱应用</td>
+                <td>
+                    <checkbox name="paramsAlipayIsSandbox"></checkbox>
+                    <p class="comment">选中后，表示当前支付宝应用为沙箱应用，仅用来模拟测试。</p>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

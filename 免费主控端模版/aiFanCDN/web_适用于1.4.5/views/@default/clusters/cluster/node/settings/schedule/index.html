@@ -1,0 +1,169 @@
+{$layout}
+{$template "/clusters/cluster/node/node_menu"}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        <b-settings-header
+            @action="editSchedule"
+            :action-text="scheduleIsEditing?'取消修改':'修改'"
+        >
+            基础设置
+        </b-settings-header>
+        <!-- <h4>基础设置 &nbsp; <a href="" @click.prevent="editSchedule" style="font-size: 0.8em"><span v-if="!scheduleIsEditing">[修改]</span><span v-else>[取消修改]</span></a> </h4> -->
+
+        <form class="ui form">
+            <table class="ui table definition selectable" v-show="!scheduleIsEditing">
+                <tr>
+                    <td class="title">当前节点租期结束日期</td>
+                    <td>
+                        <span v-if="schedule.offlineDay.length > 0">{{schedule.offlineDay}}</span>
+                        <span v-else class="disabled">没有设置</span>
+                        <p class="comment" v-if="schedule.isOffline"><span class="red">已到期</span></p>
+                        <p class="comment" v-else-if="schedule.isNearlyOffline"><span class="red">即将到期</span></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>当前节点为集群备用节点</td>
+                    <td>
+                        <span v-if="schedule.isBackupForCluster" class="green">Y</span>
+                        <span v-else class="disabled">N</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>当前节点为分组备用节点</td>
+                    <td>
+                        <span v-if="schedule.isBackupForGroup" class="green">Y</span>
+                        <span v-else class="disabled">N</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>当前节点备用IP</td>
+                    <td>
+                        <div v-if="schedule.backupIPs != null && schedule.backupIPs.length > 0">
+                            <span v-for="backupIP in schedule.backupIPs" class="ui basic tiny label">{{backupIP}}</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>当前触发动作</td>
+                    <td>
+                        <div v-if="schedule.actionStatus != null && schedule.actionStatus.actionId > 0">
+                            <div class="ui fields inline">
+                                <div class="ui field">
+                                    <node-schedule-conds-viewer :v-params="params" :v-operators="operators" v-model="schedule.actionStatus.conds"></node-schedule-conds-viewer>
+                                </div>
+                                <div class="ui field"><span class="red">-&gt;</span></div>
+                                <div class="ui field">
+                                    <span class="red">{{actionMap[schedule.actionStatus.action.code].name}}</span>
+                                </div>
+                                <div class="ui field" v-if="schedule.actionStatusExpiresTime.length > 0">
+                                <span class="red">| &nbsp; &nbsp; 有效期至{{schedule.actionStatusExpiresTime}}</span>
+                                </div>
+                                <div class="ui field">
+                                    <a href="" @click.prevent="resetActionStatus">[重置]</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <span class="disabled">无</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <form class="ui form" data-tea-success="success" data-tea-action="$" v-show="scheduleIsEditing">
+            <csrf-token></csrf-token>
+            <input type="hidden" name="nodeId" :value="schedule.id"/>
+
+            <table class="ui table definition selectable">
+                <tr>
+                    <td class="title">当前节点租期结束日期</td>
+                    <td>
+                        <datepicker name="offlineDay" v-model="schedule.offlineDay"></datepicker>
+                        <p class="comment">当前节点租期结束日期，到此日期后当前节点将会被自动下线；如果为空，则表示永远不下线。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>当前节点为集群备用节点</td>
+                    <td>
+                        <checkbox name="isBackupForCluster" v-model="schedule.isBackupForCluster"></checkbox>
+                        <p class="comment">选中后，标识当前节点为所在集群<span v-if="schedule.nodeClusterName.length > 0">（<code-label>{{schedule.nodeClusterName}}</code-label>）</span>的备用节点，同集群的其他节点可以通过调度动作切换到此节点。备用节点未被调度触发时不会加入DNS域名解析。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>当前节点为分组备用节点</td>
+                    <td>
+                        <checkbox name="isBackupForGroup" v-model="schedule.isBackupForGroup"></checkbox>
+                        <p class="comment">选中后，标识当前节点为所在分组<span v-if="schedule.nodeGroupName.length > 0">（<code-label>{{schedule.nodeGroupName}}</code-label>）</span>的备用节点，同分组的其他节点可以通过调度动作切换到此节点<span v-if="schedule.nodeGroupName.length == 0">；如果暂时还没有分组，则当前设置不会起作用</span>。备用节点未被调度触发时不会加入DNS域名解析。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>当前节点备用IP</td>
+                    <td>
+                        <values-box name="backupIPs" :v-values="schedule.backupIPs" placeholder="IP"></values-box>
+                        <p class="comment">可以通过调度动作切换到这些备用IP。</p>
+                    </td>
+                </tr>
+            </table>
+
+            <submit-btn></submit-btn>
+        </form>
+
+        <div v-show="!scheduleIsEditing">
+            <div class="ui margin"></div>
+            <h4>调度动作&nbsp;
+                <a href="" style="font-size: 0.8em" @click.prevent="createAction">[添加]</a> &nbsp;
+                <a href="" v-if="!showActionsCopyOps" @click.prevent="showActionsCopyOps = !showActionsCopyOps" title="更多操作" style="font-size: 0.8em">[更多操作]</a>
+                <span v-show="showActionsCopyOps">
+                    <a href="" style="font-size: 0.8em" v-if="schedule.nodeGroupName.length > 0" @click.prevent="copyActionsToGroup">[复制到分组"{{schedule.nodeGroupName}}"]</a> &nbsp;
+                    <a href="" style="font-size: 0.8em" @click.prevent="copyActionsToCluster">[复制到集群"{{schedule.nodeClusterName}}"]</a>
+                </span>
+            </h4>
+
+            <b-empty v-if="actions.length == 0">暂时还没有任何调度动作。</b-empty>
+            <div v-if="actions.length > 0">
+                <p class="ui message warning" v-if="schedule.isBackupForCluster || schedule.isBackupForGroup">当前节点为备用节点，这里设置的调度动作将不会被触发。</p>
+
+                <table class="ui table celled selectable" id="sortable-table">
+                    <thead>
+                        <tr>
+                            <th style="width:3em"></th>
+                            <th>条件</th>
+                            <th class="three wide">动作</th>
+                            <th class="two wide">持续时间</th>
+                            <th class="width5">状态</th>
+                            <th class="two op">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody v-for="action in actions" :v-id="action.id">
+                        <tr>
+                            <td style="text-align: center;"><i class="icon bars handle grey"></i> </td>
+                            <td>
+                                <node-schedule-conds-viewer :v-params="params" :v-operators="operators" v-model="action.conds"></node-schedule-conds-viewer>
+                            </td>
+                            <td>
+                                <span :class="{red: schedule.actionStatus != null && schedule.actionStatus.actionId > 0 && schedule.actionStatus.actionId == action.id}">{{action.actionName}}</span>
+                            </td>
+                            <td>{{action.durationDescription}}</td>
+                            <td>
+                                <div v-if="schedule.actionStatus != null && schedule.actionStatus.actionId > 0 && schedule.actionStatus.actionId == action.id">
+                                    <span class="red">已触发</span>
+                                </div>
+                                <div v-else>
+                                    <label-on :v-is-on="action.isOn"></label-on>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="" @click.prevent="updateAction(action.id)">修改</a> &nbsp; <a href="" @click.prevent="deleteAction(action.id)">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p v-if="actions.length > 0" class="comment">可以拖动左侧的<i class="icon bars"></i>排序。</p>
+            </div>
+        </div>
+    </div>
+</div>

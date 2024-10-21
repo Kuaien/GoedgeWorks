@@ -1,0 +1,36 @@
+{$layout}
+
+<first-menu>
+    <menu-item href="." code="auditing">审核中</menu-item>
+    <menu-item href=".?type=audited" code="audited">已审核</menu-item>
+    <span class="item"><tip-icon content="在这里可以审核用户填写的脚本，脚本审核通过之后方可在边缘节点运行。"></tip-icon></span>
+</first-menu>
+
+<div v-if="scripts.length == 0">
+    <b-empty>暂时还没有用户脚本。</b-empty>
+</div>
+
+<table class="ui table celled selectable" v-if="scripts.length > 0" style="max-width: 40em">
+    <thead>
+        <tr>
+            <th class="six wide">脚本创建时间</th>
+            <th>用户</th>
+            <th class="width5">状态</th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="script in scripts">
+        <td>{{script.createdTime}}</td>
+        <td><user-link :v-user="script.user"></user-link></td>
+        <td>
+            <span v-if="script.isRejected" class="red">已驳回</span>
+            <span v-else-if="script.isPassed" class="green">已通过</span>
+            <span v-else>未审核</span>
+        </td>
+        <td>
+            <a :href="'/servers/user-scripts/script?scriptId=' + script.id + '&type=' + type  + '&prevURL=' + currentURL">详情</a>
+        </td>
+    </tr>
+</table>
+
+<page-box></page-box>

@@ -1,0 +1,18 @@
+.idcard-bg {
+  width: 20em;
+  height: 13em;
+  border: 1px #ccc solid;
+  border-radius: 1em;
+  position: relative;
+  overflow: hidden;
+}
+.idcard-bg img {
+  width: 100%;
+  height: 100%;
+}
+.form .success,
+.form .error,
+.form .warning {
+  display: block !important;
+}
+/*# sourceMappingURL=enterprise.css.map */

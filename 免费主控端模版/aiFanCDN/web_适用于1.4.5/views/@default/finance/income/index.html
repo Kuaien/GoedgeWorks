@@ -1,0 +1,38 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" action="/finance/income">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <datepicker :v-name="'dayFrom'" :v-value="dayFrom"></datepicker>
+        </div>
+        <div class="ui field">-</div>
+        <div class="ui field">
+            <datepicker :v-name="'dayTo'" :v-value="dayTo"></datepicker>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">查看</button>
+        </div>
+    </div>
+</form>
+
+<table class="ui table selectable celled" v-if="stats.length > 0">
+    <thead>
+        <tr>
+            <th>日期</th>
+            <th>收入</th>
+            <th>支出</th>
+        </tr>
+    </thead>
+    <tr v-for="stat in stats">
+        <td>{{stat.day}}</td>
+        <td>
+            <span v-if="stat.income > 0">{{stat.income}}元</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td>
+            <span v-if="stat.expense > 0">-{{stat.expense}}元</span>
+            <span v-else class="disabled">-</span>
+        </td>
+    </tr>
+</table>

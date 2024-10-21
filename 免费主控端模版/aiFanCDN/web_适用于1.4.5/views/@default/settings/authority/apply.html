@@ -1,0 +1,15 @@
+{$layout}
+{$template "menu"}
+
+<b-status-card>
+   <b-status-card-item label="购买商业版后或者申请免费试用时，需要向本系统开发者官方先提交申请码。" span="full" :comment="[
+      '<strong>请拷贝上面的申请码发送给系统开发者，以便生成注册码</strong>。注册码生成后，只能在当前服务器上使用管理平台；如需迁移当前管理系统到别的服务器，请向官方重新申请注册码（重新申请后，商业版有效期保持不变）。',
+      '虚拟机或容器重启、系统升级、配置变更等可能会导致申请码失效，请小心操作。',
+   ]">
+      <form class="ui form">
+         <textarea rows="4" autocomplete="off" spellcheck="false">{{requestCode}}</textarea>
+      </form>
+   </b-status-card-item>
+ </b-status-card>
+
+<div class="margin"></div>

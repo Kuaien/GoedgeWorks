@@ -1,0 +1,82 @@
+{$layout}
+
+<first-menu>
+    <menu-item @click.prevent="createPlan">
+        <i class="pi pi-pen-to-square"></i>
+        创建套餐
+    </menu-item>
+    <span class="separator">|</span>
+    <menu-item href="/ns/settings/user">无套餐用户设置 &nbsp; <i class="icon external small"></i></menu-item>
+</first-menu>
+
+<b-empty v-if="plans.length == 0">暂时还没有套餐。</b-empty>
+
+<table class="ui table selectable celled" v-if="plans.length > 0" id="sortable-table">
+    <thead>
+        <tr>
+            <th style="width:3em"></th>
+            <th>套餐名称</th>
+            <th>价格</th>
+            <th>最小TTL</th>
+            <th>域名数量</th>
+            <th>单域名记录数</th>
+            <th>负载均衡条数</th>
+            <th>自定义线路数</th>
+            <th>内置线路</th>
+            <th>健康检查</th>
+            <th class="width6">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tbody v-for="plan in plans" :v-id="plan.id">
+        <tr>
+            <td style="text-align: center;"><i class="icon bars handle grey"></i> </td>
+            <td><a href="" @click.prevent="updatePlan(plan.id)">{{plan.name}}
+                <i class="icon expand small"></i></a>
+            </td>
+            <td>
+                {{plan.monthlyPriceFormat}}元/月<br/>
+                {{plan.yearlyPriceFormat}}元/年
+            </td>
+            <td>
+                <span v-if="plan.config.minTTL > 0">{{plan.config.minTTL}}</span>
+                <span v-else class="grey">不限</span>
+            </td>
+            <td>
+                <span v-if="plan.config.maxDomains > 0">{{plan.config.maxDomains}}</span>
+                <span v-else class="grey">不限</span>
+            </td>
+            <td>
+                <span v-if="plan.config.maxRecordsPerDomain > 0">{{plan.config.maxRecordsPerDomain}}</span>
+                <span v-else class="grey">不限</span>
+            </td>
+            <td>
+                <span v-if="plan.config.maxLoadBalanceRecordsPerRecord > 0">{{plan.config.maxLoadBalanceRecordsPerRecord}}</span>
+                <span v-else class="grey">不限</span>
+            </td>
+            <td>
+                <span v-if="plan.config.maxCustomRoutes > 0">{{plan.config.maxCustomRoutes}}</span>
+                <span v-else class="grey">不限</span>
+            </td>
+            <td>
+                <span v-if="plan.config.supportCountryRoutes">全球<br/></span>
+                <span v-if="plan.config.supportChinaProvinceRoutes">国内省份<br/></span>
+                <span v-if="plan.config.supportISPRoutes">ISP<br/></span>
+                <span v-if="plan.config.supportAgentRoutes">搜索引擎<br/></span>
+                <span v-if="plan.config.supportPublicRoutes">公用线路</span>
+            </td>
+            <td>
+                <span v-if="plan.config.supportHealthCheck" class="green">Y</span>
+                <span v-else class="disabled">N</span>
+            </td>
+            <td>
+                <label-on :v-is-on="plan.isOn"></label-on>
+            </td>
+            <td>
+                <a href="" @click.prevent="updatePlan(plan.id)">修改</a> &nbsp; <a href="" @click.prevent="deletePlan(plan.id)">删除</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p v-if="plans.length > 0" class="comment">可以拖动左侧的<i class="icon bars"></i>排序。</p>

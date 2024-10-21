@@ -1,0 +1,54 @@
+{$layout}
+{$template "menu"}
+
+<p class="ui message error" v-if="error.length > 0">{{error}}</p>
+<div v-if="error.length == 0 && dbConfig != null">
+	<b-status-card>
+		<b-status-card-item label="主机地址">
+			{{dbConfig.host}}
+		</b-status-card-item>
+		<b-status-card-item label="数据库端口">
+			{{dbConfig.port}}
+		</b-status-card-item>
+		<b-status-card-item label="数据库名称">
+			{{dbConfig.database}}
+		</b-status-card-item>
+		<b-status-card-item label="用户名">
+			<span v-if="dbConfig.username.length > 0">{{dbConfig.username}}</span>
+			<span v-else class="disabled">不使用用户名。</span>
+		</b-status-card-item>
+		<b-status-card-item label="密码">
+			<span v-if="dbConfig.password.length > 0">{{dbConfig.password}}</span>
+			<span v-else class="disabled">不使用密码。</span>
+		</b-status-card-item>
+	</b-status-card>
+
+	<!-- <table class="ui table selectable definition">
+		<tr>
+			<td class="title">主机地址</td>
+			<td>{{dbConfig.host}}</td>
+		</tr>
+		<tr>
+			<td>数据库端口</td>
+			<td>{{dbConfig.port}}</td>
+		</tr>
+		<tr>
+			<td>数据库名称</td>
+			<td>{{dbConfig.database}}</td>
+		</tr>
+		<tr>
+			<td>用户名</td>
+			<td>
+				<span v-if="dbConfig.username.length > 0">{{dbConfig.username}}</span>
+				<span v-else class="disabled">不使用用户名。</span>
+			</td>
+		</tr>
+		<tr>
+			<td>密码</td>
+			<td>
+				<span v-if="dbConfig.password.length > 0">{{dbConfig.password}}</span>
+				<span v-else class="disabled">不使用密码。</span>
+			</td>
+		</tr>
+	</table> -->
+</div>

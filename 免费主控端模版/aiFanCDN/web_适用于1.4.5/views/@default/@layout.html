@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <title>{$ htmlEncode .teaTitle}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+    {$if eq .teaFaviconFileId 0}
+    <link rel="shortcut icon" href="/images/favicon.png" />
+    {$else}
+    <link rel="shortcut icon" href="/ui/image/{$.teaFaviconFileId}" />
+    {$end}
+    <link rel="stylesheet" type="text/css" href="/_/@default/@layout.css" media="all" />
+    {$TEA.SEMANTIC} {$TEA.VUE} {$echo "header"}
+    <script type="text/javascript" src="/_/@default/@layout.js"></script>
+    <script type="text/javascript" src="/js/components.js"></script>
+    <script type="text/javascript" src="/js/utils.min.js"></script>
+    <script type="text/javascript" src="/js/sweetalert2/dist/sweetalert2.all.min.js" async></script>
+    <script type="text/javascript" src="/js/date.tea.js"></script>
+    <script type="text/javascript" src="/js/langs/base.js?v={$ .teaVersion}"></script>
+    <script type="text/javascript" src="/js/langs/{$.teaLang}.js?v={$ .teaVersion}"></script>
+    <link rel="stylesheet" type="text/css" href="/js/langs/{$.teaLang}.css?v={$ .teaVersion}" />
+    <link rel="stylesheet" type="text/css" href="/_/@default/@layout_override.css" media="all" />
+    <link rel="stylesheet" href="/primeicons/primeicons.min.css" />
+    <link rel="stylesheet" type="text/css" href="/_/@default/ui_override.css" media="all" />
+	<link rel="stylesheet" type="text/css" media="all" href="/css/custom/layout.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="app-main-container">
+        <!-- 左侧主菜单 -->
+        <div class="b-main-menu-shadow" v-if="menuVisible"></div>
+        <div class="b-main-menu-container" :class="{visible: menuVisible}">
+			<a href="/" class="brand">
+				<i class="ui icon leaf" v-if="teaLogoFileId == 0">
+				</i>
+				<img alt="logo" v-if="teaLogoFileId > 0" :src="'/ui/image/' + teaLogoFileId" />{{teaTitle}}
+				<sup v-if="teaShowVersion">v{{teaVersion}}</sup>
+			</a>
+			<div class="b-main-menu" :class="[ teaTheme||'theme-0', ]" v-cloak="">
+				<template v-for="(module) in teaModules.filter(m=>m.isOn!=false)">
+					<!-- no sub menu -->
+					<div v-if="module.subItems == null || module.subItems.length == 0" class="module" :class="{ active: isMenuExpanded(module.code), }">
+						<a class="item" :href="Tea.url(module.code)">
+							<span class="left">
+								<i class="pi" v-if="module.icon != null" :class="iconMap[module.icon]">
+								</i>
+								<span class="module-name">{{module.name}}</span>
+								<span v-if="module.subtitle" class="subtitle">{{module.subtitle}}</span>
+							</span>
+						</a>
+					</div>
+					<!-- 其他模块 -->
+					<div v-else class="module" :class="{ active: isMenuExpanded(module.code), expend: isMenuExpanded(module.code), }">
+						<div class="item" @click="toggleMenu(module.code)">
+							<span class="left">
+								<i class="pi" v-if="module.icon != null" :class="iconMap[module.icon]">
+								</i>
+								<span class="module-name">{{module.name}}</span>
+								<span v-if="module.subtitle" class="subtitle">{{module.subtitle}}</span>
+							</span>
+							<i v-if="module.subItems?.length" class="right-arrow pi" :class="{ 'pi-angle-up': isMenuExpanded(module.code), 'pi-angle-down': !isMenuExpanded(module.code), }">
+							</i>
+						</div>
+						<div class="sub-items" v-if="isMenuExpanded(module.code)">
+							<a v-if="module.subItems.find(subItem=>subItem.url === Tea.url(module.code)) == null" class="item" :class="{ active: isSubMenuActive(Tea.url(module.code), teaSubMenu), }" :href="Tea.url(module.code)">
+								<span>{{module.name}}</span>
+							</a>
+							<a class="item" :class="{ separator: subItem.name == '-', active: isSubMenuActive(subItem.url, teaSubMenu), }" v-for="subItem in module.subItems" v-if="subItem.isOn !== false" :href="subItem.url">
+								<span v-if="subItem.name != '-'">{{subItem.name}}</span>
+							</a>
+						</div>
+					</div>
+				</template>
+			</div>
+        </div>
+        <!-- 右侧主操作栏 -->
+        <div
+          class="main"
+          :class="{'without-menu':teaSubMenus.menus == null || teaSubMenus.menus.length == 0 || (teaSubMenus.menus.length == 1 && teaSubMenus.menus[0].alwaysActive), 'without-secondary-menu':teaSubMenus.alwaysMenu == null || teaSubMenus.alwaysMenu.items.length <= 1, 'without-footer':!teaShowOpenSourceInfo}"
+          v-cloak=""
+        >
+			<!-- 顶部导航 -->
+			<div class="ui menu top-nav inverted borderless" :class="(teaTheme == null || teaTheme.length == 0) ? 'theme10': teaTheme" v-cloak="">
+				<i class="ui icon bars mobile-menu-btn" :class="{'menu-open': menuVisible}" @click="triggerMobileMenu">
+				</i>
+				<div class="right menu">
+					<div class="navs">
+						<!-- 集群同步 -->
+						<a href="" class="item" v-if="teaCheckNodeTasks && doingNodeTasks.isUpdated" @click.prevent="showNodeTasks()">
+							<span v-if="!doingNodeTasks.isDoing && !doingNodeTasks.hasError" class="hover-span">
+								<i class="pi pi-cloud disabled">
+								</i>
+								<span class="disabled">已同步节点</span>
+							</span>
+							<span v-if="doingNodeTasks.isDoing && !doingNodeTasks.hasError" class="hover-span rotate">
+								<i class="pi pi-cloud">
+								</i>
+								<span>正在同步节点...</span>
+							</span>
+							<span v-if="doingNodeTasks.hasError" class="red">
+								<i class="pi pi-cloud">
+								</i>节点同步失败</span>
+						</a>
+						<!-- DNS同步 -->
+						<a href="" class="item" v-if="teaCheckDNSTasks && doingDNSTasks.isUpdated" @click.prevent="showDNSTasks()">
+							<span v-if="!doingDNSTasks.isDoing && !doingDNSTasks.hasError" class="hover-span">
+								<i class="pi pi-globe disabled">
+								</i>
+								<span class="disabled">已同步DNS</span>
+							</span>
+							<span v-if="doingDNSTasks.isDoing && !doingDNSTasks.hasError" class="hover-span">
+								<i class="pi pi-globe">
+								</i>
+								<span>正在同步DNS...</span>
+							</span>
+							<span v-if="doingDNSTasks.hasError" class="hover-span red">
+								<i class="pi pi-globe">
+								</i>
+								<span>同步DNS失败</span>
+							</span>
+						</a>
+						<!-- 消息 -->
+						<a href="" class="item" :class="{active:teaMenu == 'message'}" @click.prevent="showMessages()">
+							<span v-if="globalMessageBadge > 0" class="hover-span">
+								<i class="pi pi-bell">
+								</i>
+								<span>消息({{globalMessageBadge}})</span>
+							</span>
+							<span v-if="globalMessageBadge == 0" class="hover-span">
+								<i class="pi pi-bell disabled">
+								</i>
+								<span class="disabled">消息(0)</span>
+							</span>
+						</a>
+						<a href="" class="item" title="switch language" @click.prevent="switchLang">
+							<i class="pi pi-language">
+							</i>
+						</a>
+						<a href="" class="item" title="switch dark mode" @click.prevent="switchDarkMode">
+							<i v-if="templateMode=='light'" class="pi pi-moon"></i>
+							<i v-else class="pi pi-sun"></i>
+						</a>
+						<a href="" class="item" @click.prevent="notesShow=true"><i class="pi pi-notice"></i></a>
+					</div>
+					<div class="navs user">
+						<!-- 用户信息 -->
+						<a href="/settings/profile" class="item">
+							<img class="avatar" src="/images/avatar.png" v-if="teaUserAvatar.length == 0"/>
+							<img class="avatar" :src="teaUserAvatar" v-if="teaUserAvatar.length > 0"/>
+						    <span class="name">{{teaUsername}}</span>
+						</a>
+						<!-- 退出登录 -->
+						<a :href="Tea.url('logout')" class="logout" title="安全退出登入"><i class="pi pi-sign-out"></i><span>退出登入</span></a>
+					</div>
+				</div>
+			</div>
+          <!-- 功能区 -->
+          <div class="main-box">
+            <template v-if="teaTabbar.length > 1">
+              <!-- header with breadcrumb -->
+              <template v-if="teaTabbar[0].icon==='left arrow'">
+                <!-- <b-breadcrumb :url="teaTabbar[0].url" :current="teaTabbar[1].name">
+                  {{breadcrumbs[teaTabbar[0].url] || '列表'}}
+                </b-breadcrumb> -->
+                <!-- <div class="b-breadcrumb">
+                  <span class="back-container">
+                    <svg data-v-a6e9e3fd="" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4"><path data-v-a6e9e3fd="" stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path></svg>
+                    <a :href="teaTabbar[0].url">
+                      {{breadcrumbs[teaTabbar[0].url] || '列表'}}
+                    </a>
+                  </span>
+                  <i class="pi pi-angle-right arrow-right"></i>
+                  <span class="current-name">
+                    {{teaTabbar[1].name}}
+                  </span>
+                </div> -->
+
+                <!-- <b-page-header :back-url="teaTabbar[0].url" :sub-title="teaTabbar[1].subName">
+                  {{teaTabbar[1].name}}
+                </b-page-header> -->
+
+                <!-- <div class="b-page-head">
+                  <a :href="teaTabbar[0].url" class="back-btn">
+                    <i class="pi pi-arrow-left"></i>
+                  </a>
+      
+                  <span class="name">
+                    {{teaTabbar[1].name}}
+                    <span v-if="teaTabbar[1].subName.length > 0">
+                      ({{teaTabbar[1].subName}})
+                    </span>
+                  </span>
+                </div> -->
+                
+                <!-- 操作菜单 -->
+                <first-menu>
+					<menu-item v-if="teaTabbar.length>0" :href="teaTabbar[0].url">
+						<i class="pi pi-angle-left" style="font-size: 1.2rem;"></i>
+					</menu-item>
+                  <menu-item
+                    v-for="item in teaTabbar.slice(2)"
+                    :href="item.url"
+                    :class="{
+                      'active':item.isActive && !item.isDisabled,
+                    }"
+                  >
+                    <i v-if="item.icon != null && item.icon.length > 0"
+                      class="pi"
+                      :class="iconMap2[item.icon]"
+                    ></i>
+                    {{item.name}}
+                    <span v-if="item.subName.length > 0">({{item.subName}})</span>
+                  </menu-item>
+                </first-menu>
+              </template>
+
+              <!-- header without breadcrumb -->
+              <template v-else>
+                <first-menu>
+                  <menu-item
+                    v-for="item in teaTabbar"
+                    :href="item.url"
+                    :class="{
+                      'active':item.isActive && !item.isDisabled,
+                    }"
+                  >
+                    <i v-if="item.icon != null && item.icon.length > 0"
+                      class="pi"
+                      :class="iconMap2[item.icon]"
+                    ></i>
+                    {{item.name}}
+                    <span v-if="item.subName.length > 0">({{item.subName}})</span>
+                  </menu-item>
+                </first-menu>
+              </template>
+              <!-- <div class="ui top menu tabular tab-menu small">
+                <a
+                  class="item"
+                  v-for="item in teaTabbar.slice(2)"
+                  :class="{
+                    'active':item.isActive && !item.isDisabled,
+                    right:item.isRight,
+                    title: item.isTitle,
+                    icon: item.icon != null && item.icon.length > 0,
+                    disabled: item.isDisabled
+                  }"
+                  :href="item.url"
+                >
+                  <var>
+                      <i
+                        class="pi"
+                        :class="iconMap2[item.icon]"
+                        v-if="item.icon != null && item.icon.length > 0"
+                      ></i>
+                      {{item.name}}
+                      <span v-if="item.subName.length > 0">({{item.subName}})</span>
+                  </var>
+                  <var v-if="item.isTitle && typeof _data.node == 'object'"
+                    >{{node.name}}</var
+                  >
+                  <div
+                    class="bottom-indicator"
+                    v-if="item.isActive && !item.isTitle"
+                  ></div>
+                </a>
+              </div> -->
+            </template>
+
+            {$TEA.VIEW}
+            <!-- <div class="clear"></div> -->
+			<div class="power">Theme Power by <a href="https://github.com/Kuaien/GoedgeWorks" target="_blank">@Kuaien</a></div>
+			<div v-draggable class="notes-box" v-show="notesShow">
+				<div class="head">
+					<div class="title">便签</div>
+					<div class="close" @click.prevent="notesShow=false">
+						<i class="pi pi-remove"></i>
+					</div>
+				</div>
+				<div class="notes">
+					<textarea @pointerdown.stop.native rows="5" @input="handleNotes" v-model="notesText"></textarea>
+				</div>
+			</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 底部 -->
+      {$template "/footer"}
+    </div>
+
+    {$echo "footer"}
+  </body>
+</html>

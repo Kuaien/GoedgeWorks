@@ -1,0 +1,82 @@
+{$layout "layout_popup"}
+
+<!-- <h3>创建高防实例</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr v-if="packageId > 0">
+            <td>所属产品</td>
+            <td>{{packageSummary}}
+                <input type="hidden" name="packageId" :value="packageId"/>
+            </td>
+        </tr>
+        <tbody v-if="packageId == 0">
+            <tr>
+                <td>所属线路 *</td>
+                <td>
+                    <div v-if="networks.length > 0">
+                        <b-select
+                            name="networkId"
+                            v-model="networkId"
+                            auto-width
+                            :options="[
+                                {label: '[选择线路]', value: '0'},
+                                ...networks.map(network => ({
+                                    label: network.name??'',
+                                    value: network.id??'',
+                                }))
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown auto-width" name="networkId" v-model="networkId">
+                            <option value="0">[选择线路]</option>
+                            <option v-for="network in networks" :value="network.id">{{network.name}}</option>
+                        </select> -->
+                    </div>
+                    <span class="red" v-if="networks.length == 0">尚未创建线路和产品。</span>
+                </td>
+            </tr>
+            <tr>
+                <td>所属产品 *</td>
+                <td>
+                    <div v-show="networkId > 0">
+                        <b-select
+                            name="packageId"
+                            v-model="packageId"
+                            auto-width
+                            :options="[
+                                {label: '[选择产品]', value: '0'},
+                                ...p.networkId == networkId?packages.map(p => ({
+                                    label: p.summary??'',
+                                    value: p.id??'',
+                                })):[],
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown auto-width" name="packageId">
+                            <option value="0">[选择产品]</option>
+                            <option v-for="p in packages" :value="p.id" v-if="p.networkId == networkId">{{p.summary}}</option>
+                        </select> -->
+                    </div>
+                    <span v-if="networkId == 0" class="grey">请先选择线路</span>
+                </td>
+            </tr>
+        </tbody>
+        <tr>
+            <td class="title">部署集群 *</td>
+            <td>
+                <node-cluster-combo-box></node-cluster-combo-box>
+                <p class="comment">用于防护的网站部署的集群。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>高防IP *</td>
+            <td>
+                <values-box name="ipAddresses" placeholder="x.x.x.x" maxlength="64" :validator="ipValidator"></values-box>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn>保存</submit-btn>
+</form>

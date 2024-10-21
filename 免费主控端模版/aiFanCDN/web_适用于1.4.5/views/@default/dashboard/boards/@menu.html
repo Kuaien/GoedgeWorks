@@ -1,0 +1,11 @@
+
+<first-menu>
+    <menu-item href="/dashboard/boards" code="index">{{LANG('admin_dashboard@ui_overview')}}</menu-item>
+    <menu-item href="/dashboard/boards/waf" code="waf">
+        {{LANG('admin_dashboard@ui_waf')}}
+        <span v-if="countTodayAttacks > 0" :class="{red: countTodayAttacks != countTodayAttacksRead}">({{countTodayAttacksFormat}})</span>
+    </menu-item>
+    <menu-item href="/dashboard/boards/dns" code="dns">{{LANG('admin_dashboard@ui_dns')}}</menu-item>
+    <menu-item href="/dashboard/boards/user" code="user">{{LANG('admin_dashboard@ui_user')}}</menu-item>
+    <menu-item href="/dashboard/boards/events" code="event">{{LANG('admin_dashboard@ui_events')}}<span :class="{red: countEvents > 0}">({{countEvents}})</span></menu-item>
+</first-menu>

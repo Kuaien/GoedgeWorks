@@ -1,0 +1,32 @@
+{$layout}
+{$template "../menu"}
+
+<b-empty v-if="libraries.length == 0">暂时还没有已完成的IP库。</b-empty>
+
+<p class="ui message" v-if="isGenerating">正在生成IP库文件，请耐心等待...</p>
+
+<table class="ui table selectable celled" v-if="libraries.length > 0">
+    <thead>
+        <tr>
+            <th class="three wide">IP库名称</th>
+            <th>库文件生成时间</th>
+            <th style="width: 13em">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="library in libraries">
+        <td>{{library.name}}</td>
+        <td>
+            <span v-if="library.generatedFileId > 0">{{library.generatedTime}}
+                &nbsp; <a :href="'/settings/ip-library/library/download?libraryFileId=' + library.id" title="下载"><i class="icon download small"></i></a>
+            </span>
+            <span v-else class="disabled">尚未生成</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="generateLibrary(library.id)" :class="{disabled: isGenerating}">重新生成</a> &nbsp;
+            <span class="disabled">|</span> &nbsp;
+            <a :href="'/settings/ip-library/libraries/create?libraryFileId=' + library.id" :class="{disabled: isGenerating}">修改</a> &nbsp;
+            <span class="disabled">|</span> &nbsp;
+            <a href="" @click.prevent="deleteLibrary(library.id)" :class="{disabled: isGenerating}">删除</a>
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,79 @@
+{$layout}
+{$template "../user_menu"}
+
+<second-menu>
+    <menu-item :href="'/users/identity?userId=' + user.id" active="true">个人<span v-if="user.hasNewIndividualIdentity" class="red">(待审核)</span></menu-item>
+    <menu-item :href="'/users/identity/enterprise?userId=' + user.id">企业<span v-if="user.hasNewEnterpriseIdentity" class="red">(待审核)</span></menu-item>
+</second-menu>
+
+<b-empty v-if="identity == null">暂时还没有实名认证信息。</b-empty>
+
+<div v-if="identity != null">
+    <div class="margin"></div>
+    <form class="ui form">
+        <table class="ui table selectable definition">
+            <tr>
+                <td class="title">真实姓名</td>
+                <td>
+                    {{identity.realName}}
+                </td>
+            </tr>
+            <tr>
+                <td>身份证号</td>
+                <td>
+                    {{identity.number}}
+                </td>
+            </tr>
+            <tr>
+                <td>身份证 - 照片面</td>
+                <td>
+                    <div class="idcard-bg">
+                        <a :href="'/files/file?fileId=' + identity.backFileId" target="_blank"><img :src="'/files/file?fileId=' + identity.backFileId" v-if="identity != null && identity.backFileId > 0" alt=""/></a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>身份证 - 国徽面</td>
+                <td>
+                    <div class="idcard-bg">
+                        <a :href="'/files/file?fileId=' + identity.frontFileId" target="_blank"><img :src="'/files/file?fileId=' + identity.frontFileId" v-if="identity != null && identity.frontFileId > 0" alt=""/></a>
+                    </div>
+                </td>
+            </tr>
+            <tr v-if="isRejecting">
+                <td>驳回理由 *</td>
+                <td>
+                    <textarea v-model="rejectReason" placeholder="填写驳回原因，方便用户改正" rows="3" ref="rejectReasonBox"></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <div v-if="identity != null">
+            <!-- 待提交 -->
+            <div v-if="identity.status == 'none'">
+                <div class="ui message warning">已上传，等待用户提交审核。</div>
+            </div>
+
+            <!-- 已提交 -->
+            <div v-if="identity.status == 'submitted'">
+               <div v-if="!isRejecting">
+                   <a href="" class="ui button primary" @click.prevent="verify">审核通过</a> &nbsp; &nbsp; <a href="" class="ui button" @click.prevent="reject">驳回</a>
+               </div>
+                <div v-if="isRejecting">
+                    <a href="" class="ui button primary" @click.prevent="rejectConfirm">确定驳回</a> &nbsp; &nbsp; <a href="" @click.prevent="cancelRejecting()">取消</a>
+                </div>
+            </div>
+
+            <!-- 已拒绝 -->
+            <div v-if="identity.status == 'rejected'">
+                <div class="ui message error">审核不通过，原因：{{identity.rejectReason}}。</div>
+            </div>
+
+            <!-- 已通过 -->
+            <div v-if="identity.status == 'verified'">
+                <div class="ui message success">实名认证审核通过。</div>
+                <button class="ui button" type="button" @click.prevent="resetStatus">重置状态</button>
+            </div>
+        </div>
+    </form>
+</div>

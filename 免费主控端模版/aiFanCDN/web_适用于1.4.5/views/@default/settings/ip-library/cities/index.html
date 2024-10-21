@@ -1,0 +1,58 @@
+{$layout}
+{$template "../menu"}
+
+<div class="margin"></div>
+
+<form class="ui form" method="get" action="/settings/ip-library/cities">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <combo-box name="countryId" :v-items="countries" :v-value="countryId" @change="changeCountry" placeholder="国家/地区"></combo-box>
+        </div>
+        <div class="ui field">
+            <combo-box name="provinceId" :data-url="'/settings/ip-library/cities/provinceOptions?countryId=' + countryId" data-key="provinces" :v-value="provinceId" ref="provinceOptionsRef" placeholder="省/州"></combo-box>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="cities.length == 0">暂时还没有城市/市。</b-empty>
+
+<p class="ui basic message" v-if="cities.length > 0">共 {{cities.length}} 个城市/市。</p>
+
+<table class="ui table selectable celled" v-if="cities.length > 0">
+    <thead>
+    <tr>
+        <th style="width: 3em">ID</th>
+        <th style="width: 12em">城市/市名称</th>
+        <th style="width: 12em">内置别名</th>
+        <th style="width: 12em">自定义名称 <tip-icon content="修改在界面上显示的城市/市名称"></tip-icon></th>
+        <th style="width: 12em">自定义别名 <tip-icon content="可以在IP库中通过别名找到当前城市/市，比如通过”北京市“、”北京“都能找到北京"></tip-icon></th>
+        <th class="one op">操作</th>
+    </tr>
+    </thead>
+    <tr v-for="city in cities">
+        <td>{{city.id}}</td>
+        <td>{{city.name}}</td>
+        <td>
+            <div v-if="city.codes.length > 0">
+                <span v-for="code in city.codes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">无</span>
+        </td>
+        <td>
+            <span v-if="city.customName.length > 0">{{city.customName}}</span>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <div v-if="city.customCodes.length > 0">
+                <span v-for="code in city.customCodes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateCity(city.id)">修改</a>
+        </td>
+    </tr>
+</table>

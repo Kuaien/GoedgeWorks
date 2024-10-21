@@ -1,0 +1,98 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td>必须使用套餐</td>
+            <td>
+                <checkbox name="requirePlan" v-model="config.requirePlan"></checkbox>
+                <p class="comment">选中后，用户在创建网站时，必须选择一个套餐。</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="title">网站分组<optional-label></optional-label></td>
+            <td>
+                <b-select
+                    name="groupId"
+                    v-model="config.groupId"
+                    auto-width
+                    :options="[
+                        {label: '[选择分组]', value: '0'},
+                        ...groups.map(group => ({
+                            label: group.name,
+                            value: group.id,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="groupId" v-model="config.groupId">
+                    <option value="0">[选择分组]</option>
+                    <option v-for="group in groups" :value="group.id">{{group.name}}</option>
+                </select> -->
+                <p class="comment">用户创建的新网站自动加入此分组。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>启用统计</td>
+            <td>
+                <checkbox name="enableStat" v-model="config.enableStat"></checkbox>
+                <p class="comment">选中后，用户在创建网站后，自动启用统计。</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><more-options-indicator></more-options-indicator></td>
+        </tr>
+        <tbody v-show="moreOptionsVisible">
+            <tr>
+                <td>缓存清理任务限制</td>
+                <td>
+                    <div class="ui fields">
+                        <div class="ui field" style="width: 15em">
+                            <div class="ui input right labeled">
+                                <digit-input name="purgeMaxKeysPerTask" v-model="config.httpCacheTaskPurgeConfig.maxKeysPerTask"></digit-input>
+                                <span class="ui label">个URL/每任务</span>
+                            </div>
+                            <p class="comment">每次能提交的最多URL数量，默认{{defaultMaxCacheKeysPerTask}}。</p>
+                        </div>
+                    </div>
+                    <div class="ui fields">
+                        <div class="ui field" style="width: 16em">
+                            <div class="ui input right labeled">
+                                <digit-input name="purgeMaxKeysPerDay" v-model="config.httpCacheTaskPurgeConfig.maxKeysPerDay"></digit-input>
+                                <span class="ui label">个URL/天/每用户</span>
+                            </div>
+                            <p class="comment">每天每个用户能提交的最多URL数量，默认{{defaultMaxCacheKeysPerDay}}。</p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>缓存预热任务限制</td>
+                <td>
+                    <div class="ui fields">
+                        <div class="ui field" style="width: 15em">
+                            <div class="ui input right labeled">
+                                <digit-input name="fetchMaxKeysPerTask" v-model="config.httpCacheTaskFetchConfig.maxKeysPerTask" style="width: 5em"></digit-input>
+                                <span class="ui label">个URL/每任务</span>
+                            </div>
+                            <p class="comment">每次能提交的最多URL数量，默认{{defaultMaxCacheKeysPerTask}}。</p>
+                        </div>
+                    </div>
+                    <div class="ui fields">
+                        <div class="ui field" style="width: 16em">
+                            <div class="ui input right labeled">
+                                <digit-input name="fetchMaxKeysPerDay" v-model="config.httpCacheTaskFetchConfig.maxKeysPerDay" style="width: 5em"></digit-input>
+                                <span class="ui label">个URL/天/每用户</span>
+                            </div>
+                            <p class="comment">每天每个用户能提交的最多URL数量，默认{{defaultMaxCacheKeysPerDay}}。</p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <submit-btn></submit-btn>
+</form>

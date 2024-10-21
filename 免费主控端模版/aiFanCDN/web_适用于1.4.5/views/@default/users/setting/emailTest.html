@@ -1,0 +1,74 @@
+{$layout "layout_popup"}
+
+<!-- <h3>邮件发送测试</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="successSend" data-tea-before="before" data-tea-done="done">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="configJSON" :value="JSON.stringify(config)"/>
+    <table class="ui table selectable definition">
+        <tr>
+            <td>SMTP地址 *</td>
+            <td>
+                <span v-if="config.smtpHost.length > 0">{{config.smtpHost}}</span>
+                <span v-else class="red">没有设置。</span>
+            </td>
+        </tr>
+        <tr>
+            <td>SMTP端口 *</td>
+            <td>
+                <span v-if="config.smtpPort > 0">{{config.smtpPort}}</span>
+                <span v-else class="red">没有设置。</span>
+            </td>
+        </tr>
+        <tr>
+            <td>用户名 *</td>
+            <td>
+                <span v-if="config.username.length > 0">{{config.username}}</span>
+                <span v-else class="red">没有设置。</span>
+            </td>
+        </tr>
+        <tr>
+            <td>密码 *</td>
+            <td>
+                <span v-if="config.password.length > 0"><span v-for="i in config.password.length">*</span></span>
+                <span v-else class="red">没有设置。</span>
+            </td>
+        </tr>
+        <tr>
+            <td>发件人Email *</td>
+            <td>
+                <span v-if="config.fromEmail.length > 0">{{config.fromEmail}}</span>
+                <span v-else class="red">没有设置。</span>
+            </td>
+        </tr>
+        <tr>
+            <td>发件人名称</td>
+            <td>
+                <span v-if="config.fromName.length > 0">{{config.fromName}}</span>
+                <span v-else class="disabled">使用默认。</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">收件人Email *</td>
+            <td>
+                <input type="text" name="toEmail" placeholder="test@example.com" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">测试标题 *</td>
+            <td>
+                <input type="text" maxlength="100" name="subject" value="这是一封测试邮件"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="color-border">测试内容 *</td>
+            <td>
+                <textarea name="body" rows="3">&lt;p&gt;测试邮件内容 1&lt;/p&gt;
+&lt;p&gt;测试邮件内容 2&lt;/p&gt;</textarea>
+                <p class="comment">通常支持HTML。</p>
+            </td>
+        </tr>
+    </table>
+    <submit-btn v-show="!isSending">发送测试邮件</submit-btn>
+    <button class="ui button disabled" type="button" v-show="isSending">发送中...</button>
+</form>

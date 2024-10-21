@@ -1,0 +1,40 @@
+{$layout}
+{$template "../menu"}
+
+<second-menu>
+    <menu-item @click.prevent="createNetwork">
+        <i class="pi pi-pen-to-square"></i>
+        创建线路
+    </menu-item>
+</second-menu>
+
+<b-empty v-if="networks.length == 0">暂时还没有线路。</b-empty>
+
+<div v-if="networks.length > 0">
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th class="three wide">线路名称</th>
+                <th>描述</th>
+                <th class="width10">状态</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tbody v-for="network in networks">
+            <tr>
+                <td>
+                    <a href="" @click.prevent="updateNetwork(network.id)">{{network.name}}  <i class="icon expand small"></i></a>
+                </td>
+                <td>
+                    <span v-if="network.description.length > 0">{{network.description}}</span>
+                    <span v-else class="disabled">暂时没有描述</span>
+                </td>
+                <td><label-on :v-is-on="network.isOn"></label-on></td>
+                <td>
+                    <a href="" @click.prevent="updateNetwork(network.id)">修改</a> &nbsp;
+                    <a href="" @click.prevent="deleteNetwork(network.id)">删除</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

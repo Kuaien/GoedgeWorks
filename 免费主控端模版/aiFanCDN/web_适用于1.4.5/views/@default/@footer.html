@@ -1,0 +1,8 @@
+<div id="footer" class="ui menu inverted borderless small" v-if="teaShowOpenSourceInfo">
+    <a  href="/settings/upgrade" class="item" title="点击进入检查版本更新页面">{{teaName}} v{{teaVersion}}</a>
+    <a href="https://goedge.cloud" target="_blank" class="item">官网</a>
+    <a href="https://goedge.cloud/docs" target="_blank" class="item">文档</a>
+    <a href="https://github.com/TeaOSLab/EdgeAdmin" target="_blank" class="item">GitHub</a>
+    <a href="https://github.com/TeaOSLab/EdgeAdmin/issues" target="_blank" class="item">提Bug</a>
+    <a class="item right" href="https://goedge.cloud/commercial" target="_blank" v-if="!teaIsPlus">企业版</a>
+</div>

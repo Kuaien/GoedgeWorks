@@ -1,0 +1,81 @@
+{$layout}
+{$template "menu"}
+
+<p class="ui message warning" v-if="!enablePay">暂时未启用在线支付，去<a href="/finance/orders/setting">设置</a>。</p>
+
+
+<div class="margin"></div>
+<form class="ui form" action="/finance/orders">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <finance-user-selector :v-user-id="userId"></finance-user-selector>
+        </div>
+        <div class="ui field">
+            <b-select
+                name="status"
+                v-model="status"
+                :options="[
+                    {label: '[状态]', value: ''},
+                    ...statusList.map(statusDef => ({
+                        label: statusDef.name,
+                        value: statusDef.code,
+                    }))
+                ]"
+            ></b-select>
+
+            <!-- <select class="ui dropdown" name="status" v-model="status">
+                <option value="">[状态]</option>
+                <option v-for="statusDef in statusList" :value="statusDef.code">{{statusDef.name}}</option>
+            </select> -->
+        </div>
+        <div class="ui field">
+            <input type="text" placeholder="订单号" name="keyword" v-model="keyword"/>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+            &nbsp;
+            <a href="/finance/orders" v-if="userId > 0 || status.length > 0 || keyword.length > 0">[清除条件]</a>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="orders.length == 0" large>暂时还没有订单。</b-empty>
+
+<table class="ui table selectable celled" v-if="orders.length > 0">
+    <thead>
+        <tr>
+            <th style="width: 12em">订单号</th>
+            <th>订单金额</th>
+            <th style="width: 12em">创建时间</th>
+            <th>类型</th>
+            <th>状态</th>
+            <th>支付方式</th>
+            <th>用户</th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="order in orders">
+        <td><a :href="'/finance/orders/order?orderCode=' + order.code"><keyword :v-word="keyword">{{order.code}}</keyword></a></td>
+        <td>￥{{order.amount}}</td>
+        <td>{{order.createdTime}}</td>
+        <td>
+            <span>{{order.typeName}}</span>
+        </td>
+        <td>
+            <span :class="{green: order.status == 'finished', disabled: order.status == 'cancelled'}">{{order.statusName}}</span>
+        </td>
+        <td>
+            <span v-if="order.method.id > 0">{{order.method.name}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td>
+            <user-link :v-user="order.user" v-if="order.user.id > 0"></user-link>
+            <span v-if="order.user.id == 0" class="disabled">[已删除]</span>
+        </td>
+        <td>
+            <a :href="'/finance/orders/order?orderCode=' + order.code">详情</a>
+        </td>
+    </tr>
+</table>
+
+<page-box></page-box>

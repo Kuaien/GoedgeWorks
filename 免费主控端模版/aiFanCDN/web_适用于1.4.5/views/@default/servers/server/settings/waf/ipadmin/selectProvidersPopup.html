@@ -1,0 +1,28 @@
+{$layout "layout_popup"}
+
+<!-- <h3 v-show="type == 'allow'">选择允许的运营商</h3>
+<h3 v-show="type == 'deny'">选择封禁的运营商</h3> -->
+
+<form class="ui form">
+    <table class="ui table">
+        <tr>
+            <td>
+                <first-menu>
+                    <div class="item right">
+                        <checkbox v-model="isCheckingAll" @click.prevent="checkAll">全选</checkbox>
+                    </div>
+                </first-menu>
+
+                <div class="providers-list" style="margin-top:0.5em">
+                    <div class="item" v-for="provider in providers">
+                        <checkbox v-model="provider.isChecked" @click.prevent="selectProvider(provider)">
+                            {{provider.name}}
+                        </checkbox>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </td>
+        </tr>
+    </table>
+    <button class="ui button primary" type="button" @click.prevent="submit">确定</button>
+</form>

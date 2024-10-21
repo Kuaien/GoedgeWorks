@@ -1,0 +1,130 @@
+{$layout}
+
+{$var "header"}
+<!-- world map -->
+<script type="text/javascript" src="/js/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="/js/world.js"></script>
+<script type="text/javascript" src="/js/world-countries-map.js"></script>
+{$end}
+
+<!-- <first-menu>
+    <menu-item href="/servers">网站列表</menu-item>
+    <span class="item disabled">|</span>
+    <menu-item :href="'/servers/server?serverId=' + server.id" active="true">"{{server.name}}"看板</menu-item>
+    <span class="separator">|</span>
+    <more-items-angle
+            :v-data-url="'/servers/nearby?serverId=' + server.id"
+            :v-url="'/servers/server/boards?serverId=${serverId}'"></more-items-angle>
+</first-menu> -->
+
+<!-- 加载中 -->
+<div style="margin-top: 0.8em">
+    <div class="ui message loading" v-if="isLoading">
+        <div class="ui active inline loader small"></div>  &nbsp; 数据加载中...
+    </div>
+</div>
+
+<!-- 总体统计 -->
+<div class="ui all-chart">
+	<div class="ui three columns grid counter-chart" v-if="!isLoading">
+		<div class="ui column">
+			<a class="ui cologe"><i class="pi pi-icon44"></i></a>
+			<h4>上月峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="lastMonthlyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column">
+			<a class="ui cologe"><i class="pi pi-icon45"></i></a>
+			<h4>当月峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="monthlyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column with-border">
+			<a class="ui cologe"><i class="pi pi-icon38"></i></a>
+			<h4>当天峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="dailyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column" style="border-bottom: 1px rgba(0, 0, 0, 0.1) solid;">
+			<a class="ui cologe"><i class="pi pi-icon37"></i></a>
+			<h4>当前峰值带宽</h4>
+			<div class="value"><bits-var :v-bits="minutelyPeekBandwidthBits"></bits-var></div>
+		</div>
+		<div class="ui column">
+			<a class="ui cologe"><i class="pi pi-icon28"></i></a>
+			<h4>当天独立IP</h4>
+			<div class="value">
+				<span v-if="dailyCountIPs > 0">{{dailyCountIPsFormat}}</span>
+				<span v-else class="disabled">尚无数据</span>
+			</div>
+		</div>
+		<div class="ui column with-border">
+			<a class="ui cologe"><i class="pi pi-icon34"></i></a>
+			<h4>当天流量</h4>
+			<div class="value"><bytes-var :v-bytes="dailyTrafficBytes"></bytes-var></div>
+		</div>
+	</div>
+</div>
+
+<chart-columns-grid>
+    <div class="ui column">
+        <!-- 流量地图 -->
+        <div v-if="!isLoading">
+            <traffic-map-box :v-stats="topCountryStats"></traffic-map-box>
+        </div>
+    </div>
+
+    <div class="ui column">
+        <!-- 带宽图表 -->
+        <div class="ui menu text" v-show="!isLoading">
+            <a href="" class="item" :class="{active: bandwidthTab == 'minutely'}" @click.prevent="selectBandwidthTab('minutely')">最近带宽<span class="small grey">（比特）</span></a>
+            <a href="" class="item" :class="{active: bandwidthTab == 'hourly'}" @click.prevent="selectBandwidthTab('hourly')">按小时带宽<span class="small grey">（比特）</span></a>
+            <a href="" class="item" :class="{active: bandwidthTab == 'daily'}" @click.prevent="selectBandwidthTab('daily')">按天带宽<span class="small grey">（比特）</span></a>
+            <a :href="'/servers/traffic-stats?serverId=' + server.id" class="item right">更多</a>
+        </div>
+        <div class="ui divider"></div>
+        <div class="chart-box" id="bandwidth-chart"></div>
+    </div>
+
+    <div class="ui column">
+        <!-- 流量图表 -->
+        <div class="ui menu text" v-show="!isLoading">
+            <a href="" class="item" :class="{active: trafficTab == 'hourly'}" @click.prevent="selectTrafficTab('hourly')">24小时流量趋势</a>
+            <a href="" class="item" :class="{active: trafficTab == 'daily'}" @click.prevent="selectTrafficTab('daily')">15天流量趋势</a>
+        </div>
+        <div class="ui divider"></div>
+
+        <!-- 按小时统计流量 -->
+        <div class="chart-box" id="hourly-traffic-chart" v-show="trafficTab == 'hourly'"></div>
+
+        <!-- 按日统计流量 -->
+        <div class="chart-box" id="daily-traffic-chart" v-show="trafficTab == 'daily'"></div>
+    </div>
+
+    <div class="ui column">
+        <div class="ui menu text" v-show="!isLoading">
+            <a href="" class="item" :class="{active: requestsTab == 'hourly'}" @click.prevent="selectRequestsTab('hourly')">24小时访问量趋势</a>
+            <a href="" class="item" :class="{active: requestsTab == 'daily'}" @click.prevent="selectRequestsTab('daily')">15天访问量趋势</a>
+        </div>
+        <div class="ui divider"></div>
+
+        <!-- 按小时统计访问量 -->
+        <div class="chart-box" id="hourly-requests-chart" v-show="requestsTab == 'hourly'"></div>
+
+        <!-- 按日统计访问量 -->
+        <div class="chart-box" id="daily-requests-chart" v-show="requestsTab == 'daily'"></div>
+    </div>
+
+    <div class="ui column">
+        <!-- 域名排行 -->
+        <h4 v-show="!isLoading">域名访问排行 <span>（24小时）</span></h4>
+        <div class="ui divider"></div>
+        <div class="chart-box" id="top-domains-chart"><loading-message>数据加载中...</loading-message></div>
+    </div>
+
+    <!-- 指标 -->
+    <metric-chart v-for="chart in metricCharts"
+                  :key="chart.id"
+                  :v-chart="chart.chart"
+                  :v-stats="chart.stats"
+                  :v-item="chart.item"
+                  :v-column="true">
+    </metric-chart>
+</chart-columns-grid>

@@ -1,0 +1,39 @@
+{$layout "layout_popup"}
+
+<!-- <h3>高防产品"防护{{package.protectionBandwidthSize}}{{package.protectionBandwidthUnit.toBitUpper()}}/业务{{package.serverBandwidthSize}}{{package.serverBandwidthUnit.toBitUpper()}}"价格</h3> -->
+
+<div v-if="periods.length == 0">
+    <b-empty>暂时还没有有效期选项。</b-empty>
+</div>
+
+<div v-if="periods.length > 0">
+    <table class="ui table celled selectable">
+        <thead>
+            <tr>
+                <th class="two wide">有效期</th>
+                <th>价格</th>
+            </tr>
+        </thead>
+        <tbody v-for="period in periods">
+            <tr>
+                <td>{{period.name}}</td>
+                <td>
+                    <span v-if="prices[period.id] > 0">{{prices[period.id]}}元</span>
+                    <span v-else class="disabled">[无]</span>
+                    <div>
+                        <a href="" @click.prevent="editPrice(period.id)"><span class="small">[设置]</span></a>
+                        <div v-show="editingPeriodId == period.id">
+                            <div class="ui input small right labeled">
+                                <input type="text" size="6" maxlength="6" :ref="'input' + period.id" placeholder="价格" @keyup.enter="savePrice(period.id)" @keypress.enter.prevent="1"/>
+                                <span class="ui label">元</span>
+                            </div>
+                            <div style="margin-top: 0.6em">
+                                <button class="ui button tiny primary" type="button" @click.prevent="savePrice(period.id)">保存</button> &nbsp; <a href="" title="取消" @click.prevent="cancelEditing"><i class="pi pi-times"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

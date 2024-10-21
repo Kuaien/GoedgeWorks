@@ -1,0 +1,55 @@
+{$layout}
+{$template "menu"}
+
+<b-empty v-if="bills.length == 0">暂时还没有账单。</b-empty>
+
+<table class="ui table selectable celled" v-if="bills.length > 0">
+    <thead>
+        <tr>
+            <th class="three wide">账单编号</th>
+            <th>用户</th>
+            <th style="width: 6em">结算周期</th>
+            <th style="width: 6em">月份</th>
+            <th style="width: 7em">日期</th>
+            <th style="width: 7em">项目</th>
+            <th class="wide10">金额</th>
+            <th style="width: 5em">已支付</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="bill in bills">
+        <td>
+            <a :href="'/finance/bills/bill?billId=' + bill.id">{{bill.code}}</a>
+
+            <div v-if="bill.isOverdue">
+                <span class="ui red basic small">逾期</span>
+            </div>
+        </td>
+        <td><user-link :v-user="bill.user"></user-link></td>
+        <td>{{bill.pricePeriodName}}</td>
+        <td>{{bill.month}}</td>
+        <td>
+            <span v-if="bill.pricePeriod == 'daily'">
+                <span v-if="bill.dayFrom == bill.dayTo">{{bill.dayFrom}}</span>
+                <span v-else>{{bill.dayFrom}} - {{bill.dayTo}}</span>
+            </span>
+        </td>
+        <td>{{bill.typeName}}</td>
+        <td><span :class="{disabled: bill.amount == '0'}">¥{{bill.amount}}元</span>
+            <span v-if="!bill.canPay" class="small grey"><br/>预估</span>
+        </td>
+        <td>
+            <span class="green" v-if="bill.isPaid">Y</span>
+            <span v-else class="disabled">N</span>
+        </td>
+        <td>
+            <span v-if="bill.isPaid" class="disabled" title="已支付，无需重复支付">已支付</span>
+            <span v-else>
+                 <a href="" v-if="bill.canPay" @click.prevent="payBill(bill.id)">支付</a>
+                <span v-else class="disabled"></span>
+            </span>
+        </td>
+    </tr>
+</table>
+
+<div class="page" v-html="filterPageContent(page)"></div>

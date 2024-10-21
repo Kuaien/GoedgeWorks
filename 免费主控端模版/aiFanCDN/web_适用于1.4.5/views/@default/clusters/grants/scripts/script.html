@@ -1,0 +1,27 @@
+{$layout}
+{$template "/code_editor"}
+
+<first-menu>
+    <menu-item href="/clusters/grants">认证列表</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item href="/clusters/grants/scripts">节点初始化脚本库</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item :href="'.script?scriptId=' + script.id" class="active">"{{script.name}}"详情</menu-item>
+    <menu-item :href="'.update?scriptId=' + script.id">修改</menu-item>
+</first-menu>
+
+<table class="ui table definition selectable">
+    <tr>
+        <td class="title">脚本名</td>
+        <td>
+            {{script.name}}
+        </td>
+    </tr>
+    <tr>
+        <td>脚本代码</td>
+        <td>
+            <source-code-box type="application/javascript" name="code">{{script.code}}</source-code-box>
+            <p class="comment"><a :href="'/clusters/grants/scripts/update?scriptId=' + script.id + '&editingCode=1'">[修改代码]</a></p>
+        </td>
+    </tr>
+</table>

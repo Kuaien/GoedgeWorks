@@ -1,0 +1,13 @@
+<b-breadcrumb url="/admins" :current="`管理员（${admin.fullname}）`">
+    管理员列表
+</b-breadcrumb>
+
+<b-page-header back-url="/admins">
+    管理员（{{admin.fullname}}）
+</b-page-header>
+
+<first-menu>
+    <menu-item :href="'/admins/admin?adminId=' + admin.id" code="index">概览</menu-item>
+    <menu-item :href="'/admins/update?adminId=' + admin.id" code="update">修改</menu-item>
+    <menu-item :href="'/admins/accesskeys?adminId=' + admin.id" code="accessKey">API AccessKey({{admin.countAccessKeys}})</menu-item>
+</first-menu>

@@ -1,0 +1,271 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">允许注册</td>
+            <td>
+                <checkbox name="isOn" v-model="config.isOn"></checkbox>
+                <p class="comment">选中表示允许用户自行注册。</p>
+            </td>
+        </tr>
+        <tbody v-show="config.isOn">
+            <tr>
+                <td>必须使用复杂密码</td>
+                <td>
+                    <checkbox name="complexPassword" v-model="config.complexPassword"></checkbox>
+                    <p class="comment">选中表示用户注册时必须使用复杂密码，即长度不能低于6位，且必须包含大小写字母。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>需要审核</td>
+                <td>
+                    <checkbox name="requireVerification" v-model="config.requireVerification"></checkbox>
+                    <p class="comment">选中后，表示用户注册后需要审核才能创建服务。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>需要实名认证</td>
+                <td>
+                    <checkbox name="requireIdentity" v-model="config.requireIdentity"></checkbox>
+                    <p class="comment">选中后，表示用户注册后需要实名认证后才能创建服务。</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>登录设置</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">检查客户端区域</td>
+            <td>
+                <checkbox name="checkClientRegion" v-model="config.checkClientRegion"></checkbox>
+                <p class="comment">选中后，表示每次用户访问时都检查客户端所在地理区域是否和登录时一致，以提升安全性；如果当前系统下游有反向代理设置，请在<a href="/settings/user-ui#client-ip-header-names" target="_blank">[用户界面设置]</a>中设置“自定义客户端IP报头”选项。</p>
+            </td>
+        </tr>
+    </table>
+
+    <h4>电子邮箱相关</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">启用电子邮箱绑定功能</td>
+            <td>
+                <checkbox name="emailVerificationIsOn" v-model="config.emailVerification.isOn"></checkbox>
+                <p class="comment">选中后，电子邮箱需要激活之后可以使用邮箱登录、找回密码等。此功能需要事先设置 <a href="/users/setting/email" target="_blank">[激活邮件设置]</a>。</p>
+            </td>
+        </tr>
+        <tbody v-show="config.emailVerification.isOn">
+            <tr>
+                <td>提示用户未绑定</td>
+                <td>
+                    <checkbox name="emailVerificationShowNotice" v-model="config.emailVerification.showNotice"></checkbox>
+                    <p class="comment">选中后，将在页面上提示用户尚未绑定电子邮箱.</p>
+                </td>
+            </tr>
+            <tr>
+                <td>允许使用电子邮箱登录</td>
+                <td>
+                    <checkbox name="emailVerificationCanLogin" v-model="config.emailVerification.canLogin"></checkbox>
+                    <p class="comment">选中后，表示允许用户使用激活后的邮箱登录。</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><more-options-indicator v-model="emailVerificationMoreOptions"></more-options-indicator></td>
+            </tr>
+            <tr v-show="emailVerificationMoreOptions">
+                <td>激活邮件标题</td>
+                <td>
+                    <input type="text" name="emailVerificationSubject" v-model="config.emailVerification.subject"/>
+                    <p class="comment">其中<code-label>${product.name}</code-label>为当前设置的<a href="/settings/ui" target="_blank">产品名称</a>。</p>
+                </td>
+            </tr>
+            <tr v-show="emailVerificationMoreOptions">
+                <td>激活邮件内容</td>
+                <td>
+                    <textarea name="emailVerificationBody" rows="8" v-model="config.emailVerification.body"></textarea>
+                    <p class="comment">可以使用简单的HTML，其中<code-label>${product.name}</code-label>为当前设置的<a href="/settings/ui" target="_blank">产品名称</a>，<code-label>${url.verify}</code-label>为生成的激活地址，<code-label>${url.home}</code-label>为用户平台主页地址，由<a href="/settings/userNodes" target="_blank">用户节点</a>访问地址组合而成。</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="comment" v-if="config.emailVerification.isOn">修改邮箱相关设置后，请记得自行注册新用户测试。</p>
+    <div class="margin"></div>
+
+    <div v-show="config.emailVerification.isOn">
+        <h4>通过邮箱找回密码</h4>
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">启用找回密码功能</td>
+                <td>
+                    <checkbox name="emailResetPasswordIsOn" v-model="config.emailResetPassword.isOn"></checkbox>
+                    <p class="comment">选中后，用户可以通过已绑定的电子邮箱找回密码；此功能需要同时开启电子邮箱绑定功能。</p>
+                </td>
+            </tr>
+            <tbody v-show="config.emailResetPassword.isOn">
+                <tr>
+                    <td colspan="2"><more-options-indicator v-model="emailResetPasswordMoreOptions"></more-options-indicator></td>
+                </tr>
+                <tr v-show="emailResetPasswordMoreOptions">
+                    <td>找回密码邮件标题</td>
+                    <td>
+                        <input type="text" name="emailResetPasswordSubject" v-model="config.emailResetPassword.subject" maxlength="100"/>
+                        <p class="comment">其中<code-label>${product.name}</code-label>为当前设置的<a href="/settings/ui" target="_blank">产品名称</a>。</p>
+                    </td>
+                </tr>
+                <tr v-show="emailResetPasswordMoreOptions">
+                    <td>找回密码邮件内容</td>
+                    <td>
+                        <textarea name="emailResetPasswordBody" v-model="config.emailResetPassword.body" rows="5"></textarea>
+                        <p class="comment">可以使用简单的HTML，其中<code-label>${product.name}</code-label>为当前设置的<a href="/settings/ui" target="_blank">产品名称</a>，<code-label>${code}</code-label>为找回密码时用到的验证码，<code-label>${url.home}</code-label>为用户平台主页地址，由<a href="/settings/userNodes" target="_blank">用户节点</a>访问地址组合而成。</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="margin"></div>
+    </div>
+
+    <h4>手机号码相关</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">启用手机号码绑定功能</td>
+            <td>
+                <checkbox name="mobileVerificationIsOn" v-model="config.mobileVerification.isOn"></checkbox>
+                <p class="comment">选中后，手机号码需要激活之后可以使用手机号码、找回密码等。此功能需要事先设置 <a href="/users/setting/sms" target="_blank">[激活短信设置]</a>。</p>
+            </td>
+        </tr>
+        <tbody v-show="config.mobileVerification.isOn">
+            <tr>
+                <td>提示用户未绑定</td>
+                <td>
+                    <checkbox name="mobileVerificationShowNotice" v-model="config.mobileVerification.showNotice"></checkbox>
+                    <p class="comment">选中后，将在页面上提示用户尚未绑定手机号码.</p>
+                </td>
+            </tr>
+            <tr>
+                <td>允许使用手机号码登录</td>
+                <td>
+                    <checkbox name="mobileVerificationCanLogin" v-model="config.mobileVerification.canLogin"></checkbox>
+                    <p class="comment">选中后，表示允许用户使用激活后的手机号码登录。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>强制绑定手机号</td>
+                <td>
+                    <checkbox name="mobileVerificationForce" v-model="config.mobileVerification.force"></checkbox>
+                    <p class="comment">选中后，表示强制用户必须绑定手机号后才能使用其他功能。</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><more-options-indicator v-model="mobileVerificationMoreOptions"></more-options-indicator></td>
+            </tr>
+            <tr v-show="mobileVerificationMoreOptions">
+                <td>激活短信内容</td>
+                <td>
+                    <textarea name="mobileVerificationBody" rows="8" v-model="config.mobileVerification.body"></textarea>
+                    <p class="comment">其中使用<code-label>${code}</code-label>表示验证码。</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="comment" v-if="config.mobileVerification.isOn">修改手机号码相关设置后，请记得自行注册新用户测试。</p>
+    <div class="margin"></div>
+
+    <h4>CDN服务</h4>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">开通CDN服务</td>
+            <td>
+                <checkbox name="cdnIsOn" v-model="config.cdnIsOn"></checkbox>
+                <p class="comment">选中表示自动为用户开通CDN服务。 </p>
+            </td>
+        </tr>
+        <tbody v-show="config.cdnIsOn">
+            <tr>
+                <td>CDN集群分配 *</td>
+                <td>
+                    <cluster-selector :v-cluster-id="config.clusterId"></cluster-selector>
+                    <p class="comment">选择用户新创建服务自动分配的集群。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>默认开通功能</td>
+                <td>
+                    <!-- 已选中功能 -->
+                    <div>
+                        <div v-if="selectedFeatureNames().length > 0">
+                            <span>{{selectedFeatureNames()}}</span>
+                        </div>
+                        <b-empty v-else>暂时还没有开通任何功能。</b-empty>
+                        <div style="margin-top: 0.1em">
+                            <a href="" @click.prevent="showFeatures">修改<i class="icon angle" :class="{up: featuresVisible, down: !featuresVisible}"></i></a>
+                        </div>
+                    </div>
+                    <div class="feature-boxes" v-show="featuresVisible" style="margin-top: 1em">
+                        <div class="feature-box" v-for="feature in features">
+                            <checkbox name="features" :v-value="feature.code" v-model="feature.isChecked">{{feature.name}}</checkbox>
+                            <p class="comment">{{feature.description}}</p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>对已有用户功能操作</td>
+                <td>
+                    <b-select
+                        name="featureOp"
+                        v-model="featureOp"
+                        auto-width
+                        :options="[
+                            {label: '覆盖', value: 'overwrite'},
+                            {label: '追加', value: 'append'},
+                            {label: '保持', value: 'keep'},
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown auto-width" name="featureOp" v-model="featureOp">
+                        <option value="overwrite">覆盖</option>
+                        <option value="append">追加</option>
+                        <option value="keep">保持</option>
+                    </select> -->
+                    <p class="comment" v-if="featureOp == 'overwrite'">覆盖用户已经有的功能设置。</p>
+                    <p class="comment" v-if="featureOp == 'append'">只追加用户功能，不减少。</p>
+                    <p class="comment" v-if="featureOp == 'keep'">保持原有用户功能不变，功能修改只对新用户生效。</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div v-show="adIsVisible">
+        <div class="margin"></div>
+        <h4>DDoS高防</h4>
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">开通DDoS高防管理</td>
+                <td><checkbox name="adIsOn" v-model="config.adIsOn"></checkbox>
+                    <p class="comment">选中表示自动为用户开通DDoS高防IP使用服务。</p>
+                </td>
+            </tr>
+        </table>
+        <div class="margin"></div>
+    </div>
+
+    <div v-show="nsIsVisible">
+        <div class="margin"></div>
+        <h4>智能DNS服务</h4>
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">开通智能DNS服务</td>
+                <td><checkbox name="nsIsOn" v-model="config.nsIsOn"></checkbox>
+                    <p class="comment">选中表示自动为用户开通智能DNS服务。</p>
+                </td>
+            </tr>
+        </table>
+        <p class="comment" v-show="config.nsIsOn"><a href="/ns/settings/user">智能DNS相关功能设置</a></p>
+        <div class="margin"></div>
+    </div>
+
+    <submit-btn></submit-btn>
+</form>

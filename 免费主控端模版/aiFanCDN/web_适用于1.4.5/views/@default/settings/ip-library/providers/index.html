@@ -1,0 +1,40 @@
+{$layout}
+{$template "../menu"}
+
+<b-empty v-if="providers.length == 0">暂时还没有ISP运营商。</b-empty>
+
+<table class="ui table selectable celled" v-if="providers.length > 0">
+    <thead>
+    <tr>
+        <th style="width: 3em">ID</th>
+        <th style="width: 12em">ISP运营商名称</th>
+        <th style="width: 12em">内置别名</th>
+        <th style="width: 12em">自定义名称 <tip-icon content="修改在界面上显示的ISP运营商名称"></tip-icon></th>
+        <th style="width: 12em">自定义别名 <tip-icon content="可以在IP库中通过别名找到当前ISP运营商，比如通过联通、中国联通都可以找到联通这个ISP服务商"></tip-icon></th>
+        <th class="one op">操作</th>
+    </tr>
+    </thead>
+    <tr v-for="provider in providers">
+        <td>{{provider.id}}</td>
+        <td>{{provider.name}}</td>
+        <td>
+            <div v-if="provider.codes.length > 0">
+                <span v-for="code in provider.codes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">无</span>
+        </td>
+        <td>
+            <span v-if="provider.customName.length > 0">{{provider.customName}}</span>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <div v-if="provider.customCodes.length > 0">
+                <span v-for="code in provider.customCodes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateProvider(provider.id)">修改</a>
+        </td>
+    </tr>
+</table>

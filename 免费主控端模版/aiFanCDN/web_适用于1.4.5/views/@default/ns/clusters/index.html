@@ -1,0 +1,47 @@
+{$layout}
+{$template "menu"}
+
+<b-empty v-if="clusters.length == 0">暂时还没有集群。</b-empty>
+
+<table class="ui table selectable celled" v-if="clusters.length > 0">
+    <thead>
+        <tr>
+            <th>集群名称</th>
+            <th class="center width10">节点数</th>
+            <th class="center width10">在线节点数</th>
+            <th class="center width10">域名数</th>
+            <th class="width5">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="cluster in clusters">
+        <td class="cluster-name-td"><a :href="'/ns/clusters/cluster?clusterId=' + cluster.id">{{cluster.name}}</a>
+
+            <a :href="'/ns/clusters/cluster/settings?clusterId=' + cluster.id" title="设置"><i class="icon setting grey"></i></a>
+        </td>
+        <td class="center">
+            <a :href="'/ns/clusters/cluster?clusterId=' + cluster.id" v-if="cluster.countAllNodes > 0"><span :class="{red:cluster.countAllNodes > cluster.countActiveNodes}">{{cluster.countAllNodes}}</span></a>
+            <span class="disabled" v-else="">-</span>
+
+            <div v-if="cluster.countUpgradeNodes > 0" style="margin-top:0.5em">
+                <a :href="'/ns/clusters/cluster?clusterId=' + cluster.id" title="点击进入远程升级页面"><span class="red">有节点需要升级</span></a>
+            </div>
+        </td>
+        <td class="center">
+            <a :href="'/ns/clusters/cluster?clusterId=' + cluster.id + '&activeState=1'" v-if="cluster.countActiveNodes > 0"><span class="green">{{cluster.countActiveNodes}}</span></a>
+            <span class="disabled" v-else>-</span>
+        </td>
+        <td class="center">
+            <span v-if="cluster.countDomains > 0">{{cluster.countDomains}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td>
+            <label-on :v-is-on="cluster.isOn"></label-on>
+        </td>
+        <td>
+            <a :href="'/ns/clusters/cluster?clusterId=' + cluster.id">详情</a>
+        </td>
+    </tr>
+</table>
+
+<div class="page" v-html="filterPageContent(page)"></div>

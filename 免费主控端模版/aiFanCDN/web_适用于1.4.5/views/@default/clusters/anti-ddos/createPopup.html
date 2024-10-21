@@ -1,0 +1,88 @@
+{$layout "layout_popup"}
+
+<!-- <h3>添加高防产品</h3> -->
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">所属线路 *</td>
+            <td>
+                <b-select
+                    name="networkId"
+                    v-model="networkId"
+                    auto-width
+                    :options="[
+                        {label: '[选择线路]', value: '0'},
+                        ...networks.map(network => ({
+                            label: network.name??'',
+                            value: network.id??'',
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="networkId">
+                    <option value="0">[选择线路]</option>
+                    <option v-for="network in networks" :value="network.id">{{network.name}}</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr>
+            <td>防护带宽 *</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <input type="text" name="protectionBandwidthSize" size="4" maxlength="4"/>
+                    </div>
+                    <div class="ui field">
+                        <b-select
+                            name="protectionBandwidthUnit"
+                            v-model="protectionBandwidthUnit"
+                            :options="[
+                                ...protectionUnitOptions.map(unit => ({
+                                label: unit.name??'',
+                                value: unit.code??'',
+                                }))
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown" name="protectionBandwidthUnit">
+                            <option v-for="unit in protectionUnitOptions" :value="unit.code">{{unit.name}}</option>
+                        </select> -->
+                    </div>
+                </div>
+                <p class="comment">只作为展示作用。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>业务带宽 *</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <input type="text" name="serverBandwidthSize" size="4" maxlength="4"/>
+                    </div>
+                    <div class="ui field">
+                        <b-select
+                            name="serverBandwidthUnit"
+                            v-model="serverBandwidthUnit"
+                            :options="[
+                                ...serverUnitOptions.map(unit => ({
+                                    label: unit.name??'',
+                                    value: unit.code??'',
+                                }))
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown" name="serverBandwidthUnit">
+                            <option v-for="unit in serverUnitOptions" :value="unit.code">{{unit.name}}</option>
+                        </select> -->
+                    </div>
+                </div>
+                <p class="comment">只作为展示作用。</p>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

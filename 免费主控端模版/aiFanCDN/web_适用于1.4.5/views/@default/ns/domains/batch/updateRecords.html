@@ -1,0 +1,116 @@
+{$layout}
+{$template "menu"}
+
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">域名 *</td>
+            <td>
+                <textarea rows="15" name="names" placeholder="每行一个域名" ref="focus"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>所属用户</td>
+            <td>
+                <ns-user-selector></ns-user-selector>
+                <p class="comment">当前域名所属的平台用户。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>匹配条件</td>
+            <td>
+                <table class="ui table definition">
+                    <tr>
+                        <td class="title">记录名</td>
+                        <td>
+                            <input type="text" name="searchName"/>
+                            <p class="comment">只有不为空时才生效。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>记录值</td>
+                        <td>
+                            <input type="text" name="searchValue"/>
+                            <p class="comment">只有不为空时才生效。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>记录类型</td>
+                        <td>
+                            <b-select
+                                name="searchType"
+                                v-model="searchType"
+                                auto-width
+                                :options="[
+                                    ...types.map(type => ({
+                                        label: type.type,
+                                        value: type.type,
+                                    }))
+                                ]"
+                            ></b-select>
+
+                            <!-- <select class="ui dropdown auto-width" name="searchType">
+                                <option v-for="type in types" :value="type.type">{{type.type}}</option>
+                            </select> -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>线路</td>
+                        <td>
+                            <ns-routes-selector name="searchRouteCodes"></ns-routes-selector>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>修改后的记录</td>
+            <td>
+                <table class="ui table definition">
+                    <tr>
+                        <td class="title">记录名</td>
+                        <td>
+                            <input type="text" name="newName"/>
+                            <p class="comment">只有不为空时才生效。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>记录值</td>
+                        <td>
+                            <input type="text" name="newValue"/>
+                            <p class="comment">只有不为空时才生效。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>记录类型</td>
+                        <td>
+                            <b-select
+                                name="newType"
+                                v-model="newType"
+                                auto-width
+                                :options="[
+                                    ...types.map(type => ({
+                                        label: type.type,
+                                        value: type.type,
+                                    }))
+                                ]"
+                            ></b-select>
+
+                            <!-- <select class="ui dropdown auto-width" name="newType">
+                                <option v-for="type in types" :value="type.type">{{type.type}}</option>
+                            </select> -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>线路</td>
+                        <td>
+                            <ns-routes-selector name="newRouteCodes"></ns-routes-selector>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <submit-btn>批量修改</submit-btn>
+</form>

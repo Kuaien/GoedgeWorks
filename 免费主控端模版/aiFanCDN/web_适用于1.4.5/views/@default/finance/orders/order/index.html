@@ -1,0 +1,60 @@
+{$layout}
+{$template "../menu"}
+
+<table class="ui table selectable definition">
+    <tr>
+        <td class="title">订单号</td>
+        <td>{{order.code}}</td>
+    </tr>
+    <tr>
+        <td>订单金额</td>
+        <td>￥{{order.amount}}</td>
+    </tr>
+    <tr>
+        <td>创建时间</td>
+        <td>{{order.createdTime}}</td>
+    </tr>
+    <tr>
+        <td>类型</td>
+        <td>
+            {{order.typeName}}
+        </td>
+    </tr>
+    <tr>
+        <td>状态</td>
+        <td>
+            <span v-if="order.status == 'none' && order.isExpired" class="red">已过期</span>
+            <span v-else>
+                <span :class="{green: order.status == 'finished', disabled: order.status == 'cancelled'}">{{order.statusName}}</span>
+            </span>
+        </td>
+    </tr>
+    <tr v-if="order.status == 'finished'">
+        <td>支付时间</td>
+        <td>{{order.finishedTime}}</td>
+    </tr>
+    <tr v-if="order.status == 'cancelled'">
+        <td>取消时间</td>
+        <td>{{order.cancelledTime}}</td>
+    </tr>
+    <tr>
+        <td>支付方式</td>
+        <td>
+            <span v-if="order.method.id > 0">{{order.method.name}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+    </tr>
+    <tr>
+        <td>用户</td>
+        <td>
+            <user-link :v-user="order.user" v-if="order.user.id > 0"></user-link>
+            <span v-if="order.user.id == 0" class="disabled">[已删除]</span>
+        </td>
+    </tr>
+    <tr v-if="order.status == 'none'">
+        <td>操作</td>
+        <td>
+            <a href="" @click.prevent="finishOrder">[完成支付]</a>
+        </td>
+    </tr>
+</table>

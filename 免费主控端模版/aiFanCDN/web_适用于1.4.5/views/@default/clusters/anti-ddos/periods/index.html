@@ -1,0 +1,30 @@
+{$layout}
+{$template "../menu"}
+
+<second-menu>
+    <menu-item @click.prevent="createPeriod">[添加有效期选项]</menu-item>
+</second-menu>
+
+<b-empty v-if="periods.length == 0">暂时还没有有效期选项设置。</b-empty>
+
+<table class="ui table celled selectable" v-if="periods.length > 0">
+    <thead>
+        <tr>
+            <th>有效期选项</th>
+            <th class="width6">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="period in periods">
+        <td>
+            <a href="" @click.prevent="updatePeriod(period.id)">{{period.count}}{{period.unitName}} <i class="icon expand small"></i></a>
+        </td>
+        <td>
+            <label-on :v-is-on="period.isOn"></label-on>
+        </td>
+        <td>
+            <a href="" @click.prevent="updatePeriod(period.id)">修改</a> &nbsp;
+            <a href="" @click.prevent="deletePeriod(period.id)">删除</a>
+        </td>
+    </tr>
+</table>

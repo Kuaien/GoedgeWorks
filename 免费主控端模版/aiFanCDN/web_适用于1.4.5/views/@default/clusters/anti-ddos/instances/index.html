@@ -1,0 +1,107 @@
+{$layout}
+{$template "../menu"}
+
+<second-menu>
+    <menu-item v-if="selectedPackage != null && selectedPackage.id > 0"><span class="ui label" style="font-weight: normal">{{selectedPackage.summary}}</span> &nbsp; <a href="/clusters/anti-ddos/instances" title="清除条件"><i class="pi pi-times"></i></a></menu-item>
+    <span class="item disabled" v-if="selectedPackage != null && selectedPackage.id > 0" style="padding-left: 0">|</span>
+    <menu-item @click.prevent="createInstance()">
+        <i class="pi pi-pen-to-square"></i>
+        创建高防实例
+    </menu-item>
+</second-menu>
+
+<div v-show="selectedPackageId == 0">
+    <form class="ui form" action="/clusters/anti-ddos/instances" method="get">
+        <div class="ui fields inline">
+            <div class="ui field">
+                <b-select
+                    name="networkId"
+                    v-model="networkId"
+                    :options="[
+                        {label: '[线路]', value: '0'},
+                        ...networks.map(network => ({
+                            label: network.name??'',
+                            value: network.id??'',
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown" name="networkId" v-model="networkId">
+                    <option value="0">[线路]</option>
+                    <option v-for="network in networks" :value="network.id">{{network.name}}</option>
+                </select> -->
+            </div>
+            <div class="ui field">
+                <input type="text" name="ip" placeholder="高防IP" v-model="ip" maxlength="64"/>
+            </div>
+            <div class="ui field">
+                <button type="submit" class="ui button">搜索</button>
+                &nbsp;
+                <a href="/clusters/anti-ddos/instances" v-if="networkId > 0 || ip.length > 0">[清除缓存]</a>
+            </div>
+        </div>
+    </form>
+    <div class="margin"></div>
+</div>
+
+<div v-if="instances.length == 0">
+    <b-empty>暂时还没有高防实例。</b-empty>
+</div>
+
+<div v-if="instances.length > 0">
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th>所属线路</th>
+                <th>防护带宽</th>
+                <th>业务带宽</th>
+                <th>部署集群</th>
+                <th class="three wide">高防IP</th>
+                <th class="three wide">租用用户</th>
+                <th class="width5">状态</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="instance in instances">
+            <td>
+                <span v-if="instance.network != null && instance.network.id > 0">{{instance.network.name}}</span>
+                <span v-else class="red">已删除</span>
+            </td>
+            <td>
+                <div v-if="instance.package != null && instance.package.id > 0">
+                    {{instance.package.protectionBandwidthSize}}
+                    {{instance.package.protectionBandwidthUnit.toBitUpper()}}
+                </div>
+            </td>
+            <td>
+                <div v-if="instance.package != null && instance.package.id > 0">
+                    {{instance.package.serverBandwidthSize}}
+                    {{instance.package.serverBandwidthUnit.toBitUpper()}}
+                </div>
+                <span v-else class="red">已删除</span>
+            </td>
+            <td>
+                <span v-if="instance.cluster != null && instance.cluster.id > 0">{{instance.cluster.name}}</span>
+                <span v-else class="red">已删除</span>
+            </td>
+            <td>
+                <div v-for="ipAddr in instance.ipAddresses"><keyword :v-word="ip">{{ipAddr}}</keyword></div>
+            </td>
+            <td>
+                <div v-if="instance.user != null && instance.user.id > 0"><user-link :v-user="instance.user"></user-link>
+                    <div>
+                        <span class="small grey">到{{instance.userDayTo}}</span>
+                    </div>
+                </div>
+                <span v-else class="disabled">暂无</span>
+            </td>
+            <td><label-on :v-is-on="instance.isOn"></label-on></td>
+            <td>
+                <a href="" @click.prevent="updateInstance(instance.id)">修改</a> &nbsp;
+                <a href="" @click.prevent="deleteInstance(instance.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+
+    <page-box></page-box>
+</div>

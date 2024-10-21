@@ -1,0 +1,36 @@
+{$layout}
+
+<first-menu>
+    <menu-item href="/ns/domains/groups" active="true">分组列表</menu-item>
+    <span class="item disabled">|</span>
+    <menu-item @click.prevent="createGroup">
+        <i class="pi pi-pen-to-square"></i>
+        创建分组
+    </menu-item>
+</first-menu>
+
+<b-empty v-if="groups.length == 0">
+	暂时还没有分组。
+</b-empty>
+
+<table class="ui table selectable celled" v-if="groups.length > 0">
+    <thead>
+        <tr>
+            <th>分组名称</th>
+            <th class="width6">状态</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="group in groups">
+        <td>
+            <a href="" @click.prevent="updateGroup(group.id)">{{group.name}} <i class="icon expand small"></i></a>
+        </td>
+        <td>
+            <label-on :v-is-on="group.isOn"></label-on>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateGroup(group.id)">修改</a> &nbsp;
+            <a href="" @click.prevent="deleteGroup(group.id)">删除</a>
+        </td>
+    </tr>
+</table>

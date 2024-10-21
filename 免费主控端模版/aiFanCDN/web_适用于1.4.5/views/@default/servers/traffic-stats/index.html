@@ -1,0 +1,118 @@
+{$layout}
+{$template "/echarts"}
+{$template "menu"}
+
+<div style="margin-top: 0.6em"></div>
+<form class="ui form">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <datepicker name="dayFrom" placeholder="开始日期" v-model="dayFrom" @change="changeDayFrom"></datepicker>
+        </div>
+        <div class="ui field">
+            <datepicker name="dayTo" placeholder="结束日期" v-model="dayTo" @change="changeDayTo"></datepicker>
+        </div>
+        <div class="ui field">
+            <user-selector :v-user-id="userId" @change="changeUser"></user-selector>
+        </div>
+        <div class="ui field" v-if="userId > 0">
+            <span v-if="servers.length == 0" class="disabled">暂无网站</span>
+            <div v-else>
+                <combo-box :v-items="servers" name="serverId" @change="changeServer" :placeholder="'全部网站（' + (servers.length-1) + '）'"></combo-box>
+            </div>
+        </div>
+        <div class="ui field" v-if="userId > 0 && serverId == 0 && regions.length > 0">
+            <b-select
+                name="regionId"
+                v-model="regionId"
+                @change="changeRegion"
+                :options="[
+                    {label: '所有区域', value: '0'},
+                    ...regions.map(region => ({
+                        label: region.name,
+                        value: region.id,
+                    }))
+                ]"
+            ></b-select>
+
+            <!-- <select class="ui dropdown" name="regionId" v-model="regionId" @change="changeRegion">
+                <option value="0">所有区域</option>
+                <option v-for="region in regions" :value="region.id">{{region.name}}</option>
+            </select> -->
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="button" @click.prevent="startSearch">查询</button>
+        </div>
+    </div>
+</form>
+
+<div class="margin"></div>
+
+<div class="ui message" v-if="isLoading">加载中...</div>
+
+<columns-grid v-if="result != null">
+    <div class="ui column">
+        <h4>带宽峰值</h4>
+        <div class="value">
+            <span>{{result.maxBandwidthBitsFormat[0]}}</span>
+            {{result.maxBandwidthBitsFormat[1]}}
+            <br/>
+            <span v-if="result.maxBandwidthTime.length > 0" class="small grey">{{result.maxBandwidthTime}}:00</span>
+            <span v-else>&nbsp;<!-- placeholder --></span>
+        </div>
+    </div>
+    <div class="ui column">
+        <h4>95th带宽</h4>
+        <div class="value">
+            <span>{{result.bandwidth95thBitsFormat[0]}}</span>
+            {{result.bandwidth95thBitsFormat[1]}}
+        </div>
+    </div>
+    <div class="ui column">
+        <h4>总流量</h4>
+        <div class="value">
+            <span>{{result.totalTrafficBytesFormat[0]}}</span>
+            {{result.totalTrafficBytesFormat[1]}}
+        </div>
+    </div>
+    <div class="ui column with-border">
+        <h4>总请求数</h4>
+        <div class="value"><span>{{result.totalTrafficRequests}}</span>次</div>
+    </div>
+</columns-grid>
+
+<!-- 查询结果 -->
+<div v-if="result != null" style="margin-top: 0.6em">
+    <!-- 菜单 -->
+    <first-menu >
+        <menu-item :class="{active: tab == 'chart'}" @click.prevent="selectTab('chart')">图表 &nbsp;<i class="icon chart area small"></i></menu-item>
+        <menu-item :class="{active: tab == 'table'}" @click.prevent="selectTab('table')">表格 &nbsp;<i class="icon table small"></i></menu-item>
+        <span class="item disabled">|</span>
+        <menu-item :href="'.download?dayFrom=' + dayFrom + '&dayTo=' + dayTo + '&userId=' + userId + '&serverId=' + serverId" target="_blank">下载 <i class="icon download small"></i></menu-item>
+        <menu-item v-for="(r, index) in dayRanges" :class="{active: dayFrom == r.dayFrom && dayTo == r.dayTo, right: index == 0}" @click.prevent="selectDay(r.dayFrom, r.dayTo)">{{r.name}}</menu-item>
+    </first-menu>
+
+    <!-- 表格 -->
+    <div class="table-box scroll-box" v-if="result != null" v-show="tab == 'table'">
+        <table class="ui table selectable celled">
+            <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>带宽（Mbps）</th>
+                    <th>带宽（Gbps）</th>
+                </tr>
+            </thead>
+            <tr v-for="stat in result.bandwidthStats">
+                <td>{{stat.day.substring(0, 4)}}-{{stat.day.substring(4, 6)}}-{{stat.day.substring(6)}} {{stat.time.substring(0, 2)}}:{{stat.time.substring(2)}}</td>
+                <td>{{stat.mbps}}</td>
+                <td>{{stat.gbps}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 图表 -->
+    <div class="chart-box" id="bandwidth-chart" v-show="result != null && tab == 'chart'"></div>
+</div>
+
+<b-empty v-if="userId == 0">
+    请选择要查看的用户。
+</b-empty>

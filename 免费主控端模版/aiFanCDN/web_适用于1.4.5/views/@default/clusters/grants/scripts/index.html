@@ -1,0 +1,40 @@
+{$layout}
+
+<first-menu>
+    <menu-item href="/clusters/grants">认证列表</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item href="/clusters/grants/scripts">节点初始化脚本库</menu-item>
+    <span class="item disabled" style="padding: 0">&raquo;</span>
+    <menu-item @click.prevent="createScript">
+        <i class="pi pi-pen-to-square"></i>
+        创建节点初始化脚本
+    </menu-item>
+    <span class="item"><tip-icon content="此处添加的节点初始化脚本可以在安装节点时使用。"></tip-icon></span>
+</first-menu>
+
+<b-empty v-if="scripts.length == 0">暂时还没有脚本。</b-empty>
+<div v-if="scripts.length > 0">
+    <div class="margin"></div>
+    <table class="ui table selectable">
+        <thead>
+            <tr>
+                <th>脚本名</th>
+                <th>修改时间</th>
+                <th class="two op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="script in scripts">
+            <td>
+                <a :href="'/clusters/grants/scripts/script?scriptId=' + script.id">{{script.name}}</a>
+                <span v-if="script.isChanged" title="已修改">*</span>
+            </td>
+            <td>{{script.updatedTime}}</td>
+            <td>
+                <a :href="'/clusters/grants/scripts/script?scriptId=' + script.id">详情</a> &nbsp;
+                <a href="" @click.prevent="deleteScript(script.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="page" v-html="filterPageContent(page)"></div>

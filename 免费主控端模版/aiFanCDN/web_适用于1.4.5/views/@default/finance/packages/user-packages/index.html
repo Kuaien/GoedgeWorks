@@ -1,0 +1,53 @@
+{$layout}
+{$template "../menu"}
+
+<second-menu>
+    <menu-item @click.prevent="createUserPackage">[添加用户流量包]</menu-item>
+</second-menu>
+
+<b-empty v-if="userPackages.length == 0">暂时还没有用户流量包。</b-empty>
+
+<div v-if="userPackages.length > 0">
+    <table class="ui table selectable celled">
+        <thead>
+            <tr>
+                <th>用户</th>
+                <th>流量包</th>
+                <th style="width: 7em">区域</th>
+                <th style="width: 7em">有效期</th>
+                <th style="width: 7em">开始日期</th>
+                <th style="width: 7em">结束日期</th>
+                <th style="width: 7em">已用流量</th>
+                <th style="width: 7em">剩余流量</th>
+                <th class="one op">操作</th>
+            </tr>
+        </thead>
+        <tr v-for="up in userPackages">
+            <td><user-link :v-user="up.user"></user-link></td>
+            <td>
+                <span v-if="up.package != null">{{up.package.size}}{{up.package.unit.toUpperCase().replace(/(.)B/, "$1iB")}}</span>
+                <span v-else class="disabled">[已删除]</span>
+
+                <div v-if="up.isUsedAll || up.isExpired">
+                    <span v-if="up.isUsedAll" class="small red">已用尽</span>
+                    <span v-else-if="up.isExpired" class="small red">已过期</span>
+                </div>
+            </td>
+            <td>
+                <span v-if="up.region != null">{{up.region.name}}</span>
+                <span v-else="" class="disabled">[已删除]</span>
+            </td>
+            <td>{{up.periodCount}}{{up.periodUnitName}}</td>
+            <td>{{up.dayFrom}}</td>
+            <td>{{up.dayTo}}</td>
+            <td><span :class="{disabled: up.usedSize == '0B'}">{{up.usedSize}}</span></td>
+            <td><span :class="{disabled: up.availableSize == '0B'}">{{up.availableSize}}</span></td>
+            <td>
+                <a href="" v-if="up.canDelete" @click.prevent="deleteUserPackage(up.id)">删除</a>
+            </td>
+        </tr>
+    </table>
+
+    <page-box></page-box>
+</div>
+

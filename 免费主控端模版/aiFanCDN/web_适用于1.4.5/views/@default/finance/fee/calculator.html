@@ -1,0 +1,110 @@
+{$layout}
+{$template "menu"}
+
+<div class="margin"></div>
+
+<form class="ui form" data-tea-action="$" data-tea-success="success" ref="calculatorForm">
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">计费类型</td>
+            <td>
+                <radio name="priceType" :v-value="'bandwidth'" v-model="config.priceType">按带宽计费</radio>
+                &nbsp; &nbsp;
+                <radio name="priceType" :v-value="'traffic'" v-model="config.priceType">按流量计费</radio> &nbsp; &nbsp;
+            </td>
+        </tr>
+        <tr v-show="config.priceType == 'bandwidth'">
+            <td>所需带宽</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <input type="text" name="bandwidth" size="10" maxlength="10" @input="change" ref="bandwidthInput"/>
+                    </div>
+                    <div class="ui field">
+                        <b-select
+                            name="bandwidthUnit"
+                            v-model="bandwidthUnit"
+                            @change="change"
+                            auto-width
+                            :options="[
+                                {label: 'Mbps', value: 'mb'},
+                                {label: 'Gbps', value: 'gb'},
+                                {label: 'Tbps', value: 'tb'},
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown auto-width" name="bandwidthUnit" @change="change">
+                            <option value="mb">Mbps</option>
+                            <option value="gb">Gbps</option>
+                            <option value="tb">Tbps</option>
+                        </select> -->
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr v-show="config.priceType == 'traffic'">
+            <td>所需流量</td>
+            <td>
+                <div class="ui fields inline">
+                    <div class="ui field">
+                        <input type="text" name="traffic" size="10" maxlength="10" @input="change" ref="trafficInput"/>
+                    </div>
+                    <div class="ui field">
+                        <b-select
+                            name="trafficUnit"
+                            v-model="trafficUnit"
+                            @change="change"
+                            auto-width
+                            :options="[
+                                {label: 'GiB', value: 'gb'},
+                                {label: 'TiB', value: 'tb'},
+                                {label: 'EiB', value: 'eb'},
+                            ]"
+                        ></b-select>
+
+                        <!-- <select class="ui dropdown auto-width" name="trafficUnit" @change="change">
+                            <option value="gb">GiB</option>
+                            <option value="tb">TiB</option>
+                            <option value="eb">EiB</option>
+                        </select> -->
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr v-show="regions.length > 0">
+            <td>所在区域</td>
+            <td>
+                <b-select
+                    name="regionId"
+                    v-model="regionId"
+                    @change="change"
+                    auto-width
+                    :options="[
+                        {label: '[不区分区域]', value: '0'},
+                        ...regions.map(region => ({
+                            label: region.name,
+                            value: region.id,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" name="regionId" @change="change">
+                    <option value="0">[不区分区域]</option>
+                    <option v-for="region in regions" :value="region.id">{{region.name}}</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr>
+            <td>价格</td>
+            <td>
+                <strong v-if="formattedAmount.length > 0">
+                    ￥{{formattedAmount}}元
+                    <span v-if="hasRegionPrice" class="small grey" style="font-weight: normal">（基于区域价格设定）</span>
+                </strong>
+                <span v-else class="disabled">-</span>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn>计算价格</submit-btn>
+</form>

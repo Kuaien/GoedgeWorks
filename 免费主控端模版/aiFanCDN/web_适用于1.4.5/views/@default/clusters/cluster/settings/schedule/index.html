@@ -1,0 +1,55 @@
+{$layout}
+{$template "../menu"}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        <b-empty v-if="nodes.length == 0">暂时还没有节点。</b-empty>
+
+        <div v-if="nodes.length > 0">
+            <div class="margin"></div>
+            <table class="ui table selectable celled">
+                <thead>
+                    <tr>
+                        <th>节点</th>
+                        <th>租期结束日期</th>
+                        <th>所属集群</th>
+                        <th class="two wide">是否为<br/>集群备用节点</th>
+                        <th>所属分组</th>
+                        <th class="two wide">是否为<br/>分组备用节点</th>
+                        <th>当前状态</th>
+                        <th class="one op">操作</th>
+                    </tr>
+                </thead>
+                <tr v-for="node in nodes">
+                    <td>{{node.nodeName}}</td>
+                    <td>
+                        <span v-if="node.offlineDay.length > 0" :class="{red: node.isOffline}">{{node.offlineDay.substring(0, 4)}}-{{node.offlineDay.substring(4, 6)}}-{{node.offlineDay.substring(6, 8)}}</span>
+                        <span v-else class="disabled">没有设置</span>
+                    </td>
+                    <td>{{node.clusterName}}</td>
+                    <td>
+                        <span v-if="node.isBackupForCluster" class="green">备用</span>
+                        <span v-else class="disabled">N</span>
+                    </td>
+                    <td>
+                        <span v-if="node.groupName.length > 0">{{node.groupName}}</span>
+                        <span v-else class="disabled">没有设置</span>
+                    </td>
+                    <td>
+                        <span v-if="node.isBackupForGroup" class="green">备用</span>
+                        <span v-else class="disabled">N</span>
+                    </td>
+                    <td>
+                        <a v-if="node.actionStatus != null && node.actionStatus.actionId > 0"  :href="'/clusters/cluster/node/settings/schedule?clusterId=' + node.clusterId + '&nodeId=' + node.nodeId" target="_blank"><span class="red" style="border-bottom: 1px red dashed">已触发</span></a>
+                        <span v-else class="disabled">未触发</span>
+                    </td>
+                    <td>
+                        <a :href="'/clusters/cluster/node/settings/schedule?clusterId=' + node.clusterId + '&nodeId=' + node.nodeId" target="_blank">修改</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

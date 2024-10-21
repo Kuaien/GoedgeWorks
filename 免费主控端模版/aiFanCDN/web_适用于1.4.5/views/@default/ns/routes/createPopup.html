@@ -1,0 +1,85 @@
+{$layout "layout_popup"}
+
+<!-- <h3>创建线路</h3> -->
+<form class="ui form" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="clusterId" :value="clusterId"/>
+    <input type="hidden" name="domainId" :value="domainId"/>
+    <input type="hidden" name="userId" :value="userId"/>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">线路名称 *</td>
+            <td>
+                <input type="text" name="name" maxlength="100" ref="focus"/>
+            </td>
+        </tr>
+        <tr>
+            <td rowspan="2">范围类型</td>
+            <td>
+                <b-select
+                    v-model="rangeTypeCode"
+                    @change="changeRangeType"
+                    auto-width
+                    :options="[
+                        ...rangeTypes.map(rangeType => ({
+                            label: rangeType.name,
+                            value: rangeType.code,
+                        }))
+                    ]"
+                ></b-select>
+
+                <!-- <select class="ui dropdown auto-width" v-model="rangeTypeCode" @change="changeRangeType">
+                    <option v-for="rangeType in rangeTypes" :value="rangeType.code">{{rangeType.name}}</option>
+                </select> -->
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <ns-route-ranges-box ref="routeRangesBox"></ns-route-ranges-box>
+            </td>
+        </tr>
+        <tr>
+            <td>所属分类</td>
+            <td>
+                <div v-if="categories.length > 0">
+                    <b-select
+                        name="categoryId"
+                        v-model="categoryId"
+                        auto-width
+                        :options="[
+                            {label: '[选择分类]', value: '0'},
+                            ...categories.map(category => ({
+                                label: category.name,
+                                value: category.id,
+                            }))
+                        ]"
+                    ></b-select>
+
+                    <!-- <select class="ui dropdown auto-width" name="categoryId">
+                        <option value="0">[选择分类]</option>
+                        <option v-for="category in categories" :value="category.id">{{category.name}}</option>
+                    </select> -->
+                    <p class="comment">可选项。</p>
+                </div>
+                <b-empty v-if="categories.length == 0">暂时还没有分类。</b-empty>
+            </td>
+        </tr>
+        <tr>
+            <td>优先级</td>
+            <td>
+                <input type="text" name="priority" maxlength="10" style="width: 5em" value="0"/>
+                <p class="comment">优先级越高，越优先匹配。</p>
+            </td>
+        </tr>
+        <tr>
+            <td>公用</td>
+            <td>
+                <checkbox checked="checked" name="isPublic"></checkbox>
+                <p class="comment">选中后，表示允许用户使用当前创建的线路，否则只有管理员才能使用当前线路。</p>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

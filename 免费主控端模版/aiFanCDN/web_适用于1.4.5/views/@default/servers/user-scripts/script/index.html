@@ -1,0 +1,50 @@
+{$layout}
+{$template "/code_editor"}
+
+<first-menu>
+    <menu-item class="active" :href="prevURL">{{(type == 'auditing') ? '审核中' : '已审核'}}</menu-item>
+    <raquo-item></raquo-item>
+    <span class="item">脚本详情</span>
+</first-menu>
+
+<table class="ui selectable definition table">
+    <tr>
+        <td class="title">状态</td>
+        <td>
+            <span v-if="script.isRejected" class="red">已驳回
+                <br/>
+                <span class="grey small">驳回理由：{{script.rejectedReason}}</span>
+            </span>
+            <span v-else-if="script.isPassed" class="green">已通过</span>
+            <span v-else>未审核</span>
+        </td>
+    </tr>
+    <tr>
+        <td>操作</td>
+        <td>
+            <div v-if="script.isRejected">
+                <a href="" @click.prevent="pass(script.id)">[重新通过]</a>
+            </div>
+            <div v-else-if="script.isPassed">
+                <a href="" @click.prevent="reject(script.id)">[重新驳回]</a>
+            </div>
+            <div v-else>
+                <a href="" @click.prevent="pass(script.id)">[通过]</a> &nbsp; &nbsp; <a href="" @click.prevent="reject(script.id)">[驳回]</a>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="title">代码</td>
+        <td>
+            <source-code-box type="text/javascript">{{script.code}}</source-code-box>
+        </td>
+    </tr>
+    <tr>
+        <td>脚本创建时间</td>
+        <td>{{script.createdTime}}</td>
+    </tr>
+    <tr>
+        <td>用户</td>
+        <td><user-link :v-user="script.user"></user-link></td>
+    </tr>
+</table>

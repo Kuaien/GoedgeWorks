@@ -1,0 +1,61 @@
+{$layout}
+{$template "../menu"}
+
+<div class="margin"></div>
+
+<form class="ui form" method="get" action="/settings/ip-library/towns">
+    <div class="ui fields inline">
+        <div class="ui field">
+            <combo-box name="countryId" :v-items="countries" :v-value="countryId" @change="changeCountry" placeholder="国家/地区"></combo-box>
+        </div>
+        <div class="ui field">
+            <combo-box name="provinceId" :data-url="'/settings/ip-library/towns/provinceOptions?countryId=' + countryId" data-key="provinces" :v-value="provinceId" ref="provinceOptionsRef" @change="changeProvince" placeholder="省份/州"></combo-box>
+        </div>
+        <div class="ui field">
+            <combo-box name="cityId" :data-url="'/settings/ip-library/towns/cityOptions?provinceId=' + provinceId" data-key="cities" :v-value="cityId" ref="cityOptionsRef" placeholder="城市/市"></combo-box>
+        </div>
+        <div class="ui field">
+            <button class="ui button" type="submit">搜索</button>
+        </div>
+    </div>
+</form>
+
+<b-empty v-if="towns.length == 0">暂时还没有区/县。</b-empty>
+
+<p class="ui basic message" v-if="towns.length > 0">共 {{towns.length}} 个区/县。</p>
+
+<table class="ui table selectable celled" v-if="towns.length > 0">
+    <thead>
+        <tr>
+            <th style="width: 3em">ID</th>
+            <th style="width: 12em">区/县名称</th>
+            <th style="width: 12em">内置别名</th>
+            <th style="width: 12em">自定义名称 <tip-icon content="修改在界面上显示的区/县名称"></tip-icon></th>
+            <th style="width: 12em">自定义别名 <tip-icon content="可以在IP库中通过别名找到当前区/县，比如通过”朝阳区“、”朝阳“都能找到朝阳区"></tip-icon></th>
+            <th class="one op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="town in towns">
+        <td>{{town.id}}</td>
+        <td>{{town.name}}</td>
+        <td>
+            <div v-if="town.codes.length > 0">
+                <span v-for="code in town.codes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">无</span>
+        </td>
+        <td>
+            <span v-if="town.customName.length > 0">{{town.customName}}</span>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <div v-if="town.customCodes.length > 0">
+                <span v-for="code in town.customCodes" class="ui label basic">{{code}}</span>
+            </div>
+            <span v-else class="disabled">暂无</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="updateTown(town.id)">修改</a>
+        </td>
+    </tr>
+</table>

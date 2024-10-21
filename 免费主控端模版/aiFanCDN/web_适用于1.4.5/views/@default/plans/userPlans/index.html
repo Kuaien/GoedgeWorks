@@ -1,0 +1,63 @@
+{$layout}
+
+<first-menu>
+    <menu-item href=".?type=available" :active="type == 'available'">有效套餐({{countAvailable}})</menu-item>
+    <menu-item href=".?type=expiring7" :active="type == 'expiring7'">7天内过期(<span v-if="countExpiring7 > 0" class="red">{{countExpiring7}}</span><span v-else>0</span>)</menu-item>
+    <menu-item href=".?type=expiring30" :active="type == 'expiring30'">30天内过期(<span v-if="countExpiring30 > 0" class="red">{{countExpiring30}}</span><span v-else>0</span>)</menu-item>
+    <menu-item href=".?type=expired" :active="type == 'expired'">过期套餐({{countExpired}})</menu-item>
+    <span class="item disabled">|</span>
+    <menu-item @click.prevent="createUserPlan">[新购套餐]</menu-item>
+</first-menu>
+
+<div v-if="!canUsePlans">
+    <div class="margin"></div>
+    <div class="ui message warning">尚未在 <a href="/finance/fee">[计费设置]</a> 里开启"使用套餐计费"选项，用户将无法使用套餐。</div>
+</div>
+
+<b-empty v-if="userPlans.length == 0">暂时还没有已购套餐。</b-empty>
+
+<table class="ui table selectable celled" v-if="userPlans.length > 0">
+    <thead>
+        <tr>
+            <th>用户</th>
+            <th class="three wide">套餐</th>
+            <th class="three wide">备注名称</th>
+            <th class="three wide">有效期</th>
+            <th class="three wide">网站</th>
+            <th class="two op">操作</th>
+        </tr>
+    </thead>
+    <tr v-for="userPlan in userPlans">
+        <td>
+            <span v-if="userPlan.user.id > 0">
+                <link-icon :href="'/users/user?userId=' + userPlan.user.id">{{userPlan.user.fullname}} <span class="small">({{userPlan.user.username}})</span></link-icon>
+            </span>
+            <span class="red" v-else>[已删除]</span>
+        </td>
+        <td>
+            <span v-if="userPlan.plan.id > 0">
+                <link-icon :href="'/plans/plan?planId=' + userPlan.plan.id">{{userPlan.plan.name}}</link-icon>
+            </span>
+            <span class="red" v-else>[已删除]</span>
+        </td>
+        <td>
+            <span v-if="userPlan.name.length > 0">{{userPlan.name}}</span>
+            <span v-else class="disabled">-</span>
+        </td>
+        <td>{{userPlan.dayTo}}</td>
+        <td>
+            <div v-if="userPlan.servers != null && userPlan.servers.length > 0">
+                <div v-for="server in userPlan.servers">
+                    <a :href="'/servers/server/settings?serverId=' + server.id">{{server.name}}</a>
+                </div>
+            </div>
+            <span v-else class="disabled">尚未绑定</span>
+        </td>
+        <td>
+            <a href="" @click.prevent="renewUserPlan(userPlan.id)">续费</a> &nbsp;
+            <a href="" @click.prevent="deleteUserPlan(userPlan.id)">删除</a>
+        </td>
+    </tr>
+</table>
+
+<div class="page" v-html="filterPageContent(page)"></div>

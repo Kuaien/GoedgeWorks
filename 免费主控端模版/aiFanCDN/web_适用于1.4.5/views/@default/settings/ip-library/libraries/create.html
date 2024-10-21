@@ -1,0 +1,318 @@
+{$layout}
+{$template "../menu"}
+
+<b-steps :steps="[
+    {label: '设置数据格式', key: STEP_TEMPLATE},
+    {label: '上传文件', key: STEP_UPLOAD},
+    {label: '处理国家/地区', key: STEP_COUNTRY},
+    {label: '处理省份/州', key: STEP_PROVINCE},
+    {label: '处理城市/市', key: STEP_CITY},
+    {label: '处理县/区', key: STEP_TOWN},
+    {label: '处理ISP运营商', key: STEP_PROVIDER},
+    {label: '完成', key: STEP_FINISH},
+    {label: '', key: },
+    {label: '', key: },
+    {label: '', key: },
+    {label: '', key: },
+    {label: '', key: },
+    {label: '', key: },
+]" :current="step"></b-steps>
+
+<!-- <div class="ui steps small fluid">
+    <div class="ui step" :class="{active: step == STEP_TEMPLATE}">
+        <div class="content">设置数据格式</div>
+    </div>
+    <div class="ui step" :class="{active: step == STEP_UPLOAD}">
+        <div class="content">上传文件</div>
+    </div>
+    <div class="ui step" :class="{active: step == STEP_COUNTRY}">
+        <div class="content">处理国家/地区</div>
+    </div>
+    <div class="ui step" :class="{active: step == STEP_PROVINCE}">
+        <div class="content">处理省份/州</div>
+    </div>
+    <div class="ui step" :class="{active: step == STEP_CITY}">
+        <div class="content">处理城市/市</div>
+    </div>
+    <div class="ui step" :class="{active: step == STEP_TOWN}">
+        <div class="content">处理县/区</div>
+    </div>
+    <div class="ui step" :class="{active: step == STEP_PROVIDER}">
+        <div class="content">处理ISP运营商</div>
+    </div>
+    <div class="ui step" :class="{active: step == STEP_FINISH}">
+        <div class="content">完成</div>
+    </div>
+</div> -->
+
+<!-- 设置件格式 -->
+<div v-show="step == STEP_TEMPLATE">
+    <form class="ui form">
+        <table class="ui table selectable definition">
+            <tr>
+                <td>IP库名称 *</td>
+                <td>
+                    <input type="text" name="" v-model="libraryName" ref="libraryName" maxlength="50" v-show="libraryFileId == 0"/>
+                    <span v-if="libraryFileId > 0">{{libraryName}}</span>
+                    <p class="comment">给当前IP库起一个容易识别的名称。</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="title">数据格式模板 *</td>
+                <td>
+                    <input type="text" name="" v-model="rowTemplate" ref="rowTemplate" v-show="libraryFileId == 0"/>
+                    <span v-if="libraryFileId > 0">{{rowTemplate}}</span>
+                    <p class="comment">只支持纯文本（比如.txt）的数据内容，每行数据的格式；其中<code-label>${ipFrom}</code-label>表示开始IP，IPv4和IPv6均支持，<code-label>${ipTo}</code-label>表示结束IP，<code-label>${country}</code-label>表示国家/地区，<code-label>${province}</code-label>表示省份/州，<code-label>${city}</code-label>表示城市/市级单位，<code-label>${town}</code-label>表示区县（暂时不处理），<code-label>${provider}</code-label>表示ISP运营商，<code-label>${any}</code-label>表示不需要识别的内容。<a href="" @click.prevent="formatIP2Region()">[IP2Region示例]</a> &nbsp;<a href="" @click.prevent="formatIP138()">[IP138示例]</a> </p>
+                </td>
+            </tr>
+            <tr v-show="rowTemplate.length > 0 && libraryFileId == 0">
+                <td>数据格式分析测试</td>
+                <td>
+                    <input type="text" name="" v-model="formatTestText" placeholder="单行测试数据" @input="changeFormatTestText" @keyup.enter="testFormat()" @keypress.enter.prevent="1"/>
+                    <p class="comment"><a href="" @click.prevent="testFormat">[执行测试]</a>
+                        <span v-if="formatTestResult.length > 0" class="green">&nbsp; &nbsp; 测试成功：{{formatTestResult}}</span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>空值列表</td>
+                <td>
+                    <values-box ref="emptyValues" :v-values="emptyValues" v-show="libraryFileId == 0"></values-box>
+                    <span v-for="emptyValue in emptyValues" class="ui label basic small" v-show="libraryFileId > 0">{{emptyValue}}</span>
+                    <p class="comment">内容中如果有这些值，表示没有填写；比如如果空值是<code-label>0</code-label>，那么<code-label>字段1|0|字段2|0</code-label>中只有<code-label>字段1</code-label>、<code-label>字段2</code-label>两个信息是有效的。</p>
+                </td>
+            </tr>
+            <tr>
+                <td>密码</td>
+                <td>
+                    <input type="password" maxlength="32"  name="password" v-model="password"/>
+                </td>
+            </tr>
+        </table>
+        <button class="ui button primary" type="button" @click.prevent="templateGoNext">下一步</button>
+    </form>
+</div>
+
+<!-- 上传文件 -->
+<div v-show="step == STEP_UPLOAD">
+    <form class="ui form">
+        <table class="ui table definition selectable">
+            <tr>
+                <td class="title">选择数据文件 *</td>
+                <td>
+                    <!-- <input type="file" accept="text/plain, .txt" ref="dataFile"/> -->
+                    <file-upload accept="text/plain, .txt" ref="dataFile" />
+                    <p class="comment">只支持纯文本（比如.txt）的数据内容，每行数据的格式需要和上一步设置的数据格式模板一致。</p>
+                </td>
+            </tr>
+        </table>
+        <button class="ui button primary" type="button" @click.prevent="upload" v-if="!isUploading">开始分析</button>
+        <button class="ui button disabled" type="button" v-if="isUploading">正在上传并分析中...</button>
+        &nbsp; &nbsp;
+        <a href="" @click.prevent="goStep(STEP_TEMPLATE)" v-if="!isUploading">上一步</a>
+    </form>
+</div>
+
+<!-- 处理国家/地区 -->
+<div v-show="step == STEP_COUNTRY">
+    <div v-if="missingCountries.length == 0 && missingCountriesLoaded">
+        <div class="margin"></div>
+        暂时没有需要处理的国家/地区。
+        <div class="margin"></div>
+    </div>
+
+    <div v-if="missingCountries.length > 0 && missingCountriesLoaded">
+        <p class="comment">以下如无任何可以进行的操作，请直接进入下一步。</p>
+        <table class="ui table selectable celled">
+            <thead>
+                <tr>
+                    <th class="three wide">国家/地区</th>
+                    <th>问题</th>
+                </tr>
+            </thead>
+            <tr v-for="missingCountry in missingCountries">
+                <td>{{missingCountry.countryName}}</td>
+                <td><strong>"{{missingCountry.countryName}}"</strong>没有录入数据库
+                    <div v-if="missingCountry.similarCountries.length > 0">
+                        <div class="ui divider"></div>
+                        我们发现了以下类似国家/地区，如果有相同的国家/地区，请选择：
+                        <div style="margin-top: 0.5em">
+                            <a href="" v-for="country in missingCountry.similarCountries" class="ui label basic small" @click.prevent="addCountryCustomCode(country, missingCountry.countryName)">{{country.displayName}}</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="margin"></div>
+    </div>
+
+    <button class="ui button primary" type="button" @click.prevent="goStep(STEP_PROVINCE)">下一步</button>
+        &nbsp; &nbsp; <a href="" @click.prevent="reloadCountries">刷新</a>
+</div>
+
+<!-- 处理省份/州 -->
+<div v-show="step == STEP_PROVINCE">
+    <div v-if="missingProvinces.length == 0 && missingProvincesLoaded">
+        <div class="margin"></div>
+        暂时没有需要处理的省份/州。
+        <div class="margin"></div>
+    </div>
+
+    <div v-if="missingProvinces.length > 0 && missingProvincesLoaded">
+        <p class="comment">以下如无任何可以进行的操作，请直接进入下一步。</p>
+        <table class="ui table selectable celled">
+            <thead>
+            <tr>
+                <th class="three wide">国家/地区</th>
+                <th class="three wide">省份/州</th>
+                <th>问题</th>
+            </tr>
+            </thead>
+            <tr v-for="missingProvince in missingProvinces">
+                <td>{{missingProvince.countryName}}</td>
+                <td>{{missingProvince.provinceName}}</td>
+                <td><strong>"{{missingProvince.countryName}} - {{missingProvince.provinceName}}"</strong>没有录入数据库
+                    <div v-if="missingProvince.similarProvinces.length > 0">
+                        <div class="ui divider"></div>
+                        我们发现了以下类似省份/州，如果有相同的省份/州，请选择：
+                        <div style="margin-top: 0.5em">
+                            <a href="" v-for="province in missingProvince.similarProvinces" class="ui label basic small" @click.prevent="addProvinceCustomCode(province, missingProvince.provinceName)">{{province.displayName}}</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="margin"></div>
+    </div>
+
+    <button class="ui button primary" type="button" @click.prevent="goStep(STEP_CITY)">下一步</button>
+    &nbsp; &nbsp; <a href="" @click.prevent="reloadProvinces">刷新</a> &nbsp; <span class="disabled">|</span> &nbsp;  <a href="" @click.prevent="goStep(STEP_COUNTRY)">上一步</a>
+</div>
+
+<!-- 处理城市/市 -->
+<div v-show="step == STEP_CITY">
+    <div v-if="missingCities.length == 0 && missingCitiesLoaded">
+        <div class="margin"></div>
+        暂时没有需要处理的城市/市。
+        <div class="margin"></div>
+    </div>
+
+    <div v-if="missingCities.length > 0 && missingCitiesLoaded">
+        <p class="comment">以下如无任何可以进行的操作，请直接进入下一步。每次最多显示{{sizePerPage}}条。</p>
+        <table class="ui table selectable celled">
+            <thead>
+            <tr>
+                <th class="three wide">国家/地区</th>
+                <th class="three wide">省份/州</th>
+                <th class="three wide">城市/市</th>
+                <th>问题</th>
+            </tr>
+            </thead>
+            <tr v-for="missingCity in missingCities">
+                <td>{{missingCity.countryName}}</td>
+                <td>{{missingCity.provinceName}}</td>
+                <td>{{missingCity.cityName}}</td>
+                <td><strong>"{{missingCity.countryName}} - {{missingCity.provinceName}} - {{missingCity.cityName}}"</strong>没有录入数据库
+                    <div v-if="missingCity.similarCities.length > 0">
+                        <div class="ui divider"></div>
+                        我们发现了以下类似城市/市，如果有相同的城市/市，请选择：
+                        <div style="margin-top: 0.5em">
+                            <a href="" v-for="city in missingCity.similarCities" class="ui label basic small" @click.prevent="addCityCustomCode(city, missingCity.cityName)">{{city.displayName}}</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="margin"></div>
+    </div>
+
+    <button class="ui button primary" type="button" @click.prevent="goStep(STEP_TOWN)">下一步</button>
+    &nbsp; &nbsp; <a href="" @click.prevent="reloadCities">刷新</a> &nbsp; <span class="disabled">|</span> &nbsp;  <a href="" @click.prevent="goStep(STEP_PROVINCE)">上一步</a>
+</div>
+
+<!-- 处理城市/市 -->
+<div v-show="step == STEP_TOWN">
+    <div v-if="missingTowns.length == 0 && missingTownsLoaded">
+        <div class="margin"></div>
+        暂时没有需要处理的区/县。
+        <div class="margin"></div>
+    </div>
+
+    <div v-if="missingTowns.length > 0 && missingTownsLoaded">
+        <p class="comment">以下如无任何可以进行的操作，请直接进入下一步。每次最多显示{{sizePerPage}}条。</p>
+        <table class="ui table selectable celled">
+            <thead>
+            <tr>
+                <th class="three wide">国家/地区</th>
+                <th class="three wide">省份/州</th>
+                <th class="three wide">城市/市</th>
+                <th class="three wide">区/县</th>
+                <th>问题</th>
+            </tr>
+            </thead>
+            <tr v-for="missingTown in missingTowns">
+                <td>{{missingTown.countryName}}</td>
+                <td>{{missingTown.provinceName}}</td>
+                <td>{{missingTown.cityName}}</td>
+                <td>{{missingTown.townName}}</td>
+                <td><strong>"{{missingTown.countryName}} - {{missingTown.provinceName}} - {{missingTown.cityName}} - {{missingTown.townName}}"</strong>没有录入数据库
+                    <div v-if="missingTown.similarTowns.length > 0">
+                        <div class="ui divider"></div>
+                        我们发现了以下类似区/县，如果有相同的区/县，请选择：
+                        <div style="margin-top: 0.5em">
+                            <a href="" v-for="town in missingTown.similarTowns" class="ui label basic small" @click.prevent="addTownCustomCode(town, missingTown.townName)">{{town.displayName}}</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="margin"></div>
+    </div>
+
+    <button class="ui button primary" type="button" @click.prevent="goStep(STEP_PROVIDER)">下一步</button>
+    &nbsp; &nbsp; <a href="" @click.prevent="reloadTowns">刷新</a> &nbsp; <span class="disabled">|</span> &nbsp;  <a href="" @click.prevent="goStep(STEP_CITY)">上一步</a>
+</div>
+
+<!-- 处理ISP运营商 -->
+<div v-show="step == STEP_PROVIDER">
+    <div v-if="missingProviders.length == 0 && missingProvidersLoaded">
+        <div class="margin"></div>
+        暂时没有需要处理的ISP运营商。
+        <div class="margin"></div>
+    </div>
+
+    <div v-if="missingProviders.length > 0 && missingProvidersLoaded">
+        <p class="comment">以下如无任何可以进行的操作，请直接进入下一步。</p>
+        <table class="ui table selectable celled">
+            <thead>
+            <tr>
+                <th class="three wide">ISP运营商</th>
+                <th>问题</th>
+            </tr>
+            </thead>
+            <tr v-for="missingProvider in missingProviders">
+                <td>{{missingProvider.providerName}}</td>
+                <td><strong>"{{missingProvider.providerName}}"</strong>没有录入数据库
+                    <div v-if="missingProvider.similarProviders.length > 0">
+                        <div class="ui divider"></div>
+                        我们发现了以下类似ISP运营商，如果有相同的ISP运营商，请选择：
+                        <div style="margin-top: 0.5em">
+                            <a href="" v-for="provider in missingProvider.similarProviders" class="ui label basic small" @click.prevent="addProviderCustomCode(provider, missingProvider.providerName)">{{provider.displayName}}</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="margin"></div>
+    </div>
+
+    <button class="ui button primary" type="button" @click.prevent="goStep(STEP_FINISH)">下一步</button>
+    &nbsp; &nbsp; <a href="" @click.prevent="reloadProviders">刷新</a> &nbsp; <span class="disabled">|</span> &nbsp;  <a href="" @click.prevent="goStep(STEP_TOWN)">上一步</a>
+</div>
+
+<!-- 完成 -->
+<div v-show="step == STEP_FINISH">
+    <p>现在可以确认完成当前IP库的上传了，后期仍然可以修改国家/地区、省份/州、城市/市、区/县、ISP运营商等信息。</p>
+    <button class="ui button primary" type="button" @click.prevent="finish" v-if="!isFinishing">确认完成</button>
+    <button class="ui button disabled" type="button" v-if="isFinishing">正在完成最后操作...</button>
+</div>

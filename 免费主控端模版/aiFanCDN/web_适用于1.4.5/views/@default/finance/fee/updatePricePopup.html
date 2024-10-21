@@ -1,0 +1,40 @@
+{$layout "layout_popup"}
+
+<!-- <h3 v-if="item.type == 'traffic'">修改流量价格</h3> -->
+<!-- <h3 v-if="item.type == 'bandwidth'">修改带宽价格</h3> -->
+<form class="ui form" method="post" data-tea-action="$" data-tea-success="success">
+    <csrf-token></csrf-token>
+    <input type="hidden" name="regionId" :value="region.id"/>
+    <input type="hidden" name="itemId" :value="item.id"/>
+
+    <table class="ui table definition selectable">
+        <tr>
+            <td class="title">区域</td>
+            <td>{{region.name}}</td>
+        </tr>
+        <tr>
+            <td>价格项名称</td>
+            <td>{{item.name}}</td>
+        </tr>
+        <tr v-show="item.type == 'traffic'">
+            <td>流量范围</td>
+            <td>{{item.minSize}} - {{item.maxSize}}</td>
+        </tr>
+        <tr v-show="item.type == 'bandwidth'">
+            <td>带宽范围</td>
+            <td>{{item.minSize}} - {{item.maxSize}}</td>
+        </tr>
+        <tr>
+            <td class="title">单位价格 *</td>
+            <td>
+                <div class="ui input right labeled">
+                    <input type="text" name="price" maxlength="10" style="width:6em" ref="focus" v-model="price"/>
+                    <span class="ui label" v-if="item.type == 'traffic'">元/GiB</span>
+                    <span class="ui label" v-if="item.type == 'bandwidth'">元/Mbps</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <submit-btn></submit-btn>
+</form>

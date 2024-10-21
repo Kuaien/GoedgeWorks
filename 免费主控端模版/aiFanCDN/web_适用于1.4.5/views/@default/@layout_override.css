@@ -1,0 +1,69 @@
+.ui.toggle.checkbox input:focus:checked ~ .box:before,
+.ui.toggle.checkbox input:focus:checked ~ label:before {
+  background-color: #21ba45 !important;
+}
+.ui.toggle.checkbox input:checked ~ .box:before,
+.ui.toggle.checkbox input:checked ~ label:before {
+  background-color: #21ba45 !important;
+}
+.ui.label.basic {
+  background-color: white !important;
+}
+.ui.label.basic.grey {
+  border: 1px #ccc solid !important;
+}
+.disabled .ui.label {
+  color: #ccc !important;
+}
+.ui.basic.grey.label.border-grey {
+  border-color: #ddd !important;
+}
+form .fields {
+  margin-bottom: 0 !important;
+}
+.link.grey {
+  color: grey !important;
+}
+.link.grey:hover {
+  color: #4183c4 !important;
+}
+table th.center,
+table td.center {
+  text-align: center !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+table th.width10 {
+  width: 10em;
+}
+table th.width5 {
+  width: 5em;
+}
+table th.width6 {
+  width: 6em;
+}
+.ui.table tbody[style*="display: none;"],
+.ui.table tr[style*="display: none;"],
+.ui.table tr > td[style*="display: none;"],
+.ui.table tr > th[style*="display: none;"] {
+  display: none!important;
+}
+textarea::-webkit-scrollbar {
+  width: 6px !important;
+}
+select.dropdown {
+  height: auto !important;
+}
+.message .icon.warning {
+  font-size: 2em !important;
+}
+body.swal2-shown {
+  overflow: auto !important;
+}
+.grid {
+  margin-right: 0 !important;
+}
+.fields button {
+  min-width: 5em;
+}
+/*# sourceMappingURL=@layout_override.css.map */

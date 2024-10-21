@@ -1,0 +1,23 @@
+{$layout}
+
+<div class="left-right-box-container">
+    {$template "/left_menu"}
+
+    <div class="right-box">
+        {$template "../location_menu"}
+        {$template "../left_menu"}
+
+        <div class="right-box tiny">
+            <form class="ui form" data-tea-success="success" data-tea-action="$">
+                <csrf-token></csrf-token>
+                <input type="hidden" name="webId" :value="webId"/>
+
+                <b-settings-header>HLS加密设置</b-settings-header>
+                <!-- <h4>HLS加密设置</h4> -->
+                <http-hls-config-box v-model="hlsConfig" :v-is-location="true"></http-hls-config-box>
+
+                <submit-btn></submit-btn>
+            </form>
+        </div>
+    </div>
+</div>

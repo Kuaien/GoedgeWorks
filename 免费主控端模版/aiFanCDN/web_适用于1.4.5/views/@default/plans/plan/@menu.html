@@ -1,0 +1,6 @@
+<first-menu>
+    <menu-item href="/plans">所有套餐</menu-item>
+    <span class="item disabled">|</span>
+    <menu-item :href="'/plans/plan?planId=' + plan.id" code="index">"{{plan.name}}"详情</menu-item>
+    <menu-item :href="'/plans/plan/update?planId=' + plan.id"  code="update">修改</menu-item>
+</first-menu>

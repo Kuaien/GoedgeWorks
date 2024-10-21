@@ -1,0 +1,133 @@
+{$layout}
+{$template "menu"}
+
+
+<table class="ui table selectable definition">
+    <tr>
+        <td class="title">套餐名称</td>
+        <td>
+           {{plan.name}}
+        </td>
+    </tr>
+    <tr>
+        <td>状态</td>
+        <td><label-on :v-is-on="plan.isOn"></label-on></td>
+    </tr>
+    <tr>
+        <td>套餐简介</td>
+        <td>
+            <span v-if="plan.description.length > 0">{{plan.description}}</span>
+            <span v-else class="disabled">还没有简介。</span>
+        </td>
+    </tr>
+    <tr>
+        <td>关联集群</td>
+        <td>
+               <span v-if="plan.cluster.id > 0">
+                <link-icon :href="'/clusters/cluster?clusterId=' + plan.cluster.id">{{plan.cluster.name}}</link-icon>
+            </span>
+            <span v-else class="red">[已删除]</span>
+            <p class="comment">使用当前套餐的网站都将会部署在此集群上。</p>
+        </td>
+    </tr>
+    <tr>
+        <td>价格设置</td>
+        <td>
+             <plan-price-view :v-plan="plan"></plan-price-view>
+        </td>
+    </tr>
+</table>
+
+<table class="ui table selectable definition">
+    <tr>
+        <td class="title">流量限制</td>
+        <td>
+            <div v-if="plan.trafficLimit != null && plan.trafficLimit.isOn">
+                <plan-limit-view :value="plan" :v-single-mode="true"></plan-limit-view>
+            </div>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>带宽限制</td>
+        <td>
+            <div v-if="plan.bandwidthLimitPerNode != null && plan.bandwidthLimitPerNode.count > 0">
+                <bandwidth-size-capacity-view :v-value="plan.bandwidthLimitPerNode"></bandwidth-size-capacity-view>
+            </div>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>总网站数限制</td>
+        <td>
+            <span v-if="plan.totalServers > 0">{{plan.totalServers}}</span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>总域名数限制</td>
+        <td>
+            <span v-if="plan.totalServerNames > 0">{{plan.totalServerNames}}</span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>每个网站最多域名数</td>
+        <td>
+            <span v-if="plan.totalServerNamesPerServer > 0">{{plan.totalServerNamesPerServer}}</span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>单日请求数限制</td>
+        <td>
+            <span v-if="plan.dailyRequests > 0">{{plan.dailyRequestsFormat}}次/日</span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>单月请求数限制</td>
+        <td>
+            <span v-if="plan.monthlyRequests > 0">{{plan.monthlyRequestsFormat}}次/月</span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>单日Websocket连接数限制</td>
+        <td>
+            <span v-if="plan.dailyWebsocketConnections > 0">{{plan.dailyWebsocketConnections}}次/日</span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>单月Websocket连接数限制</td>
+        <td>
+            <span v-if="plan.monthlyWebsocketConnections > 0">{{plan.monthlyWebsocketConnections}}次/月</span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+    <tr>
+        <td>文件上传最大尺寸</td>
+        <td>
+            <span v-if="plan.maxUploadSize != null && plan.maxUploadSize.count > 0">
+                <size-capacity-view :v-value="plan.maxUploadSize"></size-capacity-view>
+            </span>
+            <span v-else class="disabled">没有限制</span>
+        </td>
+    </tr>
+</table>
+
+<table class="ui table selectable definition">
+    <tr>
+        <td class="title">支持的功能</td>
+        <td>
+            <div v-if="plan.hasFullFeatures">所有功能</div>
+            <div v-else>
+                <span v-if="plan.features == null || plan.features.length == 0" class="disabled">没有任何功能</span>
+                <span v-else>
+                    <span class="ui label basic small" v-for="feature in plan.features" :class="{disabled: !feature.isChecked}">{{feature.name}}</span>
+                </span>
+            </div>
+        </td>
+    </tr>
+</table>
