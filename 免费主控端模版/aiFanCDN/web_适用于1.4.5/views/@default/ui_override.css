@@ -840,6 +840,18 @@ table.definition > tr > td:first-child {
   background: var(--color-panel) !important;
   color: var(--color-text) !important;
 }
+.ui.table.b-no-vertical > thead > tr {
+  display: flex;
+}
+.ui.table.b-no-vertical > thead > tr > th {
+  flex: 1;
+}
+.ui.table.b-no-vertical > tbody > tr {
+  display: flex;
+}
+.ui.table.b-no-vertical > tbody > tr > td {
+  flex: 1;
+}
 .ui.input .ui.label {
   border-radius: 4px;
 }
@@ -1154,6 +1166,7 @@ form table tr td:first-child {
 .b-first-menu .menu-container {
   overflow-x: auto;
   display: flex;
+  align-items: center;
   background: var(--color-main-menu-bg) !important;
 }
 .b-first-menu .menu-container::after {

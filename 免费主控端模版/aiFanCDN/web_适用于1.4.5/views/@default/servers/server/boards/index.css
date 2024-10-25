@@ -1,27 +1,18 @@
 .chart-box {
-	height: 14em;
+  height: 14em;
 }
-
 .traffic-map-box {
-	height: 16em;
+  height: 16em;
 }
-
 .traffic-map-box div::-webkit-scrollbar {
-	width: 4px;
+  width: 4px;
 }
-
 h4 span {
-	font-size: 0.8em;
-	color: grey;
-	font-weight: normal !important;
+  font-size: 0.8em;
+  color: grey;
+  font-weight: normal !important;
 }
-
 .menu .item span.small {
-	font-size: 0.8em;
+  font-size: 0.8em;
 }
-
-.ui.all-chart .counter-chart .ui.column:nth-last-child(n+1):nth-last-child(-n+4) {
-	border-top: none;
-}
-
 /*# sourceMappingURL=index.css.map */

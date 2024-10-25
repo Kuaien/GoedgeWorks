@@ -2,6 +2,7 @@ Tea.context(function () {
 	this.success = NotifyPopup
 	this.type = "dnsla"
 	this.typeDescription = "DNS.LA提供的DNS服务。"
+	this.paramLocalEdgeDNSClusterId=""
 
 	this.changeType = function () {
 		let that = this
