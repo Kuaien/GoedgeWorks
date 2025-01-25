@@ -26,6 +26,7 @@
  - 👱‍♂[️支付宝人脸核身][7]
  - 💸[USDT支付模块][8]
  - 🌈[彩虹易支付模块][16]
+ - 🔠[系统多语言翻译(在线翻译)][18]
  
 ### 🕹️脚本Script
 
@@ -70,3 +71,4 @@
   [15]: https://github.com/Kuaien/GoedgeWorks/tree/main/%E4%BB%98%E8%B4%B9%E5%AE%9A%E5%88%B6%E6%A8%A1%E7%89%88/FoxCDN
   [16]: https://github.com/Kuaien/GoedgeWorks/tree/main/%E4%BB%98%E8%B4%B9%E5%AE%9A%E5%88%B6%E6%8F%92%E4%BB%B6/%E5%BD%A9%E8%99%B9%E6%98%93%E6%94%AF%E4%BB%98%E6%A8%A1%E5%9D%97
   [17]: https://github.com/Kuaien/GoedgeWorks/tree/main/%E4%BB%98%E8%B4%B9%E5%AE%9A%E5%88%B6%E6%8F%92%E4%BB%B6/%E6%89%B9%E9%87%8F%E8%AE%BE%E7%BD%AEURL%E8%B7%B3%E8%BD%AC
+  [18]: https://github.com/Kuaien/GoedgeWorks/tree/main/%E4%BB%98%E8%B4%B9%E5%AE%9A%E5%88%B6%E6%8F%92%E4%BB%B6/%E7%B3%BB%E7%BB%9F%E5%A4%9A%E8%AF%AD%E8%A8%80%E7%BF%BB%E8%AF%91
