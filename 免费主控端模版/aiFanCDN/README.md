@@ -5,7 +5,7 @@
 
 ## 在线演示
 ````shell
-主控端：https://edge.console.aifan.top/
+主控端：https://demo-edge-admin.aifan.top/
 账  号：kdmin
 密  码：kk54321
 ````
